@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "audiora_controller",
+  "version": "${version}",
+  "name": "Audiora Sound Controller",
+  "description": "Client-side sound settings foundation for Audiora.",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "id.audiora.controller.AudioraController"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.2",
+    "java": ">=25"
+  }
+}
