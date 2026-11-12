@@ -89,7 +89,7 @@ public final class AudioraConfig {
     private static int categoryForSound(String id) {
         if (containsAny(id, "ui.", "ui_", "button", "click", "toast", "widget")) return indexOf("ui");
         if (containsAny(id, "inventory", "container", "chest", "barrel", "shulker", "crafting")) return indexOf("inventory");
-        if (containsAny(id, "mace", "wind_charge", "firework", "trident", "attack", "hit", "critical")) return indexOf("combat");
+        if (containsAny(id, "attack", "hit", "critical", "impact")) return indexOf("combat");
         if (containsAny(id, "bird", "parrot", "chicken", "crow", "owl", "duck")) return indexOf("birds");
         if (containsAny(id, "bee", "cricket", "insect", "cicada", "mosquito", "frog")) return indexOf("insects");
         if (containsAny(id, "wind", "wave", "ocean", "beach", "rain", "thunder", "storm", "water", "ambient", "cave")) return indexOf("nature");
