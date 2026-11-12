@@ -1,45 +1,33 @@
 package id.audiora.controller;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 
-/**
- * Initial Audiora client bootstrap.
- * Creates a persistent starter configuration; sound interception and GUI
- * controls are intentionally not claimed as implemented in this first build.
- */
 public final class AudioraController implements ClientModInitializer {
-    private static final String[] CATEGORIES = {
-        "combat", "inventory", "player", "items",
-        "birds", "insects", "nature", "ui"
-    };
+    private static final KeyMapping.Category CATEGORY =
+        KeyMapping.Category.register(Identifier.fromNamespaceAndPath("audiora_controller", "main"));
+    private static KeyMapping openSettings;
 
     @Override
     public void onInitializeClient() {
-        Path config = Path.of("config", "audiora-sound-controller.json");
-        try {
-            Files.createDirectories(config.getParent());
-            if (Files.notExists(config)) {
-                Files.writeString(config, defaultConfig());
+        AudioraConfig.load();
+        openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.audiora_controller.open_settings",
+            InputConstants.Type.KEYSYM,
+            InputConstants.KEY_O,
+            CATEGORY
+        ));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (openSettings.consumeClick()) {
+                if (client.player != null && client.gui.screen() == null) {
+                    client.gui.setScreen(new AudioraScreen());
+                }
             }
-        } catch (IOException exception) {
-            System.err.println("[Audiora] Could not create configuration: " + exception.getMessage());
-        }
-        System.out.println("[Audiora] Sound Controller initialized.");
-    }
-
-    private static String defaultConfig() {
-        StringBuilder json = new StringBuilder();
-        json.append("{\n  \"masterEnabled\": true,\n  \"masterVolume\": 1.0,\n  \"categories\": {\n");
-        for (int i = 0; i < CATEGORIES.length; i++) {
-            json.append("    \"").append(CATEGORIES[i]).append("\": { \"enabled\": true, \"volume\": 1.0 }");
-            json.append(i == CATEGORIES.length - 1 ? "\n" : ",\n");
-        }
-        json.append("  }\n}\n");
-        return json.toString();
+        });
+        System.out.println("[Audiora] Sound Controller initialized. Press O to open settings.");
     }
 }
