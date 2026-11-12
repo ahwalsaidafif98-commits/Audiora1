@@ -14,6 +14,7 @@ public final class AudioraConfig {
     private static final Path FILE = Path.of("config", "audiora-sound-controller.json");
     public static boolean masterEnabled = true;
     public static int masterVolume = 100;
+    public static boolean comboEnabled = true;
     public static final boolean[] enabled = new boolean[CATEGORIES.length];
     public static final int[] volume = new int[CATEGORIES.length];
 
@@ -36,6 +37,7 @@ public final class AudioraConfig {
             JsonObject root = JsonParser.parseString(Files.readString(FILE)).getAsJsonObject();
             masterEnabled = !root.has("masterEnabled") || root.get("masterEnabled").getAsBoolean();
             masterVolume = clamp(root.has("masterVolume") ? Math.round(root.get("masterVolume").getAsFloat() * 100) : 100);
+            comboEnabled = !root.has("comboEnabled") || root.get("comboEnabled").getAsBoolean();
             JsonObject categories = root.has("categories") ? root.getAsJsonObject("categories") : new JsonObject();
             for (int i = 0; i < CATEGORIES.length; i++) {
                 JsonObject item = categories.has(CATEGORIES[i]) ? categories.getAsJsonObject(CATEGORIES[i]) : new JsonObject();
@@ -51,6 +53,7 @@ public final class AudioraConfig {
         JsonObject root = new JsonObject();
         root.addProperty("masterEnabled", masterEnabled);
         root.addProperty("masterVolume", masterVolume / 100.0f);
+        root.addProperty("comboEnabled", comboEnabled);
         JsonObject categories = new JsonObject();
         for (int i = 0; i < CATEGORIES.length; i++) {
             JsonObject item = new JsonObject();
@@ -70,6 +73,7 @@ public final class AudioraConfig {
     public static void reset() {
         masterEnabled = true;
         masterVolume = 100;
+        comboEnabled = true;
         for (int i = 0; i < CATEGORIES.length; i++) {
             enabled[i] = true;
             volume[i] = 100;
