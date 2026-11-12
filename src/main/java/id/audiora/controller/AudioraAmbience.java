@@ -19,7 +19,7 @@ public final class AudioraAmbience {
     private static final Random RANDOM = new Random();
     private static int ticksUntilNext = 20 * 18;
 
-    private AudioraAmbience() {}
+    private AudioraAmbience() {}\n\n    public static void initialize() {\n        // Force sound-event registration during client initialization, before the first tick.\n    }
 
     public static void tick(net.minecraft.client.Minecraft client) {
         if (client.player == null || client.level == null || client.gui.screen() != null) return;
