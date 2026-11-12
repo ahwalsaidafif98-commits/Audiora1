@@ -43,6 +43,12 @@ public final class AudioraScreen extends Screen {
             }).bounds(x + 97, y, 53, 20).build());
         }
 
+        this.addRenderableWidget(Button.builder(comboLabel(), button -> {
+            AudioraConfig.comboEnabled = !AudioraConfig.comboEnabled;
+            button.setMessage(comboLabel());
+            AudioraConfig.save();
+        }).bounds(center - 150, this.height - 82, 145, 20).build());
+
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), button -> {
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
             AudioraConfig.save();
@@ -84,6 +90,10 @@ public final class AudioraScreen extends Screen {
     public void onClose() {
         AudioraConfig.save();
         this.minecraft.gui.setScreen(null);
+    }
+
+    private static Component comboLabel() {
+        return Component.literal("Crit Combo: " + (AudioraConfig.comboEnabled ? "ON" : "OFF"));
     }
 
     private static Component masterLabel() {
