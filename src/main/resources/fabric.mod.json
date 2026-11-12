@@ -15,5 +15,11 @@
     "fabric-api": "*",
     "minecraft": "26.2",
     "java": ">=25"
-  }
+  },
+  "mixins": [
+    {
+      "config": "audiora_controller.client.mixins.json",
+      "environment": "client"
+    }
+  ]
 }
