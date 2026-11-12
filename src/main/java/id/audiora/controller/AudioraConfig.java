@@ -87,13 +87,13 @@ public final class AudioraConfig {
     }
 
     private static int categoryForSound(String id) {
-        if (containsAny(id, "ui.", "ui_", "button", "click", "toast", "widget")) return indexOf("ui");
-        if (containsAny(id, "inventory", "container", "chest", "barrel", "shulker", "crafting")) return indexOf("inventory");
-        if (containsAny(id, "bird", "parrot", "chicken", "crow", "owl", "duck")) return indexOf("birds");
-        if (containsAny(id, "bee", "cricket", "insect", "cicada", "mosquito", "frog")) return indexOf("insects");
-        if (containsAny(id, "wind", "wave", "ocean", "beach", "rain", "thunder", "storm", "water", "ambient", "cave")) return indexOf("nature");
-        if (containsAny(id, "item", "pickup", "drop", "throw", "equip", "consume", "break")) return indexOf("items");
-        if (containsAny(id, "player", "step", "footstep", "swim", "hurt", "death", "jump", "eat", "burp", "splash")) return indexOf("player");
+        if (containsAny(id, "ui.", "ui_", "button", "click", "toast", "widget")) return indexOfCategory("ui");
+        if (containsAny(id, "inventory", "container", "chest", "barrel", "shulker", "crafting")) return indexOfCategory("inventory");
+        if (containsAny(id, "bird", "parrot", "chicken", "crow", "owl", "duck")) return indexOfCategory("birds");
+        if (containsAny(id, "bee", "cricket", "insect", "cicada", "mosquito", "frog")) return indexOfCategory("insects");
+        if (containsAny(id, "wind", "wave", "ocean", "beach", "rain", "thunder", "storm", "water", "ambient", "cave")) return indexOfCategory("nature");
+        if (containsAny(id, "item", "pickup", "drop", "throw", "equip", "consume", "break")) return indexOfCategory("items");
+        if (containsAny(id, "player", "step", "footstep", "swim", "hurt", "death", "jump", "eat", "burp", "splash")) return indexOfCategory("player");
         return -1;
     }
 
@@ -102,7 +102,7 @@ public final class AudioraConfig {
         return false;
     }
 
-    private static int indexOf(String category) {
+    public static int indexOfCategory(String category) {
         for (int i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].equals(category)) return i;
         return -1;
     }
