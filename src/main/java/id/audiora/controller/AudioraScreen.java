@@ -46,7 +46,7 @@ public final class AudioraScreen extends Screen {
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), button -> {
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
             AudioraConfig.save();
-            this.init();
+            this.minecraft.gui.setScreen(new AudioraScreen());
         }).bounds(center - 150, this.height - 54, 92, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Disable All"), button -> {
