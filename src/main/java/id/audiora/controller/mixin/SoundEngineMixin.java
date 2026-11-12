@@ -16,7 +16,7 @@ public abstract class SoundEngineMixin {
         cancellable = true
     )
     private void audiora$applySoundControls(SoundInstance instance, CallbackInfoReturnable<Float> cir) {
-        float scale = AudioraConfig.scaleForSound(instance.getId().toString());
+        float scale = AudioraConfig.scaleForSound(instance.getIdentifier().toString());
         cir.setReturnValue(cir.getReturnValue() * scale);
     }
 }
