@@ -30,3 +30,11 @@ java {
     }
     withSourcesJar()
 }
+
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
