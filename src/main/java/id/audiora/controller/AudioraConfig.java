@@ -1,66 +1,83 @@
 package id.audiora.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public final class AudioraConfig {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    public static final String[] CATEGORIES = {
+        "combat", "inventory", "player", "items",
+        "birds", "insects", "nature", "ui"
+    };
     private static final Path FILE = Path.of("config", "audiora-sound-controller.json");
-    public boolean masterEnabled = true;
-    public float masterVolume = 1.0f;
-    public Map<String, Category> categories = defaults();
+    public static boolean masterEnabled = true;
+    public static int masterVolume = 100;
+    public static final boolean[] enabled = new boolean[CATEGORIES.length];
+    public static final int[] volume = new int[CATEGORIES.length];
 
-    public static final class Category {
-        public boolean enabled = true;
-        public float volume = 1.0f;
-        public Category() {}
-        public Category(boolean enabled, float volume) {
-            this.enabled = enabled;
-            this.volume = clamp(volume);
+    static {
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            enabled[i] = true;
+            volume[i] = 100;
         }
+        load();
     }
 
-    private static Map<String, Category> defaults() {
-        Map<String, Category> result = new LinkedHashMap<>();
-        for (String name : new String[]{"combat","inventory","player","items","birds","insects","nature","ui"})
-            result.put(name, new Category(true, 1.0f));
-        return result;
-    }
+    private AudioraConfig() {}
 
-    public static AudioraConfig load() {
+    public static void load() {
+        if (!Files.exists(FILE)) {
+            save();
+            return;
+        }
         try {
-            Files.createDirectories(FILE.getParent());
-            if (Files.exists(FILE)) {
-                AudioraConfig value = GSON.fromJson(Files.readString(FILE), AudioraConfig.class);
-                if (value != null) {
-                    if (value.categories == null) value.categories = defaults();
-                    defaults().forEach(value.categories::putIfAbsent);
-                    value.masterVolume = clamp(value.masterVolume);
-                    value.categories.values().forEach(c -> c.volume = clamp(c.volume));
-                    return value;
-                }
+            JsonObject root = JsonParser.parseString(Files.readString(FILE)).getAsJsonObject();
+            masterEnabled = !root.has("masterEnabled") || root.get("masterEnabled").getAsBoolean();
+            masterVolume = clamp(root.has("masterVolume") ? Math.round(root.get("masterVolume").getAsFloat() * 100) : 100);
+            JsonObject categories = root.has("categories") ? root.getAsJsonObject("categories") : new JsonObject();
+            for (int i = 0; i < CATEGORIES.length; i++) {
+                JsonObject item = categories.has(CATEGORIES[i]) ? categories.getAsJsonObject(CATEGORIES[i]) : new JsonObject();
+                enabled[i] = !item.has("enabled") || item.get("enabled").getAsBoolean();
+                volume[i] = clamp(item.has("volume") ? Math.round(item.get("volume").getAsFloat() * 100) : 100);
             }
-        } catch (Exception e) {
-            System.err.println("[Audiora] Config load failed: " + e.getMessage());
+        } catch (Exception exception) {
+            System.err.println("[Audiora] Config invalid, using defaults: " + exception.getMessage());
         }
-        return new AudioraConfig();
     }
 
-    public void save() {
+    public static void save() {
+        JsonObject root = new JsonObject();
+        root.addProperty("masterEnabled", masterEnabled);
+        root.addProperty("masterVolume", masterVolume / 100.0f);
+        JsonObject categories = new JsonObject();
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            JsonObject item = new JsonObject();
+            item.addProperty("enabled", enabled[i]);
+            item.addProperty("volume", volume[i] / 100.0f);
+            categories.add(CATEGORIES[i], item);
+        }
+        root.add("categories", categories);
         try {
             Files.createDirectories(FILE.getParent());
-            Files.writeString(FILE, GSON.toJson(this));
-        } catch (IOException e) {
-            System.err.println("[Audiora] Config save failed: " + e.getMessage());
+            Files.writeString(FILE, root.toString());
+        } catch (IOException exception) {
+            System.err.println("[Audiora] Could not save config: " + exception.getMessage());
         }
     }
 
-    public static float clamp(float value) {
-        return Math.max(0.0f, Math.min(1.0f, value));
+    public static void reset() {
+        masterEnabled = true;
+        masterVolume = 100;
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            enabled[i] = true;
+            volume[i] = 100;
+        }
+        save();
+    }
+
+    private static int clamp(int value) {
+        return Math.max(0, Math.min(100, value));
     }
 }
