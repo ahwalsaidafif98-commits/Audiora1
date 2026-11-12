@@ -77,6 +77,37 @@ public final class AudioraConfig {
         save();
     }
 
+    public static float scaleForSound(String soundId) {
+        if (!masterEnabled) return 0.0f;
+        String id = soundId == null ? "" : soundId.toLowerCase(java.util.Locale.ROOT);
+        int category = categoryForSound(id);
+        if (category < 0) return masterVolume / 100.0f;
+        if (!enabled[category]) return 0.0f;
+        return (masterVolume / 100.0f) * (volume[category] / 100.0f);
+    }
+
+    private static int categoryForSound(String id) {
+        if (containsAny(id, "ui.", "ui_", "button", "click", "toast", "widget")) return indexOf("ui");
+        if (containsAny(id, "inventory", "container", "chest", "barrel", "shulker", "crafting")) return indexOf("inventory");
+        if (containsAny(id, "mace", "wind_charge", "firework", "trident", "attack", "hit", "critical")) return indexOf("combat");
+        if (containsAny(id, "bird", "parrot", "chicken", "crow", "owl", "duck")) return indexOf("birds");
+        if (containsAny(id, "bee", "cricket", "insect", "cicada", "mosquito", "frog")) return indexOf("insects");
+        if (containsAny(id, "wind", "wave", "ocean", "beach", "rain", "thunder", "storm", "water", "ambient", "cave")) return indexOf("nature");
+        if (containsAny(id, "item", "pickup", "drop", "throw", "equip", "consume", "break")) return indexOf("items");
+        if (containsAny(id, "player", "step", "footstep", "swim", "hurt", "death", "jump", "eat", "burp", "splash")) return indexOf("player");
+        return -1;
+    }
+
+    private static boolean containsAny(String value, String... terms) {
+        for (String term : terms) if (value.contains(term)) return true;
+        return false;
+    }
+
+    private static int indexOf(String category) {
+        for (int i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].equals(category)) return i;
+        return -1;
+    }
+
     private static int clamp(int value) {
         return Math.max(0, Math.min(100, value));
     }
