@@ -22,6 +22,7 @@ public final class AudioraController implements ClientModInitializer {
             CATEGORY
         ));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            AudioraAmbience.tick(client);
             while (openSettings.consumeClick()) {
                 if (client.player != null && client.gui.screen() == null) {
                     client.gui.setScreen(new AudioraScreen());
