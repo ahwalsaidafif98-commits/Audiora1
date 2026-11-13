@@ -14,7 +14,8 @@ public final class AudioraController implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        AudioraConfig.load();\n        AudioraAmbience.initialize();
+        AudioraConfig.load();
+        AudioraAmbience.initialize();
         AudioraCombo.initialize();
         openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.audiora_controller.open_settings",
