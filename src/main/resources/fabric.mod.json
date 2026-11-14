@@ -12,6 +12,9 @@
     ],
     "modmenu": [
       "id.audiora.controller.AudioraModMenu"
+    ],
+    "main": [
+      "id.audiora.controller.AudioraCommon"
     ]
   },
   "depends": {
