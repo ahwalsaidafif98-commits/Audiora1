@@ -11,12 +11,10 @@ import net.minecraft.sounds.SoundSource;
 public final class AudioraAmbience {
     private static final Identifier BIRDS_ID = Identifier.fromNamespaceAndPath("audiora", "birds_forest");
     private static final Identifier CRICKETS_ID = Identifier.fromNamespaceAndPath("audiora", "crickets_night");
-    private static final Identifier RIVER_ID = Identifier.fromNamespaceAndPath("audiora", "river_water");
     private static final Identifier WIND_ID = Identifier.fromNamespaceAndPath("audiora", "open_air_wind");
 
     private static final SoundEvent BIRDS = register(BIRDS_ID);
     private static final SoundEvent CRICKETS = register(CRICKETS_ID);
-    private static final SoundEvent RIVER = register(RIVER_ID);
     private static final SoundEvent WIND = register(WIND_ID);
 
     private static final Random RANDOM = new Random();
@@ -44,8 +42,6 @@ public final class AudioraAmbience {
         boolean night = dayTime >= 13000L && dayTime <= 23000L;
         boolean forest = biome.contains("forest") || biome.contains("jungle") ||
             biome.contains("grove") || biome.contains("taiga");
-        boolean riverBiome = biome.contains("river");
-        boolean nearWater = riverBiome && hasWaterNearby(client);
         boolean outdoors = client.level.canSeeSky(client.player.blockPosition());
 
         if (night && AudioraConfig.enabled[AudioraConfig.indexOfCategory("insects")]) {
@@ -54,26 +50,11 @@ public final class AudioraAmbience {
             play(client, BIRDS, "audiora:birds_forest", 0.68f);
         }
 
-        if (nearWater && AudioraConfig.enabled[AudioraConfig.indexOfCategory("nature")]) {
-            play(client, RIVER, "audiora:river_water", 0.78f);
-        } else if (outdoors && AudioraConfig.enabled[AudioraConfig.indexOfCategory("nature")]) {
+        if (outdoors && AudioraConfig.enabled[AudioraConfig.indexOfCategory("nature")]) {
             play(client, WIND, "audiora:open_air_wind", 0.42f);
         }
 
         ticksUntilNext = 20 * (24 + RANDOM.nextInt(22));
-    }
-
-    private static boolean hasWaterNearby(net.minecraft.client.Minecraft client) {
-        BlockPos center = client.player.blockPosition();
-        for (int x = -10; x <= 10; x++) {
-            for (int z = -10; z <= 10; z++) {
-                for (int y = -3; y <= 3; y++) {
-                    BlockPos pos = center.offset(x, y, z);
-                    if (!client.level.getBlockState(pos).getFluidState().isEmpty()) return true;
-                }
-            }
-        }
-        return false;
     }
 
     private static void play(net.minecraft.client.Minecraft client, SoundEvent event, String id, float volume) {
