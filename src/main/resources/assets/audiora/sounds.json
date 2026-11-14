@@ -9,11 +9,6 @@
       { "name": "audiora:crickets_night", "stream": true }
     ]
   },
-  "river_water": {
-    "sounds": [
-      { "name": "audiora:river_water", "stream": true }
-    ]
-  },
   "open_air_wind": {
     "sounds": [
       { "name": "audiora:open_air_wind", "stream": true }
