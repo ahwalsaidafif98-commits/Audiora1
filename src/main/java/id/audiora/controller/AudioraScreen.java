@@ -95,6 +95,7 @@ public final class AudioraScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
+        drawAudioraIcon(graphics, this.width / 2 - 112, 7);
         graphics.text(this.font, "AUDIORA - Sound settings", this.width / 2 - 82, 12, 0xFFFFFFFF, true);
         graphics.text(this.font, "Master / Noise level", this.width / 2 - 150, 22, 0xFFB8D8FF, false);
         graphics.text(this.font, "Combo position: X " + AudioraConfig.comboOffsetX + " | Y " + AudioraConfig.comboOffsetY + " (5 px per tap)", this.width / 2 - 150, this.height - 96, 0xFFB8D8FF, false);
@@ -105,6 +106,28 @@ public final class AudioraScreen extends Screen {
             int y = 68 + row * 31;
             graphics.text(this.font, AudioraConfig.CATEGORIES[i].toUpperCase(), x, y - 10, 0xFFE8E8E8, false);
         }
+    }
+
+    private static void drawAudioraIcon(GuiGraphicsExtractor graphics, int x, int y) {
+        // Ikon pixel-art ungu: cincin luar, cincin dalam terbuka, dan panah naik.
+        for (int step = 0; step < 360; step += 4) {
+            double a = Math.toRadians(step);
+            int px = x + 12 + (int)Math.round(Math.cos(a) * 10);
+            int py = y + 12 + (int)Math.round(Math.sin(a) * 10);
+            graphics.fill(px, py, px + 2, py + 2, 0xFFB982F2);
+        }
+        for (int step = 48; step < 312; step += 5) {
+            double a = Math.toRadians(step);
+            int px = x + 12 + (int)Math.round(Math.cos(a) * 7);
+            int py = y + 12 + (int)Math.round(Math.sin(a) * 7);
+            graphics.fill(px, py, px + 2, py + 2, 0xFFEBD9FF);
+        }
+        // Panah mengarah ke atas.
+        graphics.fill(x + 11, y + 5, x + 14, y + 17, 0xFFEBD9FF);
+        graphics.fill(x + 8, y + 8, x + 17, y + 11, 0xFFEBD9FF);
+        graphics.fill(x + 7, y + 9, x + 10, y + 12, 0xFFEBD9FF);
+        graphics.fill(x + 15, y + 9, x + 18, y + 12, 0xFFEBD9FF);
+        graphics.fill(x + 12, y + 14, x + 16, y + 20, 0xFFEBD9FF);
     }
 
     @Override
