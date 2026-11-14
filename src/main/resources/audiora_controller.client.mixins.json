@@ -5,9 +5,8 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "SoundEngineMixin",
-    "ContainerItemMoveMixin"
+    "ContainerItemMoveMixin",
+    "LivingEntitySwingMixin"
   ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+  "injectors": { "defaultRequire": 1 }
 }
