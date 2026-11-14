@@ -3,13 +3,13 @@ package id.audiora.controller;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.effect.MobEffects;
 
 public final class AudioraCombo {
+    private static final int COMBO_TIMEOUT_TICKS = 50;
     private static int combo = 0;
     private static int displayTicks = 0;
 
@@ -30,8 +30,9 @@ public final class AudioraCombo {
                 && player.getAttackStrengthScale(0.5F) > 0.9F;
 
             if (criticalCandidate) {
+                // A new critical hit extends the timer and keeps the current combo.
                 combo++;
-                displayTicks = 50;
+                displayTicks = COMBO_TIMEOUT_TICKS;
             } else {
                 combo = 0;
                 displayTicks = 0;
@@ -44,10 +45,23 @@ public final class AudioraCombo {
             (graphics, deltaTracker) -> {
                 Minecraft client = Minecraft.getInstance();
                 if (!AudioraConfig.comboEnabled || client.player == null || displayTicks <= 0 || combo <= 0) return;
+
                 String label = "COMBO " + combo + "X";
-                int x = (client.getWindow().getGuiScaledWidth() - client.font.width(label)) / 2;
-                int y = client.getWindow().getGuiScaledHeight() / 2 + 24;
+                int labelWidth = client.font.width(label);
+                int screenWidth = client.getWindow().getGuiScaledWidth();
+                int screenHeight = client.getWindow().getGuiScaledHeight();
+                int x = (screenWidth - labelWidth) / 2 + AudioraConfig.comboOffsetX;
+                int y = screenHeight / 2 + AudioraConfig.comboOffsetY;
+
                 graphics.text(client.font, label, x, y, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF, true);
+
+                // The underline drains over the 50-tick window. If it empties,
+                // the next combo starts again from 1.
+                int barWidth = Math.max(0, Math.round(labelWidth * (displayTicks / (float) COMBO_TIMEOUT_TICKS)));
+                int barY = y + client.font.lineHeight + 2;
+                if (barWidth > 0) {
+                    graphics.fill(x, barY, x + barWidth, barY + 2, combo >= 5 ? 0xFFFFD54A : 0xFF55DFFF);
+                }
             }
         );
     }
