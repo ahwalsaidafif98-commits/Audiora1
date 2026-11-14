@@ -4,7 +4,8 @@
   "package": "id.audiora.controller.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "SoundEngineMixin"
+    "SoundEngineMixin",
+    "ContainerItemMoveMixin"
   ],
   "injectors": {
     "defaultRequire": 1
