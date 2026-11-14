@@ -1,11 +1,17 @@
 package id.audiora.controller;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public final class AudioraScreen extends Screen {
+    private static final int[] VOLUME_STEPS = {
+        0, 10, 15, 20, 25, 30, 35, 40, 45, 50,
+        55, 60, 65, 70, 75, 80, 85, 90, 95, 100
+    };
+
     private final Screen parent;
 
     public AudioraScreen() {
@@ -24,13 +30,11 @@ public final class AudioraScreen extends Screen {
             AudioraConfig.masterEnabled = !AudioraConfig.masterEnabled;
             button.setMessage(masterLabel());
             AudioraConfig.save();
-        }).bounds(center - 150, 32, 145, 20).build());
+        }).bounds(center - 150, 32, 92, 20).build());
 
-        this.addRenderableWidget(Button.builder(volumeLabel(AudioraConfig.masterVolume), button -> {
-            AudioraConfig.masterVolume = (AudioraConfig.masterVolume + 10) % 110;
-            button.setMessage(volumeLabel(AudioraConfig.masterVolume));
-            AudioraConfig.save();
-        }).bounds(center + 5, 32, 145, 20).build());
+        this.addRenderableWidget(new VolumeSlider(
+            center - 53, 32, 203, 20, AudioraConfig.masterVolume, "Master"
+        ));
 
         for (int i = 0; i < AudioraConfig.CATEGORIES.length; i++) {
             final int index = i;
@@ -42,12 +46,10 @@ public final class AudioraScreen extends Screen {
                 AudioraConfig.enabled[index] = !AudioraConfig.enabled[index];
                 button.setMessage(toggleLabel(index));
                 AudioraConfig.save();
-            }).bounds(x, y, 92, 20).build());
-            this.addRenderableWidget(Button.builder(volumeLabel(AudioraConfig.volume[index]), button -> {
-                AudioraConfig.volume[index] = (AudioraConfig.volume[index] + 10) % 110;
-                button.setMessage(volumeLabel(AudioraConfig.volume[index]));
-                AudioraConfig.save();
-            }).bounds(x + 97, y, 53, 20).build());
+            }).bounds(x, y, 45, 20).build());
+            this.addRenderableWidget(new VolumeSlider(
+                x + 50, y, 100, 20, AudioraConfig.volume[index], AudioraConfig.CATEGORIES[index]
+            ));
         }
 
         this.addRenderableWidget(Button.builder(comboLabel(), button -> {
@@ -154,7 +156,55 @@ public final class AudioraScreen extends Screen {
         return Component.literal(AudioraConfig.enabled[index] ? "ON" : "OFF");
     }
 
-    private static Component volumeLabel(int value) {
-        return Component.literal(value + "%");
+    private static int nearestStep(int value) {
+        int best = VOLUME_STEPS[0];
+        int distance = Math.abs(value - best);
+        for (int step : VOLUME_STEPS) {
+            int candidateDistance = Math.abs(value - step);
+            if (candidateDistance < distance) {
+                best = step;
+                distance = candidateDistance;
+            }
+        }
+        return best;
+    }
+
+    private static final class VolumeSlider extends AbstractSliderButton {
+        private final String label;
+
+        private VolumeSlider(int x, int y, int width, int height, int initialValue, String label) {
+            super(x, y, width, height, Component.empty(), sliderPosition(initialValue));
+            this.label = label;
+            updateMessage();
+        }
+
+        private static double sliderPosition(int volume) {
+            int snapped = nearestStep(volume);
+            for (int i = 0; i < VOLUME_STEPS.length; i++) {
+                if (VOLUME_STEPS[i] == snapped) return (double)i / (VOLUME_STEPS.length - 1);
+            }
+            return 1.0;
+        }
+
+        @Override
+        protected void updateMessage() {
+            int index = (int)Math.round(this.value * (VOLUME_STEPS.length - 1));
+            this.setMessage(Component.literal(VOLUME_STEPS[index] + "%"));
+        }
+
+        @Override
+        protected void applyValue() {
+            int index = (int)Math.round(this.value * (VOLUME_STEPS.length - 1));
+            int snapped = VOLUME_STEPS[index];
+            this.value = (double)index / (VOLUME_STEPS.length - 1);
+            if ("Master".equals(label)) {
+                AudioraConfig.masterVolume = snapped;
+            } else {
+                int category = AudioraConfig.indexOfCategory(label);
+                if (category >= 0) AudioraConfig.volume[category] = snapped;
+            }
+            AudioraConfig.save();
+            updateMessage();
+        }
     }
 }
