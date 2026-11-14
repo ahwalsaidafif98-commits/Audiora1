@@ -1,0 +1,12 @@
+{
+  "inv.buka": {
+    "sounds": [
+      "audiora_controller:inv/buka"
+    ]
+  },
+  "inv.tutup": {
+    "sounds": [
+      "audiora_controller:inv/tutup"
+    ]
+  }
+}
