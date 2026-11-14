@@ -31,7 +31,7 @@ public final class AudioraAmbience {
 
         String biome = client.level.getBiome(client.player.blockPosition())
             .unwrapKey().map(key -> key.identifier().getPath()).orElse("");
-        long dayTime = Math.floorMod(client.level.getLevelData().getDayTime(), 24000L);
+        long dayTime = Math.floorMod(client.level.getDayTime(), 24000L);
         boolean night = dayTime >= 13000L && dayTime <= 23000L;
         boolean forest = biome.contains("forest") || biome.contains("jungle") ||
             biome.contains("grove") || biome.contains("taiga");
