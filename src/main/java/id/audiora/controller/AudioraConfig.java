@@ -31,10 +31,7 @@ public final class AudioraConfig {
     private AudioraConfig() {}
 
     public static void load() {
-        if (!Files.exists(FILE)) {
-            save();
-            return;
-        }
+        if (!Files.exists(FILE)) { save(); return; }
         try {
             JsonObject root = JsonParser.parseString(Files.readString(FILE)).getAsJsonObject();
             masterEnabled = !root.has("masterEnabled") || root.get("masterEnabled").getAsBoolean();
@@ -77,15 +74,9 @@ public final class AudioraConfig {
     }
 
     public static void reset() {
-        masterEnabled = true;
-        masterVolume = 100;
-        comboEnabled = true;
-        comboOffsetX = 0;
-        comboOffsetY = 24;
-        for (int i = 0; i < CATEGORIES.length; i++) {
-            enabled[i] = true;
-            volume[i] = 100;
-        }
+        masterEnabled = true; masterVolume = 100; comboEnabled = true;
+        comboOffsetX = 0; comboOffsetY = 24;
+        for (int i = 0; i < CATEGORIES.length; i++) { enabled[i] = true; volume[i] = 100; }
         save();
     }
 
@@ -100,12 +91,12 @@ public final class AudioraConfig {
 
     private static int categoryForSound(String id) {
         if (containsAny(id, "ui.", "ui_", "button", "click", "toast", "widget")) return indexOfCategory("ui");
-        if (containsAny(id, "inventory", "container", "chest", "barrel", "shulker", "crafting")) return indexOfCategory("inventory");
+        if (containsAny(id, "inventory", "container", "chest", "barrel", "shulker", "crafting", "inv.")) return indexOfCategory("inventory");
         if (containsAny(id, "bird", "parrot", "chicken", "crow", "owl", "duck")) return indexOfCategory("birds");
         if (containsAny(id, "bee", "cricket", "insect", "cicada", "mosquito", "frog")) return indexOfCategory("insects");
         if (containsAny(id, "wind", "wave", "ocean", "beach", "rain", "thunder", "storm", "water", "ambient", "cave")) return indexOfCategory("nature");
         if (containsAny(id, "item", "pickup", "drop", "throw", "equip", "consume", "break")) return indexOfCategory("items");
-        if (containsAny(id, "player", "step", "footstep", "swim", "hurt", "death", "jump", "eat", "burp", "splash")) return indexOfCategory("player");
+        if (containsAny(id, "player", "step", "footstep", "swim", "hurt", "death", "jump", "eat", "burp", "splash", "sword_swing")) return indexOfCategory("player");
         return -1;
     }
 
@@ -119,7 +110,5 @@ public final class AudioraConfig {
         return -1;
     }
 
-    private static int clamp(int value) {
-        return Math.max(0, Math.min(100, value));
-    }
+    private static int clamp(int value) { return Math.max(0, Math.min(100, value)); }
 }
