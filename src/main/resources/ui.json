@@ -1,5 +1,5 @@
 {
   "enabled": true,
-  "open": "custominv.inv.buka",
-  "close": "custominv.inv.tutup"
+  "open": "audiora_controller:inv.buka",
+  "close": "audiora_controller:inv.tutup"
 }
