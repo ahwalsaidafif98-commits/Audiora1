@@ -15,6 +15,8 @@ public final class AudioraConfig {
     public static boolean masterEnabled = true;
     public static int masterVolume = 100;
     public static boolean comboEnabled = true;
+    public static int comboOffsetX = 0;
+    public static int comboOffsetY = 24;
     public static final boolean[] enabled = new boolean[CATEGORIES.length];
     public static final int[] volume = new int[CATEGORIES.length];
 
@@ -38,6 +40,8 @@ public final class AudioraConfig {
             masterEnabled = !root.has("masterEnabled") || root.get("masterEnabled").getAsBoolean();
             masterVolume = clamp(root.has("masterVolume") ? Math.round(root.get("masterVolume").getAsFloat() * 100) : 100);
             comboEnabled = !root.has("comboEnabled") || root.get("comboEnabled").getAsBoolean();
+            comboOffsetX = root.has("comboOffsetX") ? root.get("comboOffsetX").getAsInt() : 0;
+            comboOffsetY = root.has("comboOffsetY") ? root.get("comboOffsetY").getAsInt() : 24;
             JsonObject categories = root.has("categories") ? root.getAsJsonObject("categories") : new JsonObject();
             for (int i = 0; i < CATEGORIES.length; i++) {
                 JsonObject item = categories.has(CATEGORIES[i]) ? categories.getAsJsonObject(CATEGORIES[i]) : new JsonObject();
@@ -54,6 +58,8 @@ public final class AudioraConfig {
         root.addProperty("masterEnabled", masterEnabled);
         root.addProperty("masterVolume", masterVolume / 100.0f);
         root.addProperty("comboEnabled", comboEnabled);
+        root.addProperty("comboOffsetX", comboOffsetX);
+        root.addProperty("comboOffsetY", comboOffsetY);
         JsonObject categories = new JsonObject();
         for (int i = 0; i < CATEGORIES.length; i++) {
             JsonObject item = new JsonObject();
@@ -74,6 +80,8 @@ public final class AudioraConfig {
         masterEnabled = true;
         masterVolume = 100;
         comboEnabled = true;
+        comboOffsetX = 0;
+        comboOffsetY = 24;
         for (int i = 0; i < CATEGORIES.length; i++) {
             enabled[i] = true;
             volume[i] = 100;
