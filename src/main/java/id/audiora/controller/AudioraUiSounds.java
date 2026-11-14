@@ -43,7 +43,11 @@ public final class AudioraUiSounds {
 
     private static void play(String configuredId, Minecraft client) {
         try {
-            Identifier id = Identifier.tryParse(configuredId == null ? "" : configuredId.trim());
+            String rawId = configuredId == null ? "" : configuredId.trim();
+            // Migrate IDs written by the old external Sounds-mod configuration.
+            if (rawId.equals("custominv.inv.buka")) rawId = "audiora_controller:inv.buka";
+            if (rawId.equals("custominv.inv.tutup")) rawId = "audiora_controller:inv.tutup";
+            Identifier id = Identifier.tryParse(rawId);
             if (id == null) return;
             SoundEvent event = id.equals(AudioraSounds.INVENTORY_OPEN_ID)
                 ? AudioraSounds.INVENTORY_OPEN
