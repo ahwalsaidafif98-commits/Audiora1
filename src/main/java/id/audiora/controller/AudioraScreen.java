@@ -6,8 +6,15 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public final class AudioraScreen extends Screen {
+    private final Screen parent;
+
     public AudioraScreen() {
+        this(null);
+    }
+
+    public AudioraScreen(Screen parent) {
         super(Component.literal("Audiora Sound Controller"));
+        this.parent = parent;
     }
 
     @Override
@@ -72,7 +79,7 @@ public final class AudioraScreen extends Screen {
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), button -> {
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
             AudioraConfig.save();
-            this.minecraft.gui.setScreen(new AudioraScreen());
+            this.minecraft.gui.setScreen(new AudioraScreen(this));
         }).bounds(center - 150, this.height - 54, 92, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Disable All"), button -> {
@@ -109,7 +116,6 @@ public final class AudioraScreen extends Screen {
     }
 
     private static void drawAudioraIcon(GuiGraphicsExtractor graphics, int x, int y) {
-        // Ikon pixel-art ungu: cincin luar, cincin dalam terbuka, dan panah naik.
         for (int step = 0; step < 360; step += 4) {
             double a = Math.toRadians(step);
             int px = x + 12 + (int)Math.round(Math.cos(a) * 10);
@@ -122,7 +128,6 @@ public final class AudioraScreen extends Screen {
             int py = y + 12 + (int)Math.round(Math.sin(a) * 7);
             graphics.fill(px, py, px + 2, py + 2, 0xFFEBD9FF);
         }
-        // Panah mengarah ke atas.
         graphics.fill(x + 11, y + 5, x + 14, y + 17, 0xFFEBD9FF);
         graphics.fill(x + 8, y + 8, x + 17, y + 11, 0xFFEBD9FF);
         graphics.fill(x + 7, y + 9, x + 10, y + 12, 0xFFEBD9FF);
@@ -133,7 +138,7 @@ public final class AudioraScreen extends Screen {
     @Override
     public void onClose() {
         AudioraConfig.save();
-        this.minecraft.gui.setScreen(null);
+        this.minecraft.gui.setScreen(parent);
     }
 
     private static Component comboLabel() {
