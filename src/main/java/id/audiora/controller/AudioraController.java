@@ -17,6 +17,7 @@ public final class AudioraController implements ClientModInitializer {
         AudioraConfig.load();
         AudioraAmbience.initialize();
         AudioraCombo.initialize();
+        AudioraSounds.initialize();
         AudioraUiSounds.initialize();
         openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.audiora_controller.open_settings",
@@ -34,6 +35,6 @@ public final class AudioraController implements ClientModInitializer {
                 }
             }
         });
-        System.out.println("[Audiora] Sound Controller initialized. Press O to open settings.");
+        System.out.println("[Audiora] Standalone sound controller initialized. Press O to open settings.");
     }
 }
