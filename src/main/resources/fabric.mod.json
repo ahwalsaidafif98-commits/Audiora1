@@ -4,10 +4,14 @@
   "version": "${version}",
   "name": "Audiora Sound Controller",
   "description": "Audiora sound controller with integration for the Sounds mod audio library.",
+  "icon": "assets/audiora_controller/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
       "id.audiora.controller.AudioraController"
+    ],
+    "modmenu": [
+      "id.audiora.controller.AudioraModMenu"
     ]
   },
   "depends": {
@@ -16,6 +20,9 @@
     "minecraft": "26.2",
     "java": ">=25",
     "sounds": "*"
+  },
+  "suggests": {
+    "modmenu": ">=20.0.3"
   },
   "mixins": [
     {
