@@ -1,12 +1,14 @@
 {
   "inv.buka": {
-    "sounds": [
-      "audiora_controller:inv/buka"
-    ]
+    "sounds": ["audiora_controller:inv/buka"]
   },
   "inv.tutup": {
-    "sounds": [
-      "audiora_controller:inv/tutup"
-    ]
+    "sounds": ["audiora_controller:inv/tutup"]
+  },
+  "jump": {
+    "sounds": ["audiora_controller:jump"]
+  },
+  "item_move": {
+    "sounds": ["audiora_controller:item_move"]
   }
 }
