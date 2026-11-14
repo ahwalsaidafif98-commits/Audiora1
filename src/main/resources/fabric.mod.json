@@ -3,7 +3,7 @@
   "id": "audiora_controller",
   "version": "${version}",
   "name": "Audiora Sound Controller",
-  "description": "Client-side sound settings foundation for Audiora.",
+  "description": "Audiora sound controller with integration for the Sounds mod audio library.",
   "environment": "client",
   "entrypoints": {
     "client": [
@@ -14,7 +14,8 @@
     "fabricloader": ">=0.19.3",
     "fabric-api": "*",
     "minecraft": "26.2",
-    "java": ">=25"
+    "java": ">=25",
+    "sounds": "*"
   },
   "mixins": [
     {
