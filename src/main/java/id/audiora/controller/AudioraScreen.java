@@ -54,27 +54,27 @@ public final class AudioraScreen extends Screen {
             AudioraConfig.comboEnabled = !AudioraConfig.comboEnabled;
             button.setMessage(comboLabel());
             AudioraConfig.save();
-        }).bounds(center - 150, this.height - 82, 92, 20).build());
+        }).bounds(center - 150, this.height - 82, 86, 20).build());
 
-        this.addRenderableWidget(Button.builder(Component.literal("X-"), button -> {
+        this.addRenderableWidget(Button.builder(Component.literal("← Kiri"), button -> {
             AudioraConfig.comboOffsetX -= 5;
             AudioraConfig.save();
-        }).bounds(center - 55, this.height - 82, 30, 20).build());
+        }).bounds(center - 58, this.height - 82, 48, 20).build());
 
-        this.addRenderableWidget(Button.builder(Component.literal("X+"), button -> {
+        this.addRenderableWidget(Button.builder(Component.literal("Kanan →"), button -> {
             AudioraConfig.comboOffsetX += 5;
             AudioraConfig.save();
-        }).bounds(center - 22, this.height - 82, 30, 20).build());
+        }).bounds(center - 7, this.height - 82, 48, 20).build());
 
-        this.addRenderableWidget(Button.builder(Component.literal("Y-"), button -> {
+        this.addRenderableWidget(Button.builder(Component.literal("↑ Atas"), button -> {
             AudioraConfig.comboOffsetY -= 5;
             AudioraConfig.save();
-        }).bounds(center + 11, this.height - 82, 30, 20).build());
+        }).bounds(center + 44, this.height - 82, 48, 20).build());
 
-        this.addRenderableWidget(Button.builder(Component.literal("Y+"), button -> {
+        this.addRenderableWidget(Button.builder(Component.literal("↓ Bawah"), button -> {
             AudioraConfig.comboOffsetY += 5;
             AudioraConfig.save();
-        }).bounds(center + 44, this.height - 82, 30, 20).build());
+        }).bounds(center + 95, this.height - 82, 48, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), button -> {
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
@@ -105,7 +105,8 @@ public final class AudioraScreen extends Screen {
         drawAudioraIcon(graphics, this.width / 2 - 112, 7);
         graphics.text(this.font, "AUDIORA - Sound settings", this.width / 2 - 82, 12, 0xFFFFFFFF, true);
         graphics.text(this.font, "Master / Noise level", this.width / 2 - 150, 22, 0xFFB8D8FF, false);
-        graphics.text(this.font, "Combo position: X " + AudioraConfig.comboOffsetX + " | Y " + AudioraConfig.comboOffsetY + " (5 px per tap)", this.width / 2 - 150, this.height - 96, 0xFFB8D8FF, false);
+        graphics.text(this.font, "Geser posisi tulisan COMBO:", this.width / 2 - 150, this.height - 110, 0xFFB8D8FF, false);
+        graphics.text(this.font, "Mendatar: " + AudioraConfig.comboOffsetX + " | Tegak: " + AudioraConfig.comboOffsetY + " (5 px tiap tap)", this.width / 2 - 150, this.height - 96, 0xFFB8D8FF, false);
         for (int i = 0; i < AudioraConfig.CATEGORIES.length; i++) {
             int column = i / 4;
             int row = i % 4;
