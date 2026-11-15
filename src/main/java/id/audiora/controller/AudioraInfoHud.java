@@ -325,12 +325,20 @@ public final class AudioraInfoHud {
         }
     }
 
-    private static boolean isOreDrop(String path) {
-        return path.endsWith("_ore") || path.equals("ancient_debris")
-            || path.startsWith("raw_") || path.equals("diamond") || path.equals("emerald")
-            || path.equals("lapis_lazuli") || path.equals("redstone") || path.equals("quartz")
-            || path.equals("amethyst_shard") || path.equals("coal") || path.equals("copper_ingot")
-            || path.equals("iron_ingot") || path.equals("gold_ingot");
+    public static void onLivingEntityHealthChanged(LivingEntity entity, float oldHealth, float newHealth) {
+        if (newHealth >= oldHealth || !entity.level().isClientSide()) return;
+        recentDamage = oldHealth - newHealth;
+        damageTicks = 25;
+        AudioraCombo.onConfirmedDamage(entity.getId());
+    }
+
+    public static void recordMinedBlock(net.minecraft.world.level.block.state.BlockState state) {
+        if (state == null || state.isAir()) return;
+        String path = net.minecraft.core.registries.BuiltInRegistries.BLOCK
+            .getKey(state.getBlock()).getPath();
+        if (path.endsWith("_ore") || path.equals("ancient_debris")) {
+            oreCounts.merge(path, 1, Integer::sum);
+        }
     }
 
     private static void renderTargetCard(
