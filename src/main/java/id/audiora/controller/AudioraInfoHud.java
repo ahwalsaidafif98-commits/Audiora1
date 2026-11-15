@@ -24,6 +24,10 @@ public final class AudioraInfoHud {
     private static ItemStack pickupStack = ItemStack.EMPTY;
     private static final Map<String, Integer> oreCounts = new HashMap<>();
     private static long pickupUntil;
+    private static float lastTargetHealth = -1.0F;
+    private static int lastTargetId = -1;
+    private static float recentDamage;
+    private static int damageTicks;
 
     private AudioraInfoHud() {}
 
@@ -40,6 +44,20 @@ public final class AudioraInfoHud {
             previousCounts.clear();
             return;
         }
+
+        if (client.hitResult instanceof EntityHitResult hit && hit.getEntity() instanceof LivingEntity living) {
+            float health = living.getHealth();
+            if (living.getId() == lastTargetId && lastTargetHealth >= 0.0F && health < lastTargetHealth) {
+                recentDamage = lastTargetHealth - health;
+                damageTicks = 25;
+            }
+            lastTargetId = living.getId();
+            lastTargetHealth = health;
+        } else {
+            lastTargetId = -1;
+            lastTargetHealth = -1.0F;
+        }
+        if (damageTicks > 0) damageTicks--;
 
         Inventory inventory = client.player.getInventory();
         Map<String, Integer> current = new HashMap<>();
@@ -165,6 +183,19 @@ public final class AudioraInfoHud {
         } else {
             pickupAmount = 0;
             pickupStack = ItemStack.EMPTY;
+        }
+
+        if (damageTicks > 0) {
+            String damageText = String.format(java.util.Locale.ROOT, "-%.1f", recentDamage);
+            int damageX = graphics.guiWidth() / 2 - client.font.width(damageText) / 2
+                + AudioraConfig.hudX[8];
+            int damageY = graphics.guiHeight() / 2 - 42 + AudioraConfig.hudY[8];
+            float damageScale = AudioraConfig.hudScale[8] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(damageX, damageY - (25 - damageTicks) / 2.0F);
+            graphics.pose().scale(damageScale, damageScale);
+            graphics.text(client.font, damageText, 0, 0, 0xFFFF6868, true);
+            graphics.pose().popMatrix();
         }
 
         if (!oreCounts.isEmpty()) {
