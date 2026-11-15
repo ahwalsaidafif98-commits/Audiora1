@@ -60,7 +60,7 @@ public final class AudioraCombo {
                 int barWidth = Math.max(0, Math.round(labelWidth * (displayTicks / (float) COMBO_TIMEOUT_TICKS)));
                 int barY = y + client.font.lineHeight + 2;
                 if (barWidth > 0) {
-                    graphics.fill(x, barY, x + barWidth, barY + 2, combo >= 5 ? 0xFFFFD54A : 0xFF55DFFF);
+                    graphics.fill(x, barY, x + barWidth, barY + 2, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF);
                 }
             }
         );
