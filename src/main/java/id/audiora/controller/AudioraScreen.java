@@ -228,8 +228,8 @@ public final class AudioraScreen extends Screen {
             int x = this.width / 2 + AudioraConfig.hudX[selectedHud];
             int y = this.height / 2 + AudioraConfig.hudY[selectedHud];
             float scale = AudioraConfig.hudScale[selectedHud] / 100.0F;
-            int w = Math.max(40, Math.round(110 * scale));
-            int h = Math.max(14, Math.round(24 * scale));
+            int w = previewWidth();
+            int h = previewHeight();
             if (event.x() >= x && event.x() <= x + w && event.y() >= y && event.y() <= y + h) {
                 draggingHud = true;
                 return true;
@@ -241,8 +241,14 @@ public final class AudioraScreen extends Screen {
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
         if (!draggingHud || event.button() != 0) return super.mouseDragged(event, deltaX, deltaY);
-        AudioraConfig.hudX[selectedHud] += (int)Math.round(deltaX);
-        AudioraConfig.hudY[selectedHud] += (int)Math.round(deltaY);
+        int w = previewWidth();
+        int h = previewHeight();
+        int x = this.width / 2 + AudioraConfig.hudX[selectedHud] + (int)Math.round(deltaX);
+        int y = this.height / 2 + AudioraConfig.hudY[selectedHud] + (int)Math.round(deltaY);
+        x = Math.max(0, Math.min(this.width - w, x));
+        y = Math.max(0, Math.min(this.height - h, y));
+        AudioraConfig.hudX[selectedHud] = x - this.width / 2;
+        AudioraConfig.hudY[selectedHud] = y - this.height / 2;
         return true;
     }
 
@@ -260,11 +266,42 @@ public final class AudioraScreen extends Screen {
         int x = this.width / 2 + AudioraConfig.hudX[selectedHud];
         int y = this.height / 2 + AudioraConfig.hudY[selectedHud];
         float scale = AudioraConfig.hudScale[selectedHud] / 100.0F;
-        int w = Math.max(40, Math.round(110 * scale));
-        int h = Math.max(14, Math.round(24 * scale));
+        int w = previewWidth();
+        int h = previewHeight();
         graphics.outline(x, y, w, h, 0x99FFD45A);
-        graphics.text(this.font, AudioraConfig.HUD_IDS[selectedHud] + " " + AudioraConfig.hudScale[selectedHud] + "%",
-            x + 3, y + 4, 0xFFFFD45A, true);
+        graphics.text(this.font, previewLabel(), x + 4, y + 4, 0xFFFFD45A, true);
+    }
+
+    private int previewWidth() {
+        float scale = AudioraConfig.hudScale[selectedHud] / 100.0F;
+        return Math.max(48, Math.round((this.font.width(previewLabel()) + 8) * scale));
+    }
+
+    private int previewHeight() {
+        float scale = AudioraConfig.hudScale[selectedHud] / 100.0F;
+        return Math.max(16, Math.round((this.font.lineHeight + 8) * scale));
+    }
+
+    private static String previewLabel() {
+        return switch (AudioraConfig.HUD_IDS[selectedHud]) {
+            case "coordinates" -> "XYZ: 12.5 / 64.0 / -30.2";
+            case "biome" -> "Biome: Plains";
+            case "armor" -> "Armor: Diamond 100%";
+            case "held_item" -> "Diamond Sword 100%";
+            case "target" -> "Zombie 20/20 HP";
+            case "pickup" -> "Diamond ×1";
+            case "ore_tracker" -> "Diamond Ore: 3 (50%)";
+            case "combo" -> "COMBO 3X";
+            case "damage_number" -> "-4.0";
+            case "critical_hit" -> "CRITICAL!";
+            case "potion_effects" -> "Speed 1:30";
+            case "player_target" -> "Player 20/20 HP";
+            case "food" -> "Food: 20/20";
+            case "experience" -> "XP: 12 (65%)";
+            case "health" -> "Health: 20/20";
+            case "compass" -> "Facing: NORTH";
+            default -> AudioraConfig.HUD_IDS[selectedHud];
+        };
     }
 
     @Override
