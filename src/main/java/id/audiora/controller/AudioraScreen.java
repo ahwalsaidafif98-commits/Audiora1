@@ -20,6 +20,7 @@ public final class AudioraScreen extends Screen {
     private final Screen parent;
     private static boolean editingMobHud = true;
     private static int selectedHud = 0;
+    private boolean draggingHud = false;
 
     public AudioraScreen() {
         this(null);
@@ -222,11 +223,37 @@ public final class AudioraScreen extends Screen {
     }
 
     @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0) {
+            int x = this.width / 2 + AudioraConfig.hudX[selectedHud];
+            int y = this.height / 2 + AudioraConfig.hudY[selectedHud];
+            float scale = AudioraConfig.hudScale[selectedHud] / 100.0F;
+            int w = Math.max(40, Math.round(110 * scale));
+            int h = Math.max(14, Math.round(24 * scale));
+            if (event.x() >= x && event.x() <= x + w && event.y() >= y && event.y() <= y + h) {
+                draggingHud = true;
+                return true;
+            }
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+        if (!draggingHud || event.button() != 0) return super.mouseDragged(event, deltaX, deltaY);
         AudioraConfig.hudX[selectedHud] += (int)Math.round(deltaX);
         AudioraConfig.hudY[selectedHud] += (int)Math.round(deltaY);
-        AudioraConfig.save();
         return true;
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (draggingHud) {
+            draggingHud = false;
+            AudioraConfig.save();
+            return true;
+        }
+        return super.mouseReleased(event);
     }
 
     private void drawHudPreview(GuiGraphicsExtractor graphics) {
