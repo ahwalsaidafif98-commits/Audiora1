@@ -45,18 +45,6 @@ public final class AudioraInfoHud {
             return;
         }
 
-        if (client.hitResult instanceof EntityHitResult hit && hit.getEntity() instanceof LivingEntity living) {
-            float health = living.getHealth();
-            if (living.getId() == lastTargetId && lastTargetHealth >= 0.0F && health < lastTargetHealth) {
-                recentDamage = lastTargetHealth - health;
-                damageTicks = 25;
-            }
-            lastTargetId = living.getId();
-            lastTargetHealth = health;
-        } else {
-            lastTargetId = -1;
-            lastTargetHealth = -1.0F;
-        }
         if (damageTicks > 0) damageTicks--;
 
         Inventory inventory = client.player.getInventory();
@@ -79,7 +67,6 @@ public final class AudioraInfoHud {
                         pickupStack.setCount(1);
                         pickupAmount = gained;
                         String itemPath = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(found.getItem()).getPath();
-                        if (isOreDrop(itemPath)) oreCounts.merge(itemPath, gained, Integer::sum);
                         pickupUntil = System.currentTimeMillis() + 2200L;
                     }
                 }
