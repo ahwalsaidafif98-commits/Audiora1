@@ -1,14 +1,4 @@
 {
-  "inv.buka": {
-    "sounds": [
-      { "name": "minecraft:block.chest.open", "type": "event" }
-    ]
-  },
-  "inv.tutup": {
-    "sounds": [
-      { "name": "minecraft:block.chest.close", "type": "event" }
-    ]
-  },
   "jump": {
     "sounds": ["audiora_controller:jump"]
   },
