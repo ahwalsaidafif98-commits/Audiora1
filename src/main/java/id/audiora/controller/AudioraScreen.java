@@ -11,13 +11,9 @@ public final class AudioraScreen extends Screen {
         0, 10, 15, 20, 25, 30, 35, 40, 45, 50,
         55, 60, 65, 70, 75, 80, 85, 90, 95, 100
     };
-    private static final int VIEW_TOP = 34;
-    private static final int VIEW_BOTTOM_GAP = 8;
-    private static final int CONTENT_HEIGHT = 390;
 
     private final Screen parent;
     private static boolean editingMobHud = true;
-    private int scrollOffset;
 
     public AudioraScreen() {
         this(null);
@@ -28,14 +24,6 @@ public final class AudioraScreen extends Screen {
         this.parent = parent;
     }
 
-    private int y(int contentY) {
-        return contentY - scrollOffset;
-    }
-
-    private int maxScroll() {
-        return Math.max(0, CONTENT_HEIGHT - (this.height - VIEW_TOP - VIEW_BOTTOM_GAP));
-    }
-
     private void rebuild() {
         this.clearWidgets();
         this.init();
@@ -44,151 +32,131 @@ public final class AudioraScreen extends Screen {
     @Override
     protected void init() {
         int center = this.width / 2;
+
         this.addRenderableWidget(Button.builder(masterLabel(), button -> {
             AudioraConfig.masterEnabled = !AudioraConfig.masterEnabled;
             button.setMessage(masterLabel());
             AudioraConfig.save();
-        }).bounds(center - 150, y(38), 92, 18).build());
+        }).bounds(center - 150, 34, 92, 18).build());
 
         this.addRenderableWidget(new VolumeSlider(
-            center - 53, y(38), 203, 18, AudioraConfig.masterVolume, "Master"
+            center - 53, 34, 203, 18, AudioraConfig.masterVolume, "Master"
         ));
 
+        // Two compact columns; all seven categories fit without a scroll area.
         for (int i = 0; i < AudioraConfig.CATEGORIES.length; i++) {
             final int index = i;
             int column = i / 4;
             int row = i % 4;
             int x = center - 150 + column * 155;
-            int cy = 70 + row * 27;
+            int cy = 65 + row * 23;
             this.addRenderableWidget(Button.builder(toggleLabel(index), button -> {
                 AudioraConfig.enabled[index] = !AudioraConfig.enabled[index];
                 button.setMessage(toggleLabel(index));
                 AudioraConfig.save();
-            }).bounds(x, y(cy), 45, 18).build());
+            }).bounds(x, cy, 45, 18).build());
             this.addRenderableWidget(new VolumeSlider(
-                x + 50, y(cy), 100, 18, AudioraConfig.volume[index], AudioraConfig.CATEGORIES[index]
+                x + 49, cy, 101, 18, AudioraConfig.volume[index], AudioraConfig.CATEGORIES[index]
             ));
         }
 
         this.addRenderableWidget(Button.builder(hudPositionLabel(), button -> {
             editingMobHud = !editingMobHud;
             button.setMessage(hudPositionLabel());
-        }).bounds(center - 150, y(205), 78, 18).build());
+        }).bounds(center - 150, 171, 78, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("←"), button -> {
             if (editingMobHud) AudioraConfig.mobInfoOffsetX -= 5;
             else AudioraConfig.itemInfoOffsetX -= 5;
             AudioraConfig.save();
-        }).bounds(center - 68, y(205), 34, 18).build());
+        }).bounds(center - 68, 171, 34, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("→"), button -> {
             if (editingMobHud) AudioraConfig.mobInfoOffsetX += 5;
             else AudioraConfig.itemInfoOffsetX += 5;
             AudioraConfig.save();
-        }).bounds(center - 31, y(205), 34, 18).build());
+        }).bounds(center - 31, 171, 34, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("↑"), button -> {
             if (editingMobHud) AudioraConfig.mobInfoOffsetY -= 5;
             else AudioraConfig.itemInfoOffsetY -= 5;
             AudioraConfig.save();
-        }).bounds(center + 6, y(205), 34, 18).build());
+        }).bounds(center + 6, 171, 34, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("↓"), button -> {
             if (editingMobHud) AudioraConfig.mobInfoOffsetY += 5;
             else AudioraConfig.itemInfoOffsetY += 5;
             AudioraConfig.save();
-        }).bounds(center + 43, y(205), 34, 18).build());
+        }).bounds(center + 43, 171, 34, 18).build());
 
         this.addRenderableWidget(Button.builder(comboLabel(), button -> {
             AudioraConfig.comboEnabled = !AudioraConfig.comboEnabled;
             button.setMessage(comboLabel());
             AudioraConfig.save();
-        }).bounds(center - 150, y(240), 86, 18).build());
+        }).bounds(center - 150, 210, 86, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("← Kiri"), button -> {
             AudioraConfig.comboOffsetX -= 5;
             AudioraConfig.save();
-        }).bounds(center - 58, y(240), 48, 18).build());
+        }).bounds(center - 58, 210, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Kanan →"), button -> {
             AudioraConfig.comboOffsetX += 5;
             AudioraConfig.save();
-        }).bounds(center - 7, y(240), 48, 18).build());
+        }).bounds(center - 7, 210, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("↑ Atas"), button -> {
             AudioraConfig.comboOffsetY -= 5;
             AudioraConfig.save();
-        }).bounds(center + 44, y(240), 48, 18).build());
+        }).bounds(center + 44, 210, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("↓ Bawah"), button -> {
             AudioraConfig.comboOffsetY += 5;
             AudioraConfig.save();
-        }).bounds(center + 95, y(240), 48, 18).build());
+        }).bounds(center + 95, 210, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), button -> {
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
             AudioraConfig.save();
             rebuild();
-        }).bounds(center - 150, y(285), 92, 18).build());
+        }).bounds(center - 150, 240, 92, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Disable All"), button -> {
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = false;
             AudioraConfig.save();
             rebuild();
-        }).bounds(center - 53, y(285), 92, 18).build());
+        }).bounds(center - 53, 240, 92, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Reset"), button -> {
             AudioraConfig.reset();
             rebuild();
-        }).bounds(center + 44, y(285), 55, 18).build());
+        }).bounds(center + 44, 240, 55, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Apply / Save"), button -> {
             AudioraConfig.save();
             this.onClose();
-        }).bounds(center + 104, y(285), 96, 18).build());
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        int oldOffset = scrollOffset;
-        scrollOffset = Math.max(0, Math.min(maxScroll(), scrollOffset - (int)Math.round(scrollY * 24.0)));
-        if (oldOffset != scrollOffset) {
-            rebuild();
-            return true;
-        }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        }).bounds(center + 104, 240, 96, 18).build());
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        graphics.enableScissor(0, VIEW_TOP, this.width, this.height - VIEW_BOTTOM_GAP);
         super.extractRenderState(graphics, mouseX, mouseY, delta);
 
         int center = this.width / 2;
-        graphics.text(this.font, "Master / Noise level", center - 150, y(27), 0xFFB8D8FF, false);
+        graphics.text(this.font, "AUDIORA - Sound settings", center - 82, 12, 0xFFFFFFFF, true);
+        drawAudioraIcon(graphics, center - 112, 7);
+        graphics.text(this.font, "Master volume", center - 150, 25, 0xFFB8D8FF, false);
+
         for (int i = 0; i < AudioraConfig.CATEGORIES.length; i++) {
             int column = i / 4;
             int row = i % 4;
             int x = center - 150 + column * 155;
-            int cy = 70 + row * 27;
-            graphics.text(this.font, AudioraConfig.CATEGORIES[i].toUpperCase(), x, y(cy - 10), 0xFFE8E8E8, false);
+            int cy = 65 + row * 23;
+            graphics.text(this.font, AudioraConfig.CATEGORIES[i].toUpperCase(), x, cy - 9, 0xFFE8E8E8, false);
         }
-        graphics.text(this.font, "HUD Mob / Item position", center - 150, y(193), 0xFFB8D8FF, false);
-        graphics.text(this.font, "Crit Combo position", center - 150, y(228), 0xFFB8D8FF, false);
-        graphics.disableScissor();
 
-        drawAudioraIcon(graphics, center - 112, 7);
-        graphics.text(this.font, "AUDIORA - Sound settings", center - 82, 12, 0xFFFFFFFF, true);
-
-        if (maxScroll() > 0) {
-            int trackTop = VIEW_TOP + 2;
-            int trackBottom = this.height - VIEW_BOTTOM_GAP - 2;
-            int trackHeight = trackBottom - trackTop;
-            int thumbHeight = Math.max(18, trackHeight * (trackHeight / (trackHeight + maxScroll())));
-            int thumbY = trackTop + (trackHeight - thumbHeight) * scrollOffset / maxScroll();
-            graphics.fill(this.width - 5, trackTop, this.width - 2, trackBottom, 0x66505050);
-            graphics.fill(this.width - 5, thumbY, this.width - 2, thumbY + thumbHeight, 0xFFB982F2);
-        }
+        graphics.text(this.font, "HUD Mob / Item position", center - 150, 158, 0xFFB8D8FF, false);
+        graphics.text(this.font, "Crit Combo position", center - 150, 197, 0xFFB8D8FF, false);
     }
 
     private static void drawAudioraIcon(GuiGraphicsExtractor graphics, int x, int y) {
