@@ -150,7 +150,7 @@ public final class AudioraInfoHud {
         }
 
         if (AudioraConfig.hudEnabled[18]) {
-            String dimension = client.level.dimension().location().getPath().replace('_', ' ');
+            String dimension = client.level.dimension().toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' ');
             drawScaledText(graphics, client, "Dimension: " + dimension,
                 left + AudioraConfig.hudX[18], top + 126 + AudioraConfig.hudY[18], 0xFFD6B8FF, 18);
         }
