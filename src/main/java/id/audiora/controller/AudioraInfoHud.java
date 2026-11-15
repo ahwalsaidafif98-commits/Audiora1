@@ -114,6 +114,35 @@ public final class AudioraInfoHud {
             .orElse("unknown");
         if (AudioraConfig.hudEnabled[1]) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
 
+        if (AudioraConfig.hudEnabled[12]) {
+            int food = player.getFoodData().getFoodLevel();
+            int foodX = left + AudioraConfig.hudX[12];
+            int foodY = top + 24 + AudioraConfig.hudY[12];
+            float foodScale = AudioraConfig.hudScale[12] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(foodX, foodY);
+            graphics.pose().scale(foodScale, foodScale);
+            graphics.text(client.font, "Food: " + food + "/20", 0, 0, 0xFFFFD36A, true);
+            graphics.fill(0, 11, 80, 14, 0xFF444444);
+            graphics.fill(0, 11, Math.round(80.0F * food / 20.0F), 14, 0xFFFFB84D);
+            graphics.pose().popMatrix();
+        }
+
+        if (AudioraConfig.hudEnabled[13]) {
+            int level = player.experienceLevel;
+            float progress = player.experienceProgress;
+            int xpX = left + AudioraConfig.hudX[13];
+            int xpY = top + 42 + AudioraConfig.hudY[13];
+            float xpScale = AudioraConfig.hudScale[13] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(xpX, xpY);
+            graphics.pose().scale(xpScale, xpScale);
+            graphics.text(client.font, "XP: " + level + " (" + Math.round(progress * 100) + "%)", 0, 0, 0xFF8CFF79, true);
+            graphics.fill(0, 11, 80, 14, 0xFF444444);
+            graphics.fill(0, 11, Math.round(80.0F * progress), 14, 0xFF69D85B);
+            graphics.pose().popMatrix();
+        }
+
         int armorPieces = 0;
         if (AudioraConfig.hudEnabled[2]) {
             int armorX = left + AudioraConfig.hudX[2];
