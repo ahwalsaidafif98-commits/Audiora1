@@ -12,6 +12,9 @@ public final class AudioraCombo {
     private static final int COMBO_TIMEOUT_TICKS = 50;
     private static int combo = 0;
     private static int displayTicks = 0;
+    private static int pendingTargetId = -1;
+    private static int pendingTicks = 0;
+    private static boolean confirmedCritical = false;
 
     private AudioraCombo() {}
 
@@ -29,14 +32,8 @@ public final class AudioraCombo {
                 && !player.hasEffect(MobEffects.BLINDNESS)
                 && player.getAttackStrengthScale(0.5F) > 0.9F;
 
-            if (criticalCandidate) {
-                // A new critical hit extends the timer and keeps the current combo.
-                combo++;
-                displayTicks = COMBO_TIMEOUT_TICKS;
-            } else {
-                combo = 0;
-                displayTicks = 0;
-            }
+            pendingTargetId = criticalCandidate ? target.getId() : -1;
+            pendingTicks = criticalCandidate ? 6 : 0;
             return InteractionResult.PASS;
         });
 
@@ -58,7 +55,7 @@ public final class AudioraCombo {
                 graphics.pose().translate(x, y);
                 graphics.pose().scale(scale, scale);
 
-                if (AudioraConfig.hudEnabled[9]) graphics.text(client.font, criticalLabel,
+                if (confirmedCritical && AudioraConfig.hudEnabled[9]) graphics.text(client.font, criticalLabel,
                     AudioraConfig.hudX[9], AudioraConfig.hudY[9],
                     0xFFFFD54A, true);
                 graphics.text(client.font, label, 0, 14, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF, true);
@@ -78,7 +75,7 @@ public final class AudioraCombo {
     public static void tick() {
         if (displayTicks > 0) {
             displayTicks--;
-            if (displayTicks == 0) combo = 0;
+            if (displayTicks == 0) { combo = 0; confirmedCritical = false; }
         }
     }
 }
