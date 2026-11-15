@@ -89,12 +89,12 @@ public final class AudioraInfoHud {
         var player = client.player;
         String coordinates = String.format(java.util.Locale.ROOT, "XYZ: %.1f / %.1f / %.1f",
             player.getX(), player.getY(), player.getZ());
-        graphics.text(client.font, coordinates, left, top, 0xFFFFFFFF, true);
+        graphics.text(client.font, coordinates, left + AudioraConfig.hudX[0], top + AudioraConfig.hudY[0], 0xFFFFFFFF, true);
 
         String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
             .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
             .orElse("unknown");
-        graphics.text(client.font, "Biome: " + biome, left, top + 12, 0xFFB8D8FF, true);
+        graphics.text(client.font, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, true);
 
         int armorTotal = 0;
         int armorPieces = 0;
@@ -113,7 +113,7 @@ public final class AudioraInfoHud {
         }
         if (armorPieces > 0) {
             graphics.text(client.font, "Armor: " + (armorTotal / armorPieces) + "%",
-                left, top + 24, 0xFFE8D58A, true);
+                left + AudioraConfig.hudX[2], top + 24 + AudioraConfig.hudY[2], 0xFFE8D58A, true);
         }
 
         ItemStack held = player.getMainHandItem();
@@ -138,8 +138,8 @@ public final class AudioraInfoHud {
         if (pickupAmount > 0 && System.currentTimeMillis() < pickupUntil) {
             String label = pickupName + " ×" + pickupAmount;
             int width = client.font.width(label);
-            int x = (graphics.guiWidth() - width - 34) / 2 + AudioraConfig.itemInfoOffsetX;
-            int y = graphics.guiHeight() - 64 + AudioraConfig.itemInfoOffsetY;
+            int x = (graphics.guiWidth() - width - 34) / 2 + AudioraConfig.itemInfoOffsetX + AudioraConfig.hudX[5];
+            int y = graphics.guiHeight() - 64 + AudioraConfig.itemInfoOffsetY + AudioraConfig.hudY[5];
             graphics.fill(x, y, x + width + 30, y + 22, 0xB9000000);
             if (!pickupStack.isEmpty()) graphics.item(pickupStack, x + 4, y + 3);
             graphics.text(client.font, label, x + 24, y + 7, 0xFFFFFFFF, true);
@@ -183,8 +183,8 @@ public final class AudioraInfoHud {
 
         int cardWidth = Math.max(150, client.font.width(name) + 64);
         int cardHeight = 48;
-        int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX;
-        int y = 12 + AudioraConfig.mobInfoOffsetY;
+        int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX + AudioraConfig.hudX[4];
+        int y = 12 + AudioraConfig.mobInfoOffsetY + AudioraConfig.hudY[4];
 
         graphics.fill(x, y, x + cardWidth, y + cardHeight, 0xB9000000);
         graphics.outline(x, y, cardWidth, cardHeight, 0xFF777777);
