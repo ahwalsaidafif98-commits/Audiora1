@@ -165,6 +165,11 @@ public final class AudioraScreen extends Screen {
             AudioraConfig.hudScale[selectedHud] = 100;
             AudioraConfig.save();
         }).bounds(center + 68, 270, 78, 18).build());
+        this.addRenderableWidget(Button.builder(hudToggleLabel(), button -> {
+            AudioraConfig.hudEnabled[selectedHud] = !AudioraConfig.hudEnabled[selectedHud];
+            button.setMessage(hudToggleLabel());
+            AudioraConfig.save();
+        }).bounds(center - 150, 294, 92, 18).build());
     }
 
     @Override
@@ -272,6 +277,10 @@ public final class AudioraScreen extends Screen {
 
     private static Component selectedHudLabel() {
         return Component.literal("HUD: " + AudioraConfig.HUD_IDS[selectedHud]);
+    }
+
+    private static Component hudToggleLabel() {
+        return Component.literal("HUD: " + (AudioraConfig.hudEnabled[selectedHud] ? "ON" : "OFF"));
     }
 
     private static Component comboLabel() {
