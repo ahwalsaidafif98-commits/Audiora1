@@ -149,7 +149,7 @@ public final class AudioraScreen extends Screen {
 
         this.addRenderableWidget(Button.builder(selectedHudLabel(), button -> {
             selectedHud = (selectedHud + 1) % AudioraConfig.HUD_IDS.length;
-            button.setMessage(selectedHudLabel());
+            rebuild();
         }).bounds(center - 150, 270, 112, 18).build());
         this.addRenderableWidget(Button.builder(Component.literal("Size -"), button -> {
             AudioraConfig.hudScale[selectedHud] = Math.max(50, AudioraConfig.hudScale[selectedHud] - 10);
