@@ -172,7 +172,11 @@ public final class AudioraScreen extends Screen {
         this.minecraft.gui.setScreen(parent);
     }
 
-    private static Component hudPositionLabel() {\n        return Component.literal("Posisi: " + (editingMobHud ? "Mob" : "Item"));\n    }\n\n    private static Component comboLabel() {
+    private static Component hudPositionLabel() {
+        return Component.literal("Posisi: " + (editingMobHud ? "Mob" : "Item"));
+    }
+
+    private static Component comboLabel() {
         return Component.literal("Crit Combo: " + (AudioraConfig.comboEnabled ? "ON" : "OFF"));
     }
 
