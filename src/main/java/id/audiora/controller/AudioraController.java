@@ -95,7 +95,7 @@ public final class AudioraController implements ClientModInitializer {
             || client.player.getDeltaMovement().horizontalDistanceSqr() < 0.0004
             || !hasFullNetheriteArmor(client)) return;
 
-        playAudioraSound(client, AudioraSounds.NETHERITE_STEP, AudioraSounds.NETHERITE_STEP_ID, 0.75F);
+        playAudioraSound(client, net.minecraft.sounds.SoundEvents.BLOCK_NETHERITE_BLOCK_STEP, AudioraSounds.NETHERITE_STEP_ID, 0.75F);
         netheriteStepCooldown = 10;
     }
 
