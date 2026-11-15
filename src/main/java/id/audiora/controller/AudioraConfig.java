@@ -5,6 +5,9 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 
 public final class AudioraConfig {
     public static final String[] CATEGORIES = {
@@ -12,6 +15,8 @@ public final class AudioraConfig {
         "birds", "insects", "nature", "ui"
     };
     private static final Path FILE = Path.of("config", "audiora-sound-controller.json");
+    private static final boolean[] lastCategoryMuted = new boolean[CATEGORIES.length];
+    private static boolean lastMasterMuted;
     public static boolean masterEnabled = true;
     public static int masterVolume = 100;
     public static boolean comboEnabled = true;
@@ -91,15 +96,49 @@ public final class AudioraConfig {
         mobInfoOffsetX = 0; mobInfoOffsetY = 12;
         itemInfoOffsetX = 0; itemInfoOffsetY = 0;
         for (int i = 0; i < CATEGORIES.length; i++) { enabled[i] = true; volume[i] = 100; }
+        java.util.Arrays.fill(lastCategoryMuted, false);
+        lastMasterMuted = false;
         save();
     }
 
+    /**
+     * Stops sounds that were already playing when a category is switched off
+     * or its volume reaches zero. The volume mixin controls sounds started later;
+     * this method handles existing streams/channels that keep their initial gain.
+     */
+    public static void enforceMutedSounds(Minecraft client) {
+        if (client == null) return;
+
+        boolean masterMuted = !masterEnabled || masterVolume <= 0;
+        if (masterMuted) {
+            if (!lastMasterMuted) stopMatching(client, -1);
+            lastMasterMuted = true;
+            java.util.Arrays.fill(lastCategoryMuted, true);
+            return;
+        }
+
+        lastMasterMuted = false;
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            boolean muted = !enabled[i] || volume[i] <= 0;
+            if (muted && !lastCategoryMuted[i]) stopMatching(client, i);
+            lastCategoryMuted[i] = muted;
+        }
+    }
+
+    private static void stopMatching(Minecraft client, int category) {
+        for (Identifier id : BuiltInRegistries.SOUND_EVENT.keySet()) {
+            if (category < 0 || categoryForSound(id.toString()) == category) {
+                client.getSoundManager().stop(id, null);
+            }
+        }
+    }
+
     public static float scaleForSound(String soundId) {
-        if (!masterEnabled) return 0.0f;
+        if (!masterEnabled || masterVolume <= 0) return 0.0f;
         String id = soundId == null ? "" : soundId.toLowerCase(java.util.Locale.ROOT);
         int category = categoryForSound(id);
         if (category < 0) return masterVolume / 100.0f;
-        if (!enabled[category]) return 0.0f;
+        if (!enabled[category] || volume[category] <= 0) return 0.0f;
         return (masterVolume / 100.0f) * (volume[category] / 100.0f);
     }
 
