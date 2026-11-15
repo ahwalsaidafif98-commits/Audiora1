@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 public final class AudioraScreen extends Screen {
@@ -14,6 +15,7 @@ public final class AudioraScreen extends Screen {
 
     private final Screen parent;
     private static boolean editingMobHud = true;
+    private static int selectedHud = 0;
 
     public AudioraScreen() {
         this(null);
@@ -138,6 +140,25 @@ public final class AudioraScreen extends Screen {
             AudioraConfig.save();
             this.onClose();
         }).bounds(center + 104, 240, 96, 18).build());
+
+        this.addRenderableWidget(Button.builder(selectedHudLabel(), button -> {
+            selectedHud = (selectedHud + 1) % AudioraConfig.HUD_IDS.length;
+            button.setMessage(selectedHudLabel());
+        }).bounds(center - 150, 270, 112, 18).build());
+        this.addRenderableWidget(Button.builder(Component.literal("Size -"), button -> {
+            AudioraConfig.hudScale[selectedHud] = Math.max(50, AudioraConfig.hudScale[selectedHud] - 10);
+            AudioraConfig.save();
+        }).bounds(center - 34, 270, 48, 18).build());
+        this.addRenderableWidget(Button.builder(Component.literal("Size +"), button -> {
+            AudioraConfig.hudScale[selectedHud] = Math.min(200, AudioraConfig.hudScale[selectedHud] + 10);
+            AudioraConfig.save();
+        }).bounds(center + 17, 270, 48, 18).build());
+        this.addRenderableWidget(Button.builder(Component.literal("Reset HUD"), button -> {
+            AudioraConfig.hudX[selectedHud] = 0;
+            AudioraConfig.hudY[selectedHud] = 0;
+            AudioraConfig.hudScale[selectedHud] = 100;
+            AudioraConfig.save();
+        }).bounds(center + 68, 270, 78, 18).build());
     }
 
     @Override
@@ -159,6 +180,9 @@ public final class AudioraScreen extends Screen {
 
         graphics.text(this.font, "HUD Mob / Item position", center - 150, 158, 0xFFB8D8FF, false);
         graphics.text(this.font, "Crit Combo position", center - 150, 197, 0xFFB8D8FF, false);
+        graphics.text(this.font, "Drag anywhere to move selected HUD • " + selectedHudLabel().getString(),
+            8, this.height - 24, 0xFFFFFFFF, true);
+        drawHudPreview(graphics);
     }
 
     private static void drawAudioraIcon(GuiGraphicsExtractor graphics, int x, int y) {
@@ -182,6 +206,30 @@ public final class AudioraScreen extends Screen {
     }
 
     @Override
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        // Keep the live world visible while editing HUD layout.
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+        AudioraConfig.hudX[selectedHud] += (int)Math.round(deltaX);
+        AudioraConfig.hudY[selectedHud] += (int)Math.round(deltaY);
+        AudioraConfig.save();
+        return true;
+    }
+
+    private void drawHudPreview(GuiGraphicsExtractor graphics) {
+        int x = this.width / 2 + AudioraConfig.hudX[selectedHud];
+        int y = this.height / 2 + AudioraConfig.hudY[selectedHud];
+        float scale = AudioraConfig.hudScale[selectedHud] / 100.0F;
+        int w = Math.max(40, Math.round(110 * scale));
+        int h = Math.max(14, Math.round(24 * scale));
+        graphics.outline(x, y, w, h, 0xFFFFD45A);
+        graphics.text(this.font, AudioraConfig.HUD_IDS[selectedHud] + " " + AudioraConfig.hudScale[selectedHud] + "%",
+            x + 3, y + 4, 0xFFFFD45A, true);
+    }
+
+    @Override
     public void onClose() {
         AudioraConfig.save();
         this.minecraft.gui.setScreen(parent);
@@ -189,6 +237,10 @@ public final class AudioraScreen extends Screen {
 
     private static Component hudPositionLabel() {
         return Component.literal("Posisi: " + (editingMobHud ? "Mob" : "Item"));
+    }
+
+    private static Component selectedHudLabel() {
+        return Component.literal("HUD: " + AudioraConfig.HUD_IDS[selectedHud]);
     }
 
     private static Component comboLabel() {
