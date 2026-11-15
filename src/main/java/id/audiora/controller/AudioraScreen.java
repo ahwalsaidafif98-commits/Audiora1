@@ -31,10 +31,10 @@ public final class AudioraScreen extends Screen {
             AudioraConfig.masterEnabled = !AudioraConfig.masterEnabled;
             button.setMessage(masterLabel());
             AudioraConfig.save();
-        }).bounds(center - 150, 32, 92, 20).build());
+        }).bounds(center - 150, 32, 92, 18).build());
 
         this.addRenderableWidget(new VolumeSlider(
-            center - 53, 32, 203, 20, AudioraConfig.masterVolume, "Master"
+            center - 53, 32, 203, 18, AudioraConfig.masterVolume, "Master"
         ));
 
         for (int i = 0; i < AudioraConfig.CATEGORIES.length; i++) {
@@ -42,93 +42,96 @@ public final class AudioraScreen extends Screen {
             int column = i / 4;
             int row = i % 4;
             int x = center - 150 + column * 155;
-            int y = 68 + row * 31;
+            int y = 60 + row * 22;
             this.addRenderableWidget(Button.builder(toggleLabel(index), button -> {
                 AudioraConfig.enabled[index] = !AudioraConfig.enabled[index];
                 button.setMessage(toggleLabel(index));
                 AudioraConfig.save();
-            }).bounds(x, y, 45, 20).build());
+            }).bounds(x, y, 45, 18).build());
             this.addRenderableWidget(new VolumeSlider(
-                x + 50, y, 100, 20, AudioraConfig.volume[index], AudioraConfig.CATEGORIES[index]
+                x + 50, y, 100, 18, AudioraConfig.volume[index], AudioraConfig.CATEGORIES[index]
             ));
         }
 
         this.addRenderableWidget(Button.builder(hudPositionLabel(), button -> {
             editingMobHud = !editingMobHud;
             button.setMessage(hudPositionLabel());
-        }).bounds(center - 150, this.height - 110, 78, 20).build());
+        }).bounds(center - 150, this.height - 66, 78, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("←"), button -> {
             if (editingMobHud) AudioraConfig.mobInfoOffsetX -= 5;
             else AudioraConfig.itemInfoOffsetX -= 5;
             AudioraConfig.save();
-        }).bounds(center - 68, this.height - 110, 34, 20).build());
+        }).bounds(center - 68, this.height - 66, 34, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("→"), button -> {
             if (editingMobHud) AudioraConfig.mobInfoOffsetX += 5;
             else AudioraConfig.itemInfoOffsetX += 5;
             AudioraConfig.save();
-        }).bounds(center - 31, this.height - 110, 34, 20).build());
+        }).bounds(center - 31, this.height - 66, 34, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("↑"), button -> {
             if (editingMobHud) AudioraConfig.mobInfoOffsetY -= 5;
             else AudioraConfig.itemInfoOffsetY -= 5;
             AudioraConfig.save();
-        }).bounds(center + 6, this.height - 110, 34, 20).build());
+        }).bounds(center + 6, this.height - 66, 34, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("↓"), button -> {
             if (editingMobHud) AudioraConfig.mobInfoOffsetY += 5;
             else AudioraConfig.itemInfoOffsetY += 5;
             AudioraConfig.save();
-        }).bounds(center + 43, this.height - 110, 34, 20).build());
+        }).bounds(center + 43, this.height - 66, 34, 18).build());
 
         this.addRenderableWidget(Button.builder(comboLabel(), button -> {
             AudioraConfig.comboEnabled = !AudioraConfig.comboEnabled;
             button.setMessage(comboLabel());
             AudioraConfig.save();
-        }).bounds(center - 150, this.height - 82, 86, 20).build());
+        }).bounds(center - 150, this.height - 44, 86, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("← Kiri"), button -> {
             AudioraConfig.comboOffsetX -= 5;
             AudioraConfig.save();
-        }).bounds(center - 58, this.height - 82, 48, 20).build());
+        }).bounds(center - 58, this.height - 44, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Kanan →"), button -> {
             AudioraConfig.comboOffsetX += 5;
             AudioraConfig.save();
-        }).bounds(center - 7, this.height - 82, 48, 20).build());
+        }).bounds(center - 7, this.height - 44, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("↑ Atas"), button -> {
             AudioraConfig.comboOffsetY -= 5;
             AudioraConfig.save();
-        }).bounds(center + 44, this.height - 82, 48, 20).build());
+        }).bounds(center + 44, this.height - 44, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("↓ Bawah"), button -> {
             AudioraConfig.comboOffsetY += 5;
             AudioraConfig.save();
-        }).bounds(center + 95, this.height - 82, 48, 20).build());
+        }).bounds(center + 95, this.height - 44, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), button -> {
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
             AudioraConfig.save();
-            this.minecraft.gui.setScreen(new AudioraScreen(this));
-        }).bounds(center - 150, this.height - 54, 92, 20).build());
+            this.clearWidgets();
+            this.init();
+        }).bounds(center - 150, this.height - 22, 92, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Disable All"), button -> {
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = false;
             AudioraConfig.save();
+            this.clearWidgets();
             this.init();
-        }).bounds(center - 53, this.height - 54, 92, 20).build());
+        }).bounds(center - 53, this.height - 22, 92, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Reset"), button -> {
             AudioraConfig.reset();
+            this.clearWidgets();
             this.init();
-        }).bounds(center + 44, this.height - 54, 55, 20).build());
+        }).bounds(center + 44, this.height - 22, 55, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Apply / Save"), button -> {
             AudioraConfig.save();
             this.onClose();
-        }).bounds(center + 104, this.height - 54, 96, 20).build());
+        }).bounds(center + 104, this.height - 22, 96, 18).build());
     }
 
     @Override
@@ -141,7 +144,7 @@ public final class AudioraScreen extends Screen {
             int column = i / 4;
             int row = i % 4;
             int x = this.width / 2 - 150 + column * 155;
-            int y = 68 + row * 31;
+            int y = 60 + row * 22;
             graphics.text(this.font, AudioraConfig.CATEGORIES[i].toUpperCase(), x, y - 10, 0xFFE8E8E8, false);
         }
     }
