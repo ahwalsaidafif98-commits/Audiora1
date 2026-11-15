@@ -268,6 +268,11 @@ public final class AudioraScreen extends Screen {
     }
 
     @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
     public void onClose() {
         AudioraConfig.save();
         this.minecraft.gui.setScreen(parent);
