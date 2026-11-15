@@ -143,6 +143,18 @@ public final class AudioraInfoHud {
             graphics.pose().popMatrix();
         }
 
+        if (AudioraConfig.hudEnabled[17]) {
+            int fps = client.getFps();
+            drawScaledText(graphics, client, "FPS: " + fps, left + AudioraConfig.hudX[17],
+                top + 114 + AudioraConfig.hudY[17], 0xFF8CFF9B, 17);
+        }
+
+        if (AudioraConfig.hudEnabled[18]) {
+            String dimension = client.level.dimension().location().getPath().replace('_', ' ');
+            drawScaledText(graphics, client, "Dimension: " + dimension,
+                left + AudioraConfig.hudX[18], top + 126 + AudioraConfig.hudY[18], 0xFFD6B8FF, 18);
+        }
+
         if (AudioraConfig.hudEnabled[14]) {
             float health = Math.max(0.0F, player.getHealth());
             float maxHealth = Math.max(1.0F, player.getMaxHealth());
