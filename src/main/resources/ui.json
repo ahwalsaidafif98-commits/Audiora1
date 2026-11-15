@@ -1,5 +1,0 @@
-{
-  "enabled": true,
-  "open": "audiora_controller:inv.buka",
-  "close": "audiora_controller:inv.tutup"
-}
