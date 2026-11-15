@@ -111,19 +111,18 @@ public final class AudioraInfoHud {
         int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX;
         int y = 12 + AudioraConfig.mobInfoOffsetY;
 
-        // Dark translucent target panel.
         graphics.fill(x, y, x + cardWidth, y + cardHeight, 0xB9000000);
         graphics.outline(x, y, cardWidth, cardHeight, 0xFF777777);
 
-        // Render the actual target model: works for mobs and player skins.
         try {
             float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
             EntityRenderState state = client.getEntityRenderDispatcher().extractEntity(target, partialTick);
+            // Reverse the preview's horizontal facing so the mob/player is no longer shown from the mirrored side.
             graphics.entity(
                 state,
                 18.0F,
                 new Vector3f(0.0F, 0.0F, 0.0F),
-                new Quaternionf().rotationXYZ(0.12F, -0.35F, 0.0F),
+                new Quaternionf().rotationXYZ(0.12F, 0.35F, 0.0F),
                 null,
                 x + 4,
                 y + 3,
