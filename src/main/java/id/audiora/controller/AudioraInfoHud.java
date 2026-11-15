@@ -161,10 +161,14 @@ public final class AudioraInfoHud {
             graphics.pose().popMatrix();
         }
 
-        if (AudioraConfig.hudEnabled[4] && client.hitResult instanceof EntityHitResult entityHit) {
+        if (client.hitResult instanceof EntityHitResult entityHit) {
             Entity entity = entityHit.getEntity();
             if (entity instanceof LivingEntity living && living.isAlive()) {
-                renderTargetCard(graphics, client, living, deltaTracker);
+                if (living instanceof net.minecraft.world.entity.player.Player) {
+                    if (AudioraConfig.hudEnabled[11]) renderTargetCard(graphics, client, living, deltaTracker, 11);
+                } else if (AudioraConfig.hudEnabled[4]) {
+                    renderTargetCard(graphics, client, living, deltaTracker, 4);
+                }
             }
         }
 
@@ -258,7 +262,8 @@ public final class AudioraInfoHud {
         GuiGraphicsExtractor graphics,
         Minecraft client,
         LivingEntity target,
-        DeltaTracker deltaTracker
+        DeltaTracker deltaTracker,
+        int hudIndex
     ) {
         String name = target.getName().getString();
         float maxHealth = Math.max(1.0F, target.getMaxHealth());
@@ -267,10 +272,10 @@ public final class AudioraInfoHud {
 
         int cardWidth = Math.max(150, client.font.width(name) + 64);
         int cardHeight = 48;
-        int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX + AudioraConfig.hudX[4];
-        int y = 12 + AudioraConfig.mobInfoOffsetY + AudioraConfig.hudY[4];
+        int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX + AudioraConfig.hudX[hudIndex];
+        int y = 12 + AudioraConfig.mobInfoOffsetY + AudioraConfig.hudY[hudIndex];
 
-        float scale = AudioraConfig.hudScale[4] / 100.0F;
+        float scale = AudioraConfig.hudScale[hudIndex] / 100.0F;
         graphics.pose().pushMatrix();
         graphics.pose().translate(x, y);
         graphics.pose().scale(scale, scale);
