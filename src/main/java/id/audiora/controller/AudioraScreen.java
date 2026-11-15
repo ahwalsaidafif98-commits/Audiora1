@@ -257,9 +257,9 @@ public final class AudioraScreen extends Screen {
             boolean match = false;
             for (String term : terms) if (path.contains(term)) { match = true; break; }
             if (!match) continue;
-            var event = BuiltInRegistries.SOUND_EVENT.get(id);
-            if (event != null) {
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(event, 0.8F));
+            var eventHolder = BuiltInRegistries.SOUND_EVENT.get(id);
+            if (eventHolder.isPresent()) {
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(eventHolder.get(), 0.8F));
                 return;
             }
         }
