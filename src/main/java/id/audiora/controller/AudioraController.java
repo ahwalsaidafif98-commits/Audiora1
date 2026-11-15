@@ -20,7 +20,6 @@ public final class AudioraController implements ClientModInitializer {
         AudioraConfig.load();
         AudioraAmbience.initialize();
         AudioraCombo.initialize();
-        AudioraUiSounds.initialize();
         openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.audiora_controller.open_settings",
             InputConstants.Type.KEYSYM,
@@ -30,7 +29,6 @@ public final class AudioraController implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             AudioraAmbience.tick(client);
             AudioraCombo.tick();
-            AudioraUiSounds.tick(client);
             tickJumpSound(client);
             while (openSettings.consumeClick()) {
                 if (client.player != null && client.gui.screen() == null) {
