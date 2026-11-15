@@ -107,12 +107,12 @@ public final class AudioraInfoHud {
         var player = client.player;
         String coordinates = String.format(java.util.Locale.ROOT, "XYZ: %.1f / %.1f / %.1f",
             player.getX(), player.getY(), player.getZ());
-        drawScaledText(graphics, client, coordinates, left + AudioraConfig.hudX[0], top + AudioraConfig.hudY[0], 0xFFFFFFFF, 0);
+        if (AudioraConfig.hudEnabled[0]) drawScaledText(graphics, client, coordinates, left + AudioraConfig.hudX[0], top + AudioraConfig.hudY[0], 0xFFFFFFFF, 0);
 
         String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
             .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
             .orElse("unknown");
-        drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
+        if (AudioraConfig.hudEnabled[1]) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
 
         int armorTotal = 0;
         int armorPieces = 0;
@@ -129,13 +129,13 @@ public final class AudioraInfoHud {
                 armorPieces++;
             }
         }
-        if (armorPieces > 0) {
+        if (armorPieces > 0 && AudioraConfig.hudEnabled[2]) {
             drawScaledText(graphics, client, "Armor: " + (armorTotal / armorPieces) + "%",
                 left + AudioraConfig.hudX[2], top + 24 + AudioraConfig.hudY[2], 0xFFE8D58A, 2);
         }
 
         ItemStack held = player.getMainHandItem();
-        if (!held.isEmpty()) {
+        if (!held.isEmpty() && AudioraConfig.hudEnabled[3]) {
             String heldLabel = held.getHoverName().getString();
             if (held.isDamageableItem()) {
                 int remaining = Math.max(0, held.getMaxDamage() - held.getDamageValue());
@@ -161,14 +161,14 @@ public final class AudioraInfoHud {
             graphics.pose().popMatrix();
         }
 
-        if (client.hitResult instanceof EntityHitResult entityHit) {
+        if (AudioraConfig.hudEnabled[4] && client.hitResult instanceof EntityHitResult entityHit) {
             Entity entity = entityHit.getEntity();
             if (entity instanceof LivingEntity living && living.isAlive()) {
                 renderTargetCard(graphics, client, living, deltaTracker);
             }
         }
 
-        if (pickupAmount > 0 && System.currentTimeMillis() < pickupUntil) {
+        if (AudioraConfig.hudEnabled[5] && pickupAmount > 0 && System.currentTimeMillis() < pickupUntil) {
             String label = pickupName + " ×" + pickupAmount;
             int width = client.font.width(label);
             int x = (graphics.guiWidth() - width - 34) / 2 + AudioraConfig.itemInfoOffsetX + AudioraConfig.hudX[5];
@@ -185,7 +185,7 @@ public final class AudioraInfoHud {
             pickupStack = ItemStack.EMPTY;
         }
 
-        if (damageTicks > 0) {
+        if (AudioraConfig.hudEnabled[8] && damageTicks > 0) {
             String damageText = String.format(java.util.Locale.ROOT, "-%.1f", recentDamage);
             int damageX = graphics.guiWidth() / 2 - client.font.width(damageText) / 2
                 + AudioraConfig.hudX[8];
@@ -198,7 +198,7 @@ public final class AudioraInfoHud {
             graphics.pose().popMatrix();
         }
 
-        if (!oreCounts.isEmpty()) {
+        if (AudioraConfig.hudEnabled[6] && !oreCounts.isEmpty()) {
             int line = 0;
             int totalOres = oreCounts.values().stream().mapToInt(Integer::intValue).sum();
             for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
