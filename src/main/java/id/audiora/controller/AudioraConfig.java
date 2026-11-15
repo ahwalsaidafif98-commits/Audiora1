@@ -110,7 +110,7 @@ public final class AudioraConfig {
         if (containsAny(id, "bee", "cricket", "insect", "cicada", "mosquito", "frog")) return indexOfCategory("insects");
         if (containsAny(id, "wind", "wave", "ocean", "beach", "rain", "thunder", "storm", "water", "ambient", "cave")) return indexOfCategory("nature");
         if (containsAny(id, "item", "pickup", "drop", "throw", "equip", "consume", "break")) return indexOfCategory("items");
-        if (containsAny(id, "player", "step", "footstep", "swim", "hurt", "death", "jump", "eat", "burp", "splash", "sword_swing")) return indexOfCategory("player");
+        if (containsAny(id, "player", "step", "footstep", "swim", "hurt", "death", "jump", "eat", "burp", "splash", "sword_swing", "armor")) return indexOfCategory("player");
         return -1;
     }
 
