@@ -76,29 +76,13 @@ public final class AudioraController implements ClientModInitializer {
 
         ItemStack stack = client.player.getInventory().getSelectedItem();
         if (stack.isEmpty()) return;
-        String item = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
-        SoundEvent sound = null;
-        Identifier soundId = null;
 
-        if (item.endsWith("_sword")) {
-            sound = AudioraSounds.TOOL_SWORD; soundId = AudioraSounds.TOOL_SWORD_ID;
-        } else if (item.endsWith("_pickaxe")) {
-            sound = AudioraSounds.TOOL_PICKAXE; soundId = AudioraSounds.TOOL_PICKAXE_ID;
-        } else if (item.endsWith("_axe")) {
-            sound = AudioraSounds.TOOL_AXE; soundId = AudioraSounds.TOOL_AXE_ID;
-        } else if (item.endsWith("_shovel")) {
-            sound = AudioraSounds.TOOL_SHOVEL; soundId = AudioraSounds.TOOL_SHOVEL_ID;
-        } else if (item.endsWith("_hoe")) {
-            sound = AudioraSounds.TOOL_HOE; soundId = AudioraSounds.TOOL_HOE_ID;
-        } else if (item.equals("spear") || item.endsWith("_spear")) {
-            sound = AudioraSounds.TOOL_SPEAR; soundId = AudioraSounds.TOOL_SPEAR_ID;
-        } else if (item.equals("mace")) {
-            sound = AudioraSounds.TOOL_MACE; soundId = AudioraSounds.TOOL_MACE_ID;
-        } else if (item.equals("trident")) {
-            sound = AudioraSounds.TOOL_TRIDENT; soundId = AudioraSounds.TOOL_TRIDENT_ID;
+        // Universal hotbar selection feedback for any selected item.
+        if (AudioraConfig.scaleForSound("audiora_controller:item_move") > 0.0F) {
+            client.getSoundManager().play(SimpleSoundInstance.forUI(
+                net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 0.65F
+            ));
         }
-
-        if (sound != null) playAudioraSound(client, sound, soundId, 0.8F);
     }
 
     private static void tickNetheriteFootsteps(Minecraft client) {
