@@ -201,14 +201,48 @@ public final class AudioraInfoHud {
         if (AudioraConfig.hudEnabled[6] && !oreCounts.isEmpty()) {
             int line = 0;
             int totalOres = oreCounts.values().stream().mapToInt(Integer::intValue).sum();
+            int maxWidth = 0;
             for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
                 if (line >= 5) break;
                 int share = totalOres > 0 ? Math.round(100.0F * ore.getValue() / totalOres) : 0;
                 String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue() + " (" + share + "%)";
-                graphics.text(client.font, oreLabel, graphics.guiWidth() - client.font.width(oreLabel) - 6,
-                    6 + line * 12, 0xFFE8D58A, true);
+                maxWidth = Math.max(maxWidth, client.font.width(oreLabel));
                 line++;
             }
+            float oreScale = AudioraConfig.hudScale[6] / 100.0F;
+            int oreX = graphics.guiWidth() - maxWidth - 6 + AudioraConfig.hudX[6];
+            int oreY = 6 + AudioraConfig.hudY[6];
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(oreX, oreY);
+            graphics.pose().scale(oreScale, oreScale);
+            line = 0;
+            for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
+                if (line >= 5) break;
+                int share = totalOres > 0 ? Math.round(100.0F * ore.getValue() / totalOres) : 0;
+                String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue() + " (" + share + "%)";
+                graphics.text(client.font, oreLabel, maxWidth - client.font.width(oreLabel), line * 12, 0xFFE8D58A, true);
+                line++;
+            }
+            graphics.pose().popMatrix();
+        }
+
+        if (AudioraConfig.hudEnabled[10] && !player.getActiveEffects().isEmpty()) {
+            int potionX = 6 + AudioraConfig.hudX[10];
+            int potionY = graphics.guiHeight() / 2 + AudioraConfig.hudY[10];
+            float potionScale = AudioraConfig.hudScale[10] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(potionX, potionY);
+            graphics.pose().scale(potionScale, potionScale);
+            int line = 0;
+            for (var effect : player.getActiveEffects()) {
+                if (line >= 8) break;
+                String effectName = effect.getEffect().value().getDisplayName().getString();
+                int seconds = Math.max(0, effect.getDuration() / 20);
+                String duration = String.format(java.util.Locale.ROOT, "%d:%02d", seconds / 60, seconds % 60);
+                graphics.text(client.font, effectName + " " + duration, 0, line * 12, 0xFFD8C8FF, true);
+                line++;
+            }
+            graphics.pose().popMatrix();
         }
     }
 
