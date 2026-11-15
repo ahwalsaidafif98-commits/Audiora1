@@ -116,6 +116,9 @@ public final class AudioraConfig {
         comboOffsetX = 0; comboOffsetY = 24;
         mobInfoOffsetX = 0; mobInfoOffsetY = 12;
         itemInfoOffsetX = 0; itemInfoOffsetY = 0;
+        java.util.Arrays.fill(hudX, 0);
+        java.util.Arrays.fill(hudY, 0);
+        java.util.Arrays.fill(hudScale, 100);
         for (int i = 0; i < CATEGORIES.length; i++) { enabled[i] = true; volume[i] = 100; }
         java.util.Arrays.fill(lastCategoryMuted, false);
         lastMasterMuted = false;
