@@ -9,5 +9,50 @@
     "sounds": [
       { "name": "minecraft:entity.player.attack.sweep", "type": "event" }
     ]
+  },
+  "item_sword_select": {
+    "sounds": [
+      { "name": "minecraft:entity.player.attack.sweep", "type": "event" }
+    ]
+  },
+  "item_pickaxe_select": {
+    "sounds": [
+      { "name": "minecraft:block.stone.hit", "type": "event" }
+    ]
+  },
+  "item_axe_select": {
+    "sounds": [
+      { "name": "minecraft:item.axe.strip", "type": "event" }
+    ]
+  },
+  "item_shovel_select": {
+    "sounds": [
+      { "name": "minecraft:item.shovel.flatten", "type": "event" }
+    ]
+  },
+  "item_hoe_select": {
+    "sounds": [
+      { "name": "minecraft:item.hoe.till", "type": "event" }
+    ]
+  },
+  "item_spear_select": {
+    "sounds": [
+      { "name": "minecraft:item.trident.throw", "type": "event" }
+    ]
+  },
+  "item_mace_select": {
+    "sounds": [
+      { "name": "minecraft:item.mace.smash_ground", "type": "event" }
+    ]
+  },
+  "item_trident_select": {
+    "sounds": [
+      { "name": "minecraft:item.trident.throw", "type": "event" }
+    ]
+  },
+  "armor_netherite_step": {
+    "sounds": [
+      { "name": "minecraft:block.netherite_block.step", "type": "event" }
+    ]
   }
 }
