@@ -50,18 +50,23 @@ public final class AudioraCombo {
                 int labelWidth = client.font.width(label);
                 int screenWidth = client.getWindow().getGuiScaledWidth();
                 int screenHeight = client.getWindow().getGuiScaledHeight();
-                int x = (screenWidth - labelWidth) / 2 + AudioraConfig.comboOffsetX;
-                int y = screenHeight / 2 + AudioraConfig.comboOffsetY;
+                int x = (screenWidth - labelWidth) / 2 + AudioraConfig.comboOffsetX + AudioraConfig.hudX[7];
+                int y = screenHeight / 2 + AudioraConfig.comboOffsetY + AudioraConfig.hudY[7];
+                float scale = AudioraConfig.hudScale[7] / 100.0F;
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(x, y);
+                graphics.pose().scale(scale, scale);
 
-                graphics.text(client.font, label, x, y, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF, true);
+                graphics.text(client.font, label, 0, 0, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF, true);
 
                 // The underline drains over the 50-tick window. If it empties,
                 // the next combo starts again from 1.
                 int barWidth = Math.max(0, Math.round(labelWidth * (displayTicks / (float) COMBO_TIMEOUT_TICKS)));
-                int barY = y + client.font.lineHeight + 2;
+                int barY = client.font.lineHeight + 2;
                 if (barWidth > 0) {
-                    graphics.fill(x, barY, x + barWidth, barY + 2, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF);
+                    graphics.fill(0, barY, barWidth, barY + 2, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF);
                 }
+                graphics.pose().popMatrix();
             }
         );
     }
