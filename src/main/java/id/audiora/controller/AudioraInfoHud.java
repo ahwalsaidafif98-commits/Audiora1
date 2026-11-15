@@ -79,8 +79,8 @@ public final class AudioraInfoHud {
             if (entity instanceof LivingEntity living && living.isAlive()) {
                 String name = living.getName().getString();
                 int width = client.font.width(name);
-                int x = (graphics.guiWidth() - Math.max(110, width + 24)) / 2;
-                int y = 12;
+                int x = (graphics.guiWidth() - Math.max(110, width + 24)) / 2 + AudioraConfig.mobInfoOffsetX;
+                int y = 12 + AudioraConfig.mobInfoOffsetY;
                 graphics.fill(x, y, x + Math.max(110, width + 24), y + 28, 0xB9000000);
                 graphics.outline(x, y, Math.max(110, width + 24), 28, 0xFF65B8FF);
                 graphics.text(client.font, name, graphics.guiWidth() / 2 - width / 2, y + 10, 0xFFFFFFFF, true);
@@ -90,8 +90,8 @@ public final class AudioraInfoHud {
         if (pickupAmount > 0 && System.currentTimeMillis() < pickupUntil) {
             String label = pickupName + " " + pickupAmount + "x";
             int width = client.font.width(label);
-            int x = (graphics.guiWidth() - width - 30) / 2;
-            int y = graphics.guiHeight() - 64;
+            int x = (graphics.guiWidth() - width - 30) / 2 + AudioraConfig.itemInfoOffsetX;
+            int y = graphics.guiHeight() - 64 + AudioraConfig.itemInfoOffsetY;
             graphics.fill(x, y, x + width + 30, y + 24, 0xC9000000);
             graphics.outline(x, y, width + 30, 24, 0xFF65B8FF);
             graphics.text(client.font, label, x + 15, y + 8, 0xFFFFFFFF, true);
