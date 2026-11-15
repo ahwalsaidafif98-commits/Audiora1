@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,6 +19,7 @@ public final class AudioraController implements ClientModInitializer {
         KeyMapping.Category.register(Identifier.fromNamespaceAndPath("audiora_controller", "main"));
     private static KeyMapping openSettings;
     private static boolean wasOnGround;
+    private static boolean wasInventoryOpen;
     private static int lastSelectedSlot = -1;
     private static int netheriteStepCooldown;
 
@@ -38,6 +40,7 @@ public final class AudioraController implements ClientModInitializer {
             AudioraCombo.tick();
             AudioraInfoHud.tick(client);
             tickJumpSound(client);
+            tickInventorySound(client);
             tickHotbarItemSound(client);
             tickNetheriteFootsteps(client);
             while (openSettings.consumeClick()) {
@@ -61,6 +64,22 @@ public final class AudioraController implements ClientModInitializer {
         wasOnGround = onGround;
     }
 
+    private static void tickInventorySound(Minecraft client) {
+        if (client.player == null) {
+            wasInventoryOpen = false;
+            return;
+        }
+        boolean inventoryOpen = client.gui.screen() instanceof AbstractContainerScreen;
+        if (inventoryOpen != wasInventoryOpen) {
+            if (inventoryOpen) {
+                playAudioraSound(client, AudioraSounds.INVENTORY_OPEN, AudioraSounds.INVENTORY_OPEN_ID, 1.0F);
+            } else {
+                playAudioraSound(client, AudioraSounds.INVENTORY_CLOSE, AudioraSounds.INVENTORY_CLOSE_ID, 0.9F);
+            }
+        }
+        wasInventoryOpen = inventoryOpen;
+    }
+
     private static void tickHotbarItemSound(Minecraft client) {
         if (client.player == null) {
             lastSelectedSlot = -1;
@@ -76,13 +95,7 @@ public final class AudioraController implements ClientModInitializer {
 
         ItemStack stack = client.player.getInventory().getSelectedItem();
         if (stack.isEmpty()) return;
-
-        // Universal hotbar selection feedback for any selected item.
-        if (AudioraConfig.scaleForSound("audiora_controller:item_move") > 0.0F) {
-            client.getSoundManager().play(SimpleSoundInstance.forUI(
-                net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 0.65F
-            ));
-        }
+        playAudioraSound(client, AudioraSounds.ITEM_MOVE, AudioraSounds.ITEM_MOVE_ID, 0.8F);
     }
 
     private static void tickNetheriteFootsteps(Minecraft client) {
