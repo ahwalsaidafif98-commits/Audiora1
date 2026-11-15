@@ -17,6 +17,10 @@ public final class AudioraConfig {
     public static boolean comboEnabled = true;
     public static int comboOffsetX = 0;
     public static int comboOffsetY = 24;
+    public static int mobInfoOffsetX = 0;
+    public static int mobInfoOffsetY = 12;
+    public static int itemInfoOffsetX = 0;
+    public static int itemInfoOffsetY = 0;
     public static final boolean[] enabled = new boolean[CATEGORIES.length];
     public static final int[] volume = new int[CATEGORIES.length];
 
@@ -39,6 +43,10 @@ public final class AudioraConfig {
             comboEnabled = !root.has("comboEnabled") || root.get("comboEnabled").getAsBoolean();
             comboOffsetX = root.has("comboOffsetX") ? root.get("comboOffsetX").getAsInt() : 0;
             comboOffsetY = root.has("comboOffsetY") ? root.get("comboOffsetY").getAsInt() : 24;
+            mobInfoOffsetX = root.has("mobInfoOffsetX") ? root.get("mobInfoOffsetX").getAsInt() : 0;
+            mobInfoOffsetY = root.has("mobInfoOffsetY") ? root.get("mobInfoOffsetY").getAsInt() : 12;
+            itemInfoOffsetX = root.has("itemInfoOffsetX") ? root.get("itemInfoOffsetX").getAsInt() : 0;
+            itemInfoOffsetY = root.has("itemInfoOffsetY") ? root.get("itemInfoOffsetY").getAsInt() : 0;
             JsonObject categories = root.has("categories") ? root.getAsJsonObject("categories") : new JsonObject();
             for (int i = 0; i < CATEGORIES.length; i++) {
                 JsonObject item = categories.has(CATEGORIES[i]) ? categories.getAsJsonObject(CATEGORIES[i]) : new JsonObject();
@@ -57,6 +65,10 @@ public final class AudioraConfig {
         root.addProperty("comboEnabled", comboEnabled);
         root.addProperty("comboOffsetX", comboOffsetX);
         root.addProperty("comboOffsetY", comboOffsetY);
+        root.addProperty("mobInfoOffsetX", mobInfoOffsetX);
+        root.addProperty("mobInfoOffsetY", mobInfoOffsetY);
+        root.addProperty("itemInfoOffsetX", itemInfoOffsetX);
+        root.addProperty("itemInfoOffsetY", itemInfoOffsetY);
         JsonObject categories = new JsonObject();
         for (int i = 0; i < CATEGORIES.length; i++) {
             JsonObject item = new JsonObject();
@@ -76,6 +88,8 @@ public final class AudioraConfig {
     public static void reset() {
         masterEnabled = true; masterVolume = 100; comboEnabled = true;
         comboOffsetX = 0; comboOffsetY = 24;
+        mobInfoOffsetX = 0; mobInfoOffsetY = 12;
+        itemInfoOffsetX = 0; itemInfoOffsetY = 0;
         for (int i = 0; i < CATEGORIES.length; i++) { enabled[i] = true; volume[i] = 100; }
         save();
     }
