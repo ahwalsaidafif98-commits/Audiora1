@@ -163,10 +163,28 @@ public final class AudioraConfig {
         }
     }
 
-    public static float scaleForSound(String soundId) {
-        if (!masterEnabled || masterVolume <= 0) return 0.0f;
-        String id = soundId == null ? "" : soundId.toLowerCase(java.util.Locale.ROOT);
+    public static float scaleForSound(net.minecraft.client.resources.sounds.SoundInstance instance) {
+        if (instance == null) return 1.0f;
+        String id = instance.getIdentifier().toString();
         int category = categoryForSound(id);
+        if (category < 0) {
+            net.minecraft.sounds.SoundSource source = instance.getSource();
+            if (source == net.minecraft.sounds.SoundSource.AMBIENT || source == net.minecraft.sounds.SoundSource.WEATHER) {
+                category = indexOfCategory("nature");
+            } else if (source == net.minecraft.sounds.SoundSource.PLAYERS) {
+                category = indexOfCategory("player");
+            }
+        }
+        return scaleForCategory(category);
+    }
+
+    public static float scaleForSound(String soundId) {
+        String id = soundId == null ? "" : soundId.toLowerCase(java.util.Locale.ROOT);
+        return scaleForCategory(categoryForSound(id));
+    }
+
+    private static float scaleForCategory(int category) {
+        if (!masterEnabled || masterVolume <= 0) return 0.0f;
         if (category < 0) return masterVolume / 100.0f;
         if (!enabled[category] || volume[category] <= 0) return 0.0f;
         return (masterVolume / 100.0f) * (volume[category] / 100.0f);
