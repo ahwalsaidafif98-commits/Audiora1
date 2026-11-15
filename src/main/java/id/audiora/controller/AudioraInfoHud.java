@@ -122,7 +122,7 @@ public final class AudioraInfoHud {
                 state,
                 18.0F,
                 new Vector3f(0.0F, 0.0F, 0.0F),
-                new Quaternionf().rotationXYZ(0.12F, 0.35F, 0.0F),
+                new Quaternionf().rotationZ((float) Math.PI).rotateY(0.35F),
                 null,
                 x + 4,
                 y + 3,
