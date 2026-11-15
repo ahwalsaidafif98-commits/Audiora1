@@ -16,13 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ContainerItemMoveMixin {
     @Inject(
         method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V",
-        at = @At("RETURN")
+        at = @At("HEAD")
     )
     private void audiora$playItemMove(Slot slot, int slotId, int buttonNum, ContainerInput input, CallbackInfo ci) {
-        if (slot == null || !slot.hasItem()) return;
+        if (slot == null) return;
         Minecraft client = Minecraft.getInstance();
-        if (client.player == null || !AudioraConfig.masterEnabled) return;
-        if (AudioraConfig.scaleForSound(AudioraSounds.ITEM_MOVE_ID.toString()) <= 0.0f) return;
-        client.getSoundManager().play(SimpleSoundInstance.forUI(AudioraSounds.ITEM_MOVE, 1.0F));
+        if (client.player == null || AudioraConfig.scaleForSound(AudioraSounds.ITEM_MOVE_ID.toString()) <= 0.0f) return;
+        client.getSoundManager().play(SimpleSoundInstance.forUI(AudioraSounds.ITEM_MOVE, 0.9F));
     }
 }
