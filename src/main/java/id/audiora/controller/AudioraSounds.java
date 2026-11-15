@@ -8,6 +8,8 @@ import net.minecraft.sounds.SoundEvent;
 public final class AudioraSounds {
     public static final Identifier JUMP_ID = id("jump");
     public static final Identifier ITEM_MOVE_ID = id("item_move");
+    public static final Identifier INVENTORY_OPEN_ID = id("inventory_open");
+    public static final Identifier INVENTORY_CLOSE_ID = id("inventory_close");
     public static final Identifier SWORD_SWING_ID = id("sword_swing");
     public static final Identifier TOOL_SWORD_ID = id("item_sword_select");
     public static final Identifier TOOL_PICKAXE_ID = id("item_pickaxe_select");
@@ -21,6 +23,8 @@ public final class AudioraSounds {
 
     public static SoundEvent JUMP;
     public static SoundEvent ITEM_MOVE;
+    public static SoundEvent INVENTORY_OPEN;
+    public static SoundEvent INVENTORY_CLOSE;
     public static SoundEvent SWORD_SWING;
     public static SoundEvent TOOL_SWORD;
     public static SoundEvent TOOL_PICKAXE;
@@ -41,6 +45,8 @@ public final class AudioraSounds {
     public static void initialize() {
         JUMP = register(JUMP_ID);
         ITEM_MOVE = register(ITEM_MOVE_ID);
+        INVENTORY_OPEN = register(INVENTORY_OPEN_ID);
+        INVENTORY_CLOSE = register(INVENTORY_CLOSE_ID);
         SWORD_SWING = register(SWORD_SWING_ID);
         TOOL_SWORD = register(TOOL_SWORD_ID);
         TOOL_PICKAXE = register(TOOL_PICKAXE_ID);
