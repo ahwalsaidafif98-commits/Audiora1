@@ -124,8 +124,23 @@ public final class AudioraInfoHud {
                 int percent = Math.round(100.0F * remaining / held.getMaxDamage());
                 heldLabel += " " + percent + "%";
             }
-            graphics.text(client.font, heldLabel, left, top + (armorPieces > 0 ? 36 : 24),
-                0xFFFFFFFF, true);
+            int heldX = left + AudioraConfig.hudX[3];
+            int heldY = top + (armorPieces > 0 ? 36 : 24) + AudioraConfig.hudY[3];
+            float heldScale = AudioraConfig.hudScale[3] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(heldX, heldY);
+            graphics.pose().scale(heldScale, heldScale);
+            graphics.item(held, 0, 0);
+            graphics.text(client.font, heldLabel, 20, 5, 0xFFFFFFFF, true);
+            if (held.isDamageableItem()) {
+                int remaining = Math.max(0, held.getMaxDamage() - held.getDamageValue());
+                int percent = Math.round(100.0F * remaining / held.getMaxDamage());
+                int barWidth = 80;
+                graphics.fill(20, 17, 20 + barWidth, 20, 0xFF444444);
+                graphics.fill(20, 17, 20 + Math.round(barWidth * percent / 100.0F), 20,
+                    percent > 50 ? 0xFF55D66B : percent > 20 ? 0xFFFFC247 : 0xFFE64B4B);
+            }
+            graphics.pose().popMatrix();
         }
 
         if (client.hitResult instanceof EntityHitResult entityHit) {
@@ -140,8 +155,6 @@ public final class AudioraInfoHud {
             int width = client.font.width(label);
             int x = (graphics.guiWidth() - width - 34) / 2 + AudioraConfig.itemInfoOffsetX + AudioraConfig.hudX[5];
             int y = graphics.guiHeight() - 64 + AudioraConfig.itemInfoOffsetY + AudioraConfig.hudY[5];
-            graphics.fill(x, y, x + width + 30, y + 22, 0xB9000000);
-            if (!pickupStack.isEmpty()) graphics.item(pickupStack, x + 4, y + 3);
             float scale = AudioraConfig.hudScale[5] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(x, y);
