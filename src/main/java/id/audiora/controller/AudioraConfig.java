@@ -26,6 +26,10 @@ public final class AudioraConfig {
     public static int mobInfoOffsetY = 12;
     public static int itemInfoOffsetX = 0;
     public static int itemInfoOffsetY = 0;
+    public static final String[] HUD_IDS = {"coordinates", "biome", "armor", "held_item", "target", "pickup", "ore_tracker", "combo"};
+    public static final int[] hudX = new int[HUD_IDS.length];
+    public static final int[] hudY = new int[HUD_IDS.length];
+    public static final int[] hudScale = new int[HUD_IDS.length];
     public static final boolean[] enabled = new boolean[CATEGORIES.length];
     public static final int[] volume = new int[CATEGORIES.length];
 
@@ -34,6 +38,7 @@ public final class AudioraConfig {
             enabled[i] = true;
             volume[i] = 100;
         }
+        java.util.Arrays.fill(hudScale, 100);
         load();
     }
 
@@ -52,6 +57,13 @@ public final class AudioraConfig {
             mobInfoOffsetY = root.has("mobInfoOffsetY") ? root.get("mobInfoOffsetY").getAsInt() : 12;
             itemInfoOffsetX = root.has("itemInfoOffsetX") ? root.get("itemInfoOffsetX").getAsInt() : 0;
             itemInfoOffsetY = root.has("itemInfoOffsetY") ? root.get("itemInfoOffsetY").getAsInt() : 0;
+            JsonObject hudLayout = root.has("hudLayout") ? root.getAsJsonObject("hudLayout") : new JsonObject();
+            for (int i = 0; i < HUD_IDS.length; i++) {
+                JsonObject layout = hudLayout.has(HUD_IDS[i]) ? hudLayout.getAsJsonObject(HUD_IDS[i]) : new JsonObject();
+                hudX[i] = layout.has("x") ? layout.get("x").getAsInt() : 0;
+                hudY[i] = layout.has("y") ? layout.get("y").getAsInt() : 0;
+                hudScale[i] = Math.max(50, Math.min(200, layout.has("scale") ? layout.get("scale").getAsInt() : 100));
+            }
             JsonObject categories = root.has("categories") ? root.getAsJsonObject("categories") : new JsonObject();
             for (int i = 0; i < CATEGORIES.length; i++) {
                 JsonObject item = categories.has(CATEGORIES[i]) ? categories.getAsJsonObject(CATEGORIES[i]) : new JsonObject();
@@ -74,6 +86,15 @@ public final class AudioraConfig {
         root.addProperty("mobInfoOffsetY", mobInfoOffsetY);
         root.addProperty("itemInfoOffsetX", itemInfoOffsetX);
         root.addProperty("itemInfoOffsetY", itemInfoOffsetY);
+        JsonObject hudLayout = new JsonObject();
+        for (int i = 0; i < HUD_IDS.length; i++) {
+            JsonObject layout = new JsonObject();
+            layout.addProperty("x", hudX[i]);
+            layout.addProperty("y", hudY[i]);
+            layout.addProperty("scale", hudScale[i]);
+            hudLayout.add(HUD_IDS[i], layout);
+        }
+        root.add("hudLayout", hudLayout);
         JsonObject categories = new JsonObject();
         for (int i = 0; i < CATEGORIES.length; i++) {
             JsonObject item = new JsonObject();
