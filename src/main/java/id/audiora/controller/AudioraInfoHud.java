@@ -21,6 +21,8 @@ public final class AudioraInfoHud {
     private static final Map<String, Integer> previousCounts = new HashMap<>();
     private static String pickupName = "";
     private static int pickupAmount;
+    private static ItemStack pickupStack = ItemStack.EMPTY;
+    private static final Map<String, Integer> oreCounts = new HashMap<>();
     private static long pickupUntil;
 
     private AudioraInfoHud() {}
@@ -55,7 +57,11 @@ public final class AudioraInfoHud {
                     ItemStack found = findStack(inventory, entry.getKey());
                     if (!found.isEmpty()) {
                         pickupName = found.getHoverName().getString();
+                        pickupStack = found.copy();
+                        pickupStack.setCount(1);
                         pickupAmount = gained;
+                        String itemPath = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(found.getItem()).getPath();
+                        if (isOreDrop(itemPath)) oreCounts.merge(itemPath, gained, Integer::sum);
                         pickupUntil = System.currentTimeMillis() + 2200L;
                     }
                 }
@@ -130,14 +136,36 @@ public final class AudioraInfoHud {
         }
 
         if (pickupAmount > 0 && System.currentTimeMillis() < pickupUntil) {
-            String label = pickupName + " " + pickupAmount + "x";
+            String label = pickupName + " ×" + pickupAmount;
             int width = client.font.width(label);
-            int x = (graphics.guiWidth() - width - 30) / 2 + AudioraConfig.itemInfoOffsetX;
+            int x = (graphics.guiWidth() - width - 34) / 2 + AudioraConfig.itemInfoOffsetX;
             int y = graphics.guiHeight() - 64 + AudioraConfig.itemInfoOffsetY;
-            graphics.text(client.font, label, x + 15, y + 8, 0xFFFFFFFF, true);
+            graphics.fill(x, y, x + width + 30, y + 22, 0xB9000000);
+            if (!pickupStack.isEmpty()) graphics.item(pickupStack, x + 4, y + 3);
+            graphics.text(client.font, label, x + 24, y + 7, 0xFFFFFFFF, true);
         } else {
             pickupAmount = 0;
+            pickupStack = ItemStack.EMPTY;
         }
+
+        if (!oreCounts.isEmpty()) {
+            int line = 0;
+            for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
+                if (line >= 5) break;
+                String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue();
+                graphics.text(client.font, oreLabel, graphics.guiWidth() - client.font.width(oreLabel) - 6,
+                    6 + line * 12, 0xFFE8D58A, true);
+                line++;
+            }
+        }
+    }
+
+    private static boolean isOreDrop(String path) {
+        return path.endsWith("_ore") || path.equals("ancient_debris")
+            || path.startsWith("raw_") || path.equals("diamond") || path.equals("emerald")
+            || path.equals("lapis_lazuli") || path.equals("redstone") || path.equals("quartz")
+            || path.equals("amethyst_shard") || path.equals("coal") || path.equals("copper_ingot")
+            || path.equals("iron_ingot") || path.equals("gold_ingot");
     }
 
     private static void renderTargetCard(
