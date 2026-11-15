@@ -26,7 +26,7 @@ public final class AudioraConfig {
     public static int mobInfoOffsetY = 12;
     public static int itemInfoOffsetX = 0;
     public static int itemInfoOffsetY = 0;
-    public static final String[] HUD_IDS = {"coordinates", "biome", "armor", "held_item", "target", "pickup", "ore_tracker", "combo", "damage_number", "critical_hit", "potion_effects", "player_target", "food", "experience", "health", "compass", "world_time"};
+    public static final String[] HUD_IDS = {"coordinates", "biome", "armor", "held_item", "target", "pickup", "ore_tracker", "combo", "damage_number", "critical_hit", "potion_effects", "player_target", "food", "experience", "health", "compass", "world_time", "fps", "dimension"};
     public static final int[] hudX = new int[HUD_IDS.length];
     public static final int[] hudY = new int[HUD_IDS.length];
     public static final int[] hudScale = new int[HUD_IDS.length];
