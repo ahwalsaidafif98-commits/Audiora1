@@ -44,7 +44,7 @@ public final class AudioraCombo {
             Identifier.fromNamespaceAndPath("audiora_controller", "crit_combo"),
             (graphics, deltaTracker) -> {
                 Minecraft client = Minecraft.getInstance();
-                if (!AudioraConfig.comboEnabled || client.player == null || displayTicks <= 0 || combo <= 0) return;
+                if (!AudioraConfig.comboEnabled || !AudioraConfig.hudEnabled[7] || client.player == null || displayTicks <= 0 || combo <= 0) return;
 
                 String label = "COMBO " + combo + "X";
                 String criticalLabel = "CRITICAL!";
@@ -58,7 +58,7 @@ public final class AudioraCombo {
                 graphics.pose().translate(x, y);
                 graphics.pose().scale(scale, scale);
 
-                graphics.text(client.font, criticalLabel,
+                if (AudioraConfig.hudEnabled[9]) graphics.text(client.font, criticalLabel,
                     AudioraConfig.hudX[9], AudioraConfig.hudY[9],
                     0xFFFFD54A, true);
                 graphics.text(client.font, label, 0, 14, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF, true);
