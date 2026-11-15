@@ -47,6 +47,7 @@ public final class AudioraCombo {
                 if (!AudioraConfig.comboEnabled || client.player == null || displayTicks <= 0 || combo <= 0) return;
 
                 String label = "COMBO " + combo + "X";
+                String criticalLabel = "CRITICAL!";
                 int labelWidth = client.font.width(label);
                 int screenWidth = client.getWindow().getGuiScaledWidth();
                 int screenHeight = client.getWindow().getGuiScaledHeight();
@@ -57,12 +58,15 @@ public final class AudioraCombo {
                 graphics.pose().translate(x, y);
                 graphics.pose().scale(scale, scale);
 
-                graphics.text(client.font, label, 0, 0, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF, true);
+                graphics.text(client.font, criticalLabel,
+                    AudioraConfig.hudX[9], AudioraConfig.hudY[9],
+                    0xFFFFD54A, true);
+                graphics.text(client.font, label, 0, 14, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF, true);
 
                 // The underline drains over the 50-tick window. If it empties,
                 // the next combo starts again from 1.
                 int barWidth = Math.max(0, Math.round(labelWidth * (displayTicks / (float) COMBO_TIMEOUT_TICKS)));
-                int barY = client.font.lineHeight + 2;
+                int barY = 14 + client.font.lineHeight + 2;
                 if (barWidth > 0) {
                     graphics.fill(0, barY, barWidth, barY + 2, combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF);
                 }
