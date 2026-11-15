@@ -6,7 +6,9 @@
   "client": [
     "SoundEngineMixin",
     "ContainerItemMoveMixin",
-    "LivingEntitySwingMixin"
+    "LivingEntitySwingMixin",
+    "LivingEntityHealthMixin",
+    "MiningTrackerMixin"
   ],
   "injectors": { "defaultRequire": 1 }
 }
