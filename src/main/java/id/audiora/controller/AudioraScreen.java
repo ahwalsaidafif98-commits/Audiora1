@@ -116,12 +116,14 @@ public final class AudioraScreen extends Screen {
         }).bounds(center + 95, 210, 48, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), button -> {
+            AudioraConfig.masterEnabled = true;
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
             AudioraConfig.save();
             rebuild();
         }).bounds(center - 150, 240, 92, 18).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Disable All"), button -> {
+            AudioraConfig.masterEnabled = false;
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = false;
             AudioraConfig.save();
             rebuild();
