@@ -113,23 +113,6 @@ public final class AudioraInfoHud {
             graphics.pose().popMatrix();
         }
 
-        if (AudioraConfig.hudEnabled[16]) {
-            long dayTime = Math.floorMod(client.level.getDayTime(), 24000L);
-            int totalMinutes = (int) (dayTime * 1440L / 24000L + 360L) % 1440;
-            int hour = totalMinutes / 60;
-            int minute = totalMinutes % 60;
-            int day = (int) Math.floor(client.level.getDayTime() / 24000.0D) + 1;
-            int clockX = left + AudioraConfig.hudX[16];
-            int clockY = top + 96 + AudioraConfig.hudY[16];
-            float clockScale = AudioraConfig.hudScale[16] / 100.0F;
-            graphics.pose().pushMatrix();
-            graphics.pose().translate(clockX, clockY);
-            graphics.pose().scale(clockScale, clockScale);
-            graphics.text(client.font, String.format(java.util.Locale.ROOT, "World: %02d:%02d | Day %d", hour, minute, day),
-                0, 0, 0xFFFFE39A, true);
-            graphics.pose().popMatrix();
-        }
-
         if (AudioraConfig.hudEnabled[14]) {
             float health = Math.max(0.0F, player.getHealth());
             float maxHealth = Math.max(1.0F, player.getMaxHealth());
