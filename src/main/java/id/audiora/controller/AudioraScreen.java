@@ -262,7 +262,7 @@ public final class AudioraScreen extends Screen {
         float scale = AudioraConfig.hudScale[selectedHud] / 100.0F;
         int w = Math.max(40, Math.round(110 * scale));
         int h = Math.max(14, Math.round(24 * scale));
-        graphics.outline(x, y, w, h, 0xFFFFD45A);
+        graphics.outline(x, y, w, h, 0x99FFD45A);
         graphics.text(this.font, AudioraConfig.HUD_IDS[selectedHud] + " " + AudioraConfig.hudScale[selectedHud] + "%",
             x + 3, y + 4, 0xFFFFD45A, true);
     }
