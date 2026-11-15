@@ -86,7 +86,7 @@ public final class AudioraInfoHud {
         graphics.text(client.font, coordinates, left, top, 0xFFFFFFFF, true);
 
         String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
-            .map(key -> key.location().getPath().replace('_', ' '))
+            .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
             .orElse("unknown");
         graphics.text(client.font, "Biome: " + biome, left, top + 12, 0xFFB8D8FF, true);
 
