@@ -5,6 +5,10 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.Component;
 
 public final class AudioraScreen extends Screen {
@@ -58,8 +62,10 @@ public final class AudioraScreen extends Screen {
                 AudioraConfig.save();
             }).bounds(x, cy, 45, 18).build());
             this.addRenderableWidget(new VolumeSlider(
-                x + 49, cy, 101, 18, AudioraConfig.volume[index], AudioraConfig.CATEGORIES[index]
+                x + 49, cy, 76, 18, AudioraConfig.volume[index], AudioraConfig.CATEGORIES[index]
             ));
+            this.addRenderableWidget(Button.builder(Component.literal("▶"), button -> previewCategory(index))
+                .bounds(x + 128, cy, 22, 18).build());
         }
 
         this.addRenderableWidget(Button.builder(hudPositionLabel(), button -> {
@@ -233,6 +239,31 @@ public final class AudioraScreen extends Screen {
     public void onClose() {
         AudioraConfig.save();
         this.minecraft.gui.setScreen(parent);
+    }
+
+    private static void previewCategory(int category) {
+        String name = AudioraConfig.CATEGORIES[category];
+        String[] terms = switch (name) {
+            case "inventory" -> new String[] {"chest", "barrel", "shulker"};
+            case "player" -> new String[] {"player", "step", "hurt"};
+            case "items" -> new String[] {"item", "pickup", "equip"};
+            case "birds" -> new String[] {"parrot", "chicken", "ambient"};
+            case "insects" -> new String[] {"bee", "cave", "ambient"};
+            case "nature" -> new String[] {"water", "ambient", "rain"};
+            default -> new String[] {"ui.button", "ui"};
+        };
+        for (Identifier id : BuiltInRegistries.SOUND_EVENT.keySet()) {
+            String path = id.getPath();
+            boolean match = false;
+            for (String term : terms) if (path.contains(term)) { match = true; break; }
+            if (!match) continue;
+            var event = BuiltInRegistries.SOUND_EVENT.get(id);
+            if (event != null) {
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(event, 0.8F));
+                return;
+            }
+        }
+        // No matching vanilla sample is registered for this category.
     }
 
     private static Component hudPositionLabel() {
