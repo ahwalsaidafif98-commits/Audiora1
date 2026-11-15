@@ -114,6 +114,35 @@ public final class AudioraInfoHud {
             .orElse("unknown");
         if (AudioraConfig.hudEnabled[1]) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
 
+        if (AudioraConfig.hudEnabled[15]) {
+            String facing = player.getDirection().getName().toUpperCase(java.util.Locale.ROOT);
+            int compassX = left + AudioraConfig.hudX[15];
+            int compassY = top + 78 + AudioraConfig.hudY[15];
+            float compassScale = AudioraConfig.hudScale[15] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(compassX, compassY);
+            graphics.pose().scale(compassScale, compassScale);
+            graphics.text(client.font, "Facing: " + facing, 0, 0, 0xFF9FE7FF, true);
+            graphics.pose().popMatrix();
+        }
+
+        if (AudioraConfig.hudEnabled[16]) {
+            long dayTime = Math.floorMod(client.level.getDayTime(), 24000L);
+            int totalMinutes = (int) (dayTime * 1440L / 24000L + 360L) % 1440;
+            int hour = totalMinutes / 60;
+            int minute = totalMinutes % 60;
+            int day = (int) Math.floor(client.level.getDayTime() / 24000.0D) + 1;
+            int clockX = left + AudioraConfig.hudX[16];
+            int clockY = top + 96 + AudioraConfig.hudY[16];
+            float clockScale = AudioraConfig.hudScale[16] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(clockX, clockY);
+            graphics.pose().scale(clockScale, clockScale);
+            graphics.text(client.font, String.format(java.util.Locale.ROOT, "World: %02d:%02d | Day %d", hour, minute, day),
+                0, 0, 0xFFFFE39A, true);
+            graphics.pose().popMatrix();
+        }
+
         if (AudioraConfig.hudEnabled[14]) {
             float health = Math.max(0.0F, player.getHealth());
             float maxHealth = Math.max(1.0F, player.getMaxHealth());
