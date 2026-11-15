@@ -101,63 +101,15 @@ public final class AudioraInfoHud {
             .orElse("unknown");
         if (AudioraConfig.hudEnabled[1]) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
 
-        if (AudioraConfig.hudEnabled[15]) {
+        if (AudioraConfig.hudEnabled[12]) {
             String facing = player.getDirection().getName().toUpperCase(java.util.Locale.ROOT);
-            int compassX = left + AudioraConfig.hudX[15];
-            int compassY = top + 78 + AudioraConfig.hudY[15];
-            float compassScale = AudioraConfig.hudScale[15] / 100.0F;
+            int compassX = left + AudioraConfig.hudX[12];
+            int compassY = top + 78 + AudioraConfig.hudY[12];
+            float compassScale = AudioraConfig.hudScale[12] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(compassX, compassY);
             graphics.pose().scale(compassScale, compassScale);
             graphics.text(client.font, "Facing: " + facing, 0, 0, 0xFF9FE7FF, true);
-            graphics.pose().popMatrix();
-        }
-
-        if (AudioraConfig.hudEnabled[14]) {
-            float health = Math.max(0.0F, player.getHealth());
-            float maxHealth = Math.max(1.0F, player.getMaxHealth());
-            float absorption = Math.max(0.0F, player.getAbsorptionAmount());
-            int healthX = left + AudioraConfig.hudX[14];
-            int healthY = top + 60 + AudioraConfig.hudY[14];
-            float healthScale = AudioraConfig.hudScale[14] / 100.0F;
-            graphics.pose().pushMatrix();
-            graphics.pose().translate(healthX, healthY);
-            graphics.pose().scale(healthScale, healthScale);
-            graphics.text(client.font, "Health: " + String.format(java.util.Locale.ROOT, "%.1f", health)
-                + "/" + String.format(java.util.Locale.ROOT, "%.1f", maxHealth)
-                + (absorption > 0 ? " +" + String.format(java.util.Locale.ROOT, "%.1f", absorption) : ""),
-                0, 0, 0xFFFF7777, true);
-            graphics.fill(0, 11, 80, 14, 0xFF444444);
-            graphics.fill(0, 11, Math.round(80.0F * Math.min(1.0F, health / maxHealth)), 14, 0xFFE65353);
-            graphics.pose().popMatrix();
-        }
-
-        if (AudioraConfig.hudEnabled[12]) {
-            int food = player.getFoodData().getFoodLevel();
-            int foodX = left + AudioraConfig.hudX[12];
-            int foodY = top + 24 + AudioraConfig.hudY[12];
-            float foodScale = AudioraConfig.hudScale[12] / 100.0F;
-            graphics.pose().pushMatrix();
-            graphics.pose().translate(foodX, foodY);
-            graphics.pose().scale(foodScale, foodScale);
-            graphics.text(client.font, "Food: " + food + "/20", 0, 0, 0xFFFFD36A, true);
-            graphics.fill(0, 11, 80, 14, 0xFF444444);
-            graphics.fill(0, 11, Math.round(80.0F * food / 20.0F), 14, 0xFFFFB84D);
-            graphics.pose().popMatrix();
-        }
-
-        if (AudioraConfig.hudEnabled[13]) {
-            int level = player.experienceLevel;
-            float progress = player.experienceProgress;
-            int xpX = left + AudioraConfig.hudX[13];
-            int xpY = top + 42 + AudioraConfig.hudY[13];
-            float xpScale = AudioraConfig.hudScale[13] / 100.0F;
-            graphics.pose().pushMatrix();
-            graphics.pose().translate(xpX, xpY);
-            graphics.pose().scale(xpScale, xpScale);
-            graphics.text(client.font, "XP: " + level + " (" + Math.round(progress * 100) + "%)", 0, 0, 0xFF8CFF79, true);
-            graphics.fill(0, 11, 80, 14, 0xFF444444);
-            graphics.fill(0, 11, Math.round(80.0F * progress), 14, 0xFF69D85B);
             graphics.pose().popMatrix();
         }
 
