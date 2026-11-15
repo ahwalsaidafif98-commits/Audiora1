@@ -89,12 +89,12 @@ public final class AudioraInfoHud {
         var player = client.player;
         String coordinates = String.format(java.util.Locale.ROOT, "XYZ: %.1f / %.1f / %.1f",
             player.getX(), player.getY(), player.getZ());
-        graphics.text(client.font, coordinates, left + AudioraConfig.hudX[0], top + AudioraConfig.hudY[0], 0xFFFFFFFF, true);
+        drawScaledText(graphics, client, coordinates, left + AudioraConfig.hudX[0], top + AudioraConfig.hudY[0], 0xFFFFFFFF, 0);
 
         String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
             .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
             .orElse("unknown");
-        graphics.text(client.font, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, true);
+        drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
 
         int armorTotal = 0;
         int armorPieces = 0;
@@ -112,8 +112,8 @@ public final class AudioraInfoHud {
             }
         }
         if (armorPieces > 0) {
-            graphics.text(client.font, "Armor: " + (armorTotal / armorPieces) + "%",
-                left + AudioraConfig.hudX[2], top + 24 + AudioraConfig.hudY[2], 0xFFE8D58A, true);
+            drawScaledText(graphics, client, "Armor: " + (armorTotal / armorPieces) + "%",
+                left + AudioraConfig.hudX[2], top + 24 + AudioraConfig.hudY[2], 0xFFE8D58A, 2);
         }
 
         ItemStack held = player.getMainHandItem();
@@ -142,7 +142,13 @@ public final class AudioraInfoHud {
             int y = graphics.guiHeight() - 64 + AudioraConfig.itemInfoOffsetY + AudioraConfig.hudY[5];
             graphics.fill(x, y, x + width + 30, y + 22, 0xB9000000);
             if (!pickupStack.isEmpty()) graphics.item(pickupStack, x + 4, y + 3);
-            graphics.text(client.font, label, x + 24, y + 7, 0xFFFFFFFF, true);
+            float scale = AudioraConfig.hudScale[5] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(x, y);
+            graphics.pose().scale(scale, scale);
+            if (!pickupStack.isEmpty()) graphics.item(pickupStack, 4, 3);
+            graphics.text(client.font, label, 24, 7, 0xFFFFFFFF, true);
+            graphics.pose().popMatrix();
         } else {
             pickupAmount = 0;
             pickupStack = ItemStack.EMPTY;
@@ -199,24 +205,24 @@ public final class AudioraInfoHud {
                 new Vector3f(0.0F, 0.0F, 0.0F),
                 new Quaternionf().rotationZ((float) Math.PI).rotateY(0.35F),
                 null,
-                x + 4,
-                y + 3,
-                x + 43,
-                y + 45
+                4,
+                3,
+                43,
+                45
             );
         } catch (RuntimeException exception) {
             // Keep the target name and health visible if a custom entity renderer cannot be previewed.
         }
 
-        int textX = x + 49;
-        int textY = y + 7;
+        int textX = 49;
+        int textY = 7;
         graphics.text(client.font, name, textX, textY, 0xFFFFFFFF, true);
 
         String healthLabel = String.format(java.util.Locale.ROOT, "%.1f / %.1f HP", health, maxHealth);
         graphics.text(client.font, healthLabel, textX, textY + 13, 0xFFE0E0E0, true);
 
         int barX = textX;
-        int barY = y + 34;
+        int barY = 34;
         int barWidth = cardWidth - 58;
         graphics.fill(barX, barY, barX + barWidth, barY + 6, 0xFF3A3A3A);
         int filledWidth = Math.round(barWidth * healthRatio);
@@ -224,5 +230,16 @@ public final class AudioraInfoHud {
             int barColor = healthRatio > 0.5F ? 0xFF48D16A : healthRatio > 0.25F ? 0xFFFFC247 : 0xFFE64B4B;
             graphics.fill(barX, barY, barX + filledWidth, barY + 6, barColor);
         }
+        graphics.pose().popMatrix();
+    }
+
+    private static void drawScaledText(GuiGraphicsExtractor graphics, Minecraft client, String text,
+                                       int x, int y, int color, int hudIndex) {
+        float scale = AudioraConfig.hudScale[hudIndex] / 100.0F;
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, y);
+        graphics.pose().scale(scale, scale);
+        graphics.text(client.font, text, 0, 0, color, true);
+        graphics.pose().popMatrix();
     }
 }
