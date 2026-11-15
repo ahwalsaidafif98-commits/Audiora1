@@ -77,6 +77,51 @@ public final class AudioraInfoHud {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null || client.gui.screen() != null) return;
 
+        // Compact information HUDs requested for Audiora 1.0.3.
+        int left = 6;
+        int top = 6;
+        var player = client.player;
+        String coordinates = String.format(java.util.Locale.ROOT, "XYZ: %.1f / %.1f / %.1f",
+            player.getX(), player.getY(), player.getZ());
+        graphics.text(client.font, coordinates, left, top, 0xFFFFFFFF, true);
+
+        String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
+            .map(key -> key.location().getPath().replace('_', ' '))
+            .orElse("unknown");
+        graphics.text(client.font, "Biome: " + biome, left, top + 12, 0xFFB8D8FF, true);
+
+        int armorTotal = 0;
+        int armorPieces = 0;
+        for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
+            net.minecraft.world.entity.EquipmentSlot.HEAD,
+            net.minecraft.world.entity.EquipmentSlot.CHEST,
+            net.minecraft.world.entity.EquipmentSlot.LEGS,
+            net.minecraft.world.entity.EquipmentSlot.FEET
+        }) {
+            ItemStack armor = player.getItemBySlot(slot);
+            if (!armor.isEmpty() && armor.isDamageableItem()) {
+                int remaining = Math.max(0, armor.getMaxDamage() - armor.getDamageValue());
+                armorTotal += Math.round(100.0F * remaining / armor.getMaxDamage());
+                armorPieces++;
+            }
+        }
+        if (armorPieces > 0) {
+            graphics.text(client.font, "Armor: " + (armorTotal / armorPieces) + "%",
+                left, top + 24, 0xFFE8D58A, true);
+        }
+
+        ItemStack held = player.getMainHandItem();
+        if (!held.isEmpty()) {
+            String heldLabel = held.getHoverName().getString();
+            if (held.isDamageableItem()) {
+                int remaining = Math.max(0, held.getMaxDamage() - held.getDamageValue());
+                int percent = Math.round(100.0F * remaining / held.getMaxDamage());
+                heldLabel += " " + percent + "%";
+            }
+            graphics.text(client.font, heldLabel, left, top + (armorPieces > 0 ? 36 : 24),
+                0xFFFFFFFF, true);
+        }
+
         if (client.hitResult instanceof EntityHitResult entityHit) {
             Entity entity = entityHit.getEntity();
             if (entity instanceof LivingEntity living && living.isAlive()) {
