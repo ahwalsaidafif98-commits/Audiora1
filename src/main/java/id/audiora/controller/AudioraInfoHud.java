@@ -114,24 +114,35 @@ public final class AudioraInfoHud {
             .orElse("unknown");
         if (AudioraConfig.hudEnabled[1]) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
 
-        int armorTotal = 0;
         int armorPieces = 0;
-        for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
-            net.minecraft.world.entity.EquipmentSlot.HEAD,
-            net.minecraft.world.entity.EquipmentSlot.CHEST,
-            net.minecraft.world.entity.EquipmentSlot.LEGS,
-            net.minecraft.world.entity.EquipmentSlot.FEET
-        }) {
-            ItemStack armor = player.getItemBySlot(slot);
-            if (!armor.isEmpty() && armor.isDamageableItem()) {
+        if (AudioraConfig.hudEnabled[2]) {
+            int armorX = left + AudioraConfig.hudX[2];
+            int armorY = top + 24 + AudioraConfig.hudY[2];
+            float armorScale = AudioraConfig.hudScale[2] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(armorX, armorY);
+            graphics.pose().scale(armorScale, armorScale);
+            for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
+                net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET
+            }) {
+                ItemStack armor = player.getItemBySlot(slot);
+                if (armor.isEmpty() || !armor.isDamageableItem()) continue;
                 int remaining = Math.max(0, armor.getMaxDamage() - armor.getDamageValue());
-                armorTotal += Math.round(100.0F * remaining / armor.getMaxDamage());
+                int percent = Math.round(100.0F * remaining / armor.getMaxDamage());
+                int rowY = armorPieces * 14;
+                graphics.item(armor, 0, rowY - 2);
+                graphics.text(client.font, armor.getHoverName().getString() + " " + percent + "%",
+                    20, rowY, 0xFFE8D58A, true);
+                int barWidth = 64;
+                graphics.fill(20, rowY + 10, 20 + barWidth, rowY + 12, 0xFF444444);
+                graphics.fill(20, rowY + 10, 20 + Math.round(barWidth * percent / 100.0F), rowY + 12,
+                    percent > 50 ? 0xFF55D66B : percent > 20 ? 0xFFFFC247 : 0xFFE64B4B);
                 armorPieces++;
             }
-        }
-        if (armorPieces > 0 && AudioraConfig.hudEnabled[2]) {
-            drawScaledText(graphics, client, "Armor: " + (armorTotal / armorPieces) + "%",
-                left + AudioraConfig.hudX[2], top + 24 + AudioraConfig.hudY[2], 0xFFE8D58A, 2);
+            graphics.pose().popMatrix();
         }
 
         ItemStack held = player.getMainHandItem();
@@ -143,7 +154,7 @@ public final class AudioraInfoHud {
                 heldLabel += " " + percent + "%";
             }
             int heldX = left + AudioraConfig.hudX[3];
-            int heldY = top + (armorPieces > 0 ? 36 : 24) + AudioraConfig.hudY[3];
+            int heldY = top + (armorPieces > 0 ? 84 : 24) + AudioraConfig.hudY[3];
             float heldScale = AudioraConfig.hudScale[3] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(heldX, heldY);
