@@ -3,7 +3,19 @@
     "sounds": ["audiora_controller:jump"]
   },
   "item_move": {
-    "sounds": ["audiora_controller:item_move"]
+    "sounds": [
+      { "name": "minecraft:entity.item.pickup", "type": "event" }
+    ]
+  },
+  "inventory_open": {
+    "sounds": [
+      { "name": "minecraft:block.chest.open", "type": "event" }
+    ]
+  },
+  "inventory_close": {
+    "sounds": [
+      { "name": "minecraft:block.chest.close", "type": "event" }
+    ]
   },
   "sword_swing": {
     "sounds": [
