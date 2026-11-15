@@ -36,6 +36,7 @@ public final class AudioraController implements ClientModInitializer {
             CATEGORY
         ));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            AudioraConfig.enforceMutedSounds(client);
             AudioraAmbience.tick(client);
             AudioraCombo.tick();
             AudioraInfoHud.tick(client);
