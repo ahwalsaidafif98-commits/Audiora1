@@ -7,12 +7,15 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public final class AudioraInfoHud {
     private static final Map<String, Integer> previousCounts = new HashMap<>();
@@ -77,11 +80,7 @@ public final class AudioraInfoHud {
         if (client.hitResult instanceof EntityHitResult entityHit) {
             Entity entity = entityHit.getEntity();
             if (entity instanceof LivingEntity living && living.isAlive()) {
-                String name = living.getName().getString();
-                int width = client.font.width(name);
-                int x = (graphics.guiWidth() - Math.max(110, width + 24)) / 2 + AudioraConfig.mobInfoOffsetX;
-                int y = 12 + AudioraConfig.mobInfoOffsetY;
-                graphics.text(client.font, name, graphics.guiWidth() / 2 - width / 2, y + 10, 0xFFFFFFFF, true);
+                renderTargetCard(graphics, client, living, deltaTracker);
             }
         }
 
@@ -93,6 +92,63 @@ public final class AudioraInfoHud {
             graphics.text(client.font, label, x + 15, y + 8, 0xFFFFFFFF, true);
         } else {
             pickupAmount = 0;
+        }
+    }
+
+    private static void renderTargetCard(
+        GuiGraphicsExtractor graphics,
+        Minecraft client,
+        LivingEntity target,
+        DeltaTracker deltaTracker
+    ) {
+        String name = target.getName().getString();
+        float maxHealth = Math.max(1.0F, target.getMaxHealth());
+        float health = Math.max(0.0F, Math.min(maxHealth, target.getHealth()));
+        float healthRatio = health / maxHealth;
+
+        int cardWidth = Math.max(150, client.font.width(name) + 64);
+        int cardHeight = 48;
+        int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX;
+        int y = 12 + AudioraConfig.mobInfoOffsetY;
+
+        // Dark translucent target panel.
+        graphics.fill(x, y, x + cardWidth, y + cardHeight, 0xB9000000);
+        graphics.outline(x, y, cardWidth, cardHeight, 0xFF777777);
+
+        // Render the actual target model: works for mobs and player skins.
+        try {
+            float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
+            EntityRenderState state = client.getEntityRenderDispatcher().extractEntity(target, partialTick);
+            graphics.entity(
+                state,
+                18.0F,
+                new Vector3f(0.0F, 0.0F, 0.0F),
+                new Quaternionf().rotationXYZ(0.12F, -0.35F, 0.0F),
+                null,
+                x + 4,
+                y + 3,
+                x + 43,
+                y + 45
+            );
+        } catch (RuntimeException exception) {
+            // Keep the target name and health visible if a custom entity renderer cannot be previewed.
+        }
+
+        int textX = x + 49;
+        int textY = y + 7;
+        graphics.text(client.font, name, textX, textY, 0xFFFFFFFF, true);
+
+        String healthLabel = String.format(java.util.Locale.ROOT, "%.1f / %.1f HP", health, maxHealth);
+        graphics.text(client.font, healthLabel, textX, textY + 13, 0xFFE0E0E0, true);
+
+        int barX = textX;
+        int barY = y + 34;
+        int barWidth = cardWidth - 58;
+        graphics.fill(barX, barY, barX + barWidth, barY + 6, 0xFF3A3A3A);
+        int filledWidth = Math.round(barWidth * healthRatio);
+        if (filledWidth > 0) {
+            int barColor = healthRatio > 0.5F ? 0xFF48D16A : healthRatio > 0.25F ? 0xFFFFC247 : 0xFFE64B4B;
+            graphics.fill(barX, barY, barX + filledWidth, barY + 6, barColor);
         }
     }
 }
