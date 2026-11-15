@@ -13,6 +13,7 @@ public final class AudioraScreen extends Screen {
     };
 
     private final Screen parent;
+    private static boolean editingMobHud = true;
 
     public AudioraScreen() {
         this(null);
@@ -51,6 +52,35 @@ public final class AudioraScreen extends Screen {
                 x + 50, y, 100, 20, AudioraConfig.volume[index], AudioraConfig.CATEGORIES[index]
             ));
         }
+
+        this.addRenderableWidget(Button.builder(hudPositionLabel(), button -> {
+            editingMobHud = !editingMobHud;
+            button.setMessage(hudPositionLabel());
+        }).bounds(center - 150, this.height - 110, 78, 20).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("←"), button -> {
+            if (editingMobHud) AudioraConfig.mobInfoOffsetX -= 5;
+            else AudioraConfig.itemInfoOffsetX -= 5;
+            AudioraConfig.save();
+        }).bounds(center - 68, this.height - 110, 34, 20).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("→"), button -> {
+            if (editingMobHud) AudioraConfig.mobInfoOffsetX += 5;
+            else AudioraConfig.itemInfoOffsetX += 5;
+            AudioraConfig.save();
+        }).bounds(center - 31, this.height - 110, 34, 20).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("↑"), button -> {
+            if (editingMobHud) AudioraConfig.mobInfoOffsetY -= 5;
+            else AudioraConfig.itemInfoOffsetY -= 5;
+            AudioraConfig.save();
+        }).bounds(center + 6, this.height - 110, 34, 20).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("↓"), button -> {
+            if (editingMobHud) AudioraConfig.mobInfoOffsetY += 5;
+            else AudioraConfig.itemInfoOffsetY += 5;
+            AudioraConfig.save();
+        }).bounds(center + 43, this.height - 110, 34, 20).build());
 
         this.addRenderableWidget(Button.builder(comboLabel(), button -> {
             AudioraConfig.comboEnabled = !AudioraConfig.comboEnabled;
@@ -107,8 +137,6 @@ public final class AudioraScreen extends Screen {
         drawAudioraIcon(graphics, this.width / 2 - 112, 7);
         graphics.text(this.font, "AUDIORA - Sound settings", this.width / 2 - 82, 12, 0xFFFFFFFF, true);
         graphics.text(this.font, "Master / Noise level", this.width / 2 - 150, 22, 0xFFB8D8FF, false);
-        graphics.text(this.font, "Geser posisi tulisan COMBO:", this.width / 2 - 150, this.height - 110, 0xFFB8D8FF, false);
-        graphics.text(this.font, "Mendatar: " + AudioraConfig.comboOffsetX + " | Tegak: " + AudioraConfig.comboOffsetY + " (5 px tiap tap)", this.width / 2 - 150, this.height - 96, 0xFFB8D8FF, false);
         for (int i = 0; i < AudioraConfig.CATEGORIES.length; i++) {
             int column = i / 4;
             int row = i % 4;
@@ -144,7 +172,7 @@ public final class AudioraScreen extends Screen {
         this.minecraft.gui.setScreen(parent);
     }
 
-    private static Component comboLabel() {
+    private static Component hudPositionLabel() {\n        return Component.literal("Posisi: " + (editingMobHud ? "Mob" : "Item"));\n    }\n\n    private static Component comboLabel() {
         return Component.literal("Crit Combo: " + (AudioraConfig.comboEnabled ? "ON" : "OFF"));
     }
 
