@@ -296,9 +296,6 @@ public final class AudioraScreen extends Screen {
             case "critical_hit" -> "CRITICAL!";
             case "potion_effects" -> "Speed 1:30";
             case "player_target" -> "Player 20/20 HP";
-            case "food" -> "Food: 20/20";
-            case "experience" -> "XP: 12 (65%)";
-            case "health" -> "Health: 20/20";
             case "compass" -> "Facing: NORTH";
             default -> AudioraConfig.HUD_IDS[selectedHud];
         };
