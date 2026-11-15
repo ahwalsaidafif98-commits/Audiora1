@@ -150,9 +150,11 @@ public final class AudioraInfoHud {
 
         if (!oreCounts.isEmpty()) {
             int line = 0;
+            int totalOres = oreCounts.values().stream().mapToInt(Integer::intValue).sum();
             for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
                 if (line >= 5) break;
-                String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue();
+                int share = totalOres > 0 ? Math.round(100.0F * ore.getValue() / totalOres) : 0;
+                String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue() + " (" + share + "%)";
                 graphics.text(client.font, oreLabel, graphics.guiWidth() - client.font.width(oreLabel) - 6,
                     6 + line * 12, 0xFFE8D58A, true);
                 line++;
