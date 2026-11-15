@@ -114,6 +114,25 @@ public final class AudioraInfoHud {
             .orElse("unknown");
         if (AudioraConfig.hudEnabled[1]) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
 
+        if (AudioraConfig.hudEnabled[14]) {
+            float health = Math.max(0.0F, player.getHealth());
+            float maxHealth = Math.max(1.0F, player.getMaxHealth());
+            float absorption = Math.max(0.0F, player.getAbsorptionAmount());
+            int healthX = left + AudioraConfig.hudX[14];
+            int healthY = top + 60 + AudioraConfig.hudY[14];
+            float healthScale = AudioraConfig.hudScale[14] / 100.0F;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(healthX, healthY);
+            graphics.pose().scale(healthScale, healthScale);
+            graphics.text(client.font, "Health: " + String.format(java.util.Locale.ROOT, "%.1f", health)
+                + "/" + String.format(java.util.Locale.ROOT, "%.1f", maxHealth)
+                + (absorption > 0 ? " +" + String.format(java.util.Locale.ROOT, "%.1f", absorption) : ""),
+                0, 0, 0xFFFF7777, true);
+            graphics.fill(0, 11, 80, 14, 0xFF444444);
+            graphics.fill(0, 11, Math.round(80.0F * Math.min(1.0F, health / maxHealth)), 14, 0xFFE65353);
+            graphics.pose().popMatrix();
+        }
+
         if (AudioraConfig.hudEnabled[12]) {
             int food = player.getFoodData().getFoodLevel();
             int foodX = left + AudioraConfig.hudX[12];
