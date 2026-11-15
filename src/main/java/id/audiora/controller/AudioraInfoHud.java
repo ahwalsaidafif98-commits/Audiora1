@@ -192,8 +192,11 @@ public final class AudioraInfoHud {
         int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX + AudioraConfig.hudX[4];
         int y = 12 + AudioraConfig.mobInfoOffsetY + AudioraConfig.hudY[4];
 
-        graphics.fill(x, y, x + cardWidth, y + cardHeight, 0xB9000000);
-        graphics.outline(x, y, cardWidth, cardHeight, 0xFF777777);
+        float scale = AudioraConfig.hudScale[4] / 100.0F;
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, y);
+        graphics.pose().scale(scale, scale);
+        graphics.outline(0, 0, cardWidth, cardHeight, 0x88777777);
 
         try {
             float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
