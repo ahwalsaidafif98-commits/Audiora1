@@ -107,7 +107,7 @@ public final class AudioraHudScreen extends Screen {
             case "coordinates" -> "Coordinates"; case "biome" -> "Biome";
             case "armor" -> "Armor"; case "held_item" -> "Held item";
             case "target" -> "Mob Guide"; case "pickup" -> "Pickup";
-            case "ore_tracker" -> "Ore Tracker"; case "combo" -> "Crit combo";
+            case "ore_tracker" -> "Ore Tracker"; case "combo" -> "Combo";
             case "damage_number" -> "Damage number"; case "critical_hit" -> "Critical hit";
             case "potion_effects" -> "Potion effects"; case "player_target" -> "Player Guide";
             case "compass" -> "Compass"; default -> AudioraConfig.HUD_IDS[i];
