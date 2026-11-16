@@ -107,5 +107,317 @@
         "type": "event"
       }
     ]
+  },
+  "potion_effect_speed": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.experience_orb.pickup",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_slowness": {
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.chime",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_haste": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_mining_fatigue": {
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.chime",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_strength": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.player.levelup",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_instant_health": {
+    "sounds": [
+      {
+        "name": "minecraft:block.enchantment_table.use",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_instant_damage": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.evoker.prepare_attack",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_jump_boost": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.ender_eye.launch",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_nausea": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.fox.teleport",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_regeneration": {
+    "sounds": [
+      {
+        "name": "minecraft:block.respawn_anchor.charge",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_resistance": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.phantom.flap",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_fire_resistance": {
+    "sounds": [
+      {
+        "name": "minecraft:block.bell.use",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_water_breathing": {
+    "sounds": [
+      {
+        "name": "minecraft:block.conduit.activate",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_invisibility": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.guardian.attack",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_blindness": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.shulker.teleport",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_night_vision": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.enderman.teleport",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_hunger": {
+    "sounds": [
+      {
+        "name": "minecraft:block.portal.trigger",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_weakness": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.player.attack.crit",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_poison": {
+    "sounds": [
+      {
+        "name": "minecraft:block.sculk_sensor.clicking",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_wither": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.witch.celebrate",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_health_boost": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.dolphin.play",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_absorption": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.turtle.egg_crack",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_saturation": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.goat.horn_break",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_glowing": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.lightning_bolt.thunder",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_levitation": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.firework_rocket.twinkle",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_luck": {
+    "sounds": [
+      {
+        "name": "minecraft:block.copper_bulb.turn_on",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_unluck": {
+    "sounds": [
+      {
+        "name": "minecraft:block.respawn_anchor.set_spawn",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_slow_falling": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.axolotl.splash",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_conduit_power": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.frog.tongue",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_dolphins_grace": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.sniffer.scenting",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_bad_omen": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.camel.eat",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_hero_of_the_village": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.breeze.jump",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_darkness": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.wind_charge.wind_burst",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_trial_omen": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.armadillo.roll",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_raid_omen": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.allay.ambient_with_item",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_wind_charged": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.vex.charge",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_weaving": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.illusioner.prepare_mirror",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_oozing": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.puffer_fish.blow_up",
+        "type": "event"
+      }
+    ]
+  },
+  "potion_effect_infested": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.warden.heartbeat",
+        "type": "event"
+      }
+    ]
   }
 }
