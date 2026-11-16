@@ -300,7 +300,7 @@ public final class AudioraInfoHud {
         float health = Math.max(0.0F, Math.min(maxHealth, target.getHealth()));
         float healthRatio = health / maxHealth;
 
-        int cardWidth = Math.max(150, client.font.width(name) + 64);
+        int cardWidth = Math.max(150, client.font.width(name) + 58);
         int cardHeight = 48;
         // Keep each preview beside its own target name inside the centered target card.
         int x = (graphics.guiWidth() - cardWidth) / 2
@@ -318,20 +318,20 @@ public final class AudioraInfoHud {
             // Reverse the preview's horizontal facing so the mob/player is no longer shown from the mirrored side.
             graphics.entity(
                 state,
-                hudIndex == 4 ? 12.0F : 18.0F,
+                hudIndex == 4 ? 8.0F : 18.0F,
                 new Vector3f(0.0F, 0.0F, 0.0F),
                 new Quaternionf().rotationZ((float) Math.PI).rotateY(0.35F),
                 null,
-                4,
-                3,
-                43,
+                2,
+                2,
+                38,
                 45
             );
         } catch (RuntimeException exception) {
             // Keep the target name and health visible if a custom entity renderer cannot be previewed.
         }
 
-        int textX = 49;
+        int textX = 42;
         int textY = 7;
         graphics.text(client.font, name, textX, textY, 0xFFFFFFFF, true);
 
@@ -340,7 +340,7 @@ public final class AudioraInfoHud {
 
         int barX = textX;
         int barY = 34;
-        int barWidth = cardWidth - 58;
+        int barWidth = cardWidth - 51;
         graphics.fill(barX, barY, barX + barWidth, barY + 6, 0xFF3A3A3A);
         int filledWidth = Math.round(barWidth * healthRatio);
         if (filledWidth > 0) {
