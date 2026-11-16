@@ -3,6 +3,7 @@ package id.audiora.controller;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -167,7 +168,9 @@ public final class AudioraHudScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         int x = Math.max(6, width - PANEL_WIDTH - 8);
         int top = 48;
         for (int i = 0; i < VISIBLE_ROWS && i < AudioraConfig.HUD_IDS.length; i++) {
@@ -178,7 +181,7 @@ public final class AudioraHudScreen extends Screen {
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
