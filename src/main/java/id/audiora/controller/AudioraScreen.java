@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 public final class AudioraScreen extends Screen {
     private static final int[] VOLUME_STEPS = {0,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100};
     private final Screen parent;
+    private int firstCategory;
 
     public AudioraScreen() { this(null); }
     public AudioraScreen(Screen parent) {
@@ -31,7 +32,7 @@ public final class AudioraScreen extends Screen {
 
         for (int i=0; i<AudioraConfig.CATEGORIES.length; i++) {
             final int index=i;
-            int col=i/4, row=i%4, x=c-150+col*155, y=76+row*27;
+            int x=c-150, y=76+row*27;
             this.addRenderableWidget(Button.builder(toggleLabel(i), b -> {
                 AudioraConfig.enabled[index]=!AudioraConfig.enabled[index];
                 b.setMessage(toggleLabel(index)); AudioraConfig.save();
@@ -41,29 +42,33 @@ public final class AudioraScreen extends Screen {
                 .bounds(x+128,y,22,20).build());
         }
 
-        this.addRenderableWidget(Button.builder(Component.literal("HUD Settings  ⚙"), b ->
+        this.addRenderableWidget(Button.builder(Component.literal("↑"), b -> { firstCategory=Math.max(0,firstCategory-1); rebuild(); })\n            .bounds(c-150, 190, 42, 20).build());\n        this.addRenderableWidget(Button.builder(Component.literal("↓"), b -> { firstCategory=Math.min(3,firstCategory+1); rebuild(); })\n            .bounds(c-104, 190, 42, 20).build());\n        this.addRenderableWidget(Button.builder(Component.literal("HUD Settings  ⚙"), b ->
             this.minecraft.gui.setScreen(new AudioraHudScreen(this)))
-            .bounds(c-150, 204, 150, 22).build());
+            .bounds(c-55, 190, 205, 22).build());
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), b -> {
             AudioraConfig.masterEnabled=true;
             for(int i=0;i<AudioraConfig.enabled.length;i++) AudioraConfig.enabled[i]=true;
             AudioraConfig.save(); rebuild();
-        }).bounds(c-150,238,92,20).build());
+        }).bounds(c-150,218,92,20).build());
         this.addRenderableWidget(Button.builder(Component.literal("Disable All"), b -> {
             AudioraConfig.masterEnabled=false;
             for(int i=0;i<AudioraConfig.enabled.length;i++) AudioraConfig.enabled[i]=false;
             AudioraConfig.save(); rebuild();
-        }).bounds(c-53,238,92,20).build());
+        }).bounds(c-53,218,92,20).build());
         this.addRenderableWidget(Button.builder(Component.literal("Reset Sound"), b -> {
             AudioraConfig.masterEnabled=true; AudioraConfig.masterVolume=100;
             for(int i=0;i<AudioraConfig.enabled.length;i++){AudioraConfig.enabled[i]=true;AudioraConfig.volume[i]=100;}
             AudioraConfig.save(); rebuild();
-        }).bounds(c+44,238,90,20).build());
+        }).bounds(c+44,218,90,20).build());
         this.addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
-            .bounds(c+104, 270, 96, 20).build());
+            .bounds(c+104, 246, 96, 20).build());
     }
 
     private void rebuild(){ this.clearWidgets(); this.init(); }
+
+    @Override public boolean mouseScrolled(double mouseX,double mouseY,double deltaX,double deltaY){
+        firstCategory=Math.max(0,Math.min(3,firstCategory+(deltaY<0?1:-1))); rebuild(); return true;
+    }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g,int mx,int my,float delta) {
@@ -71,10 +76,8 @@ public final class AudioraScreen extends Screen {
         int c=this.width/2;
         g.text(this.font,"AUDIORA • SOUND CONTROL",c-83,12,0xFFFFFFFF,true);
         g.text(this.font,"Master volume",c-150,24,0xFFB8D8FF,false);
-        for(int i=0;i<AudioraConfig.CATEGORIES.length;i++){
-            int x=c-150+(i/4)*155, y=76+(i%4)*27;
-            g.text(this.font,AudioraConfig.CATEGORIES[i].toUpperCase(),x,y-10,0xFFE8E8E8,false);
-        }
+        for(int row=0;row<4;row++){ int i=firstCategory+row; if(i>=AudioraConfig.CATEGORIES.length)break;
+            int x=c-150, y=76+row*27; g.text(this.font,AudioraConfig.CATEGORIES[i].toUpperCase(),x,y-10,0xFFE8E8E8,false); }
         g.text(this.font,"HUD controls are in the separate HUD Settings panel.",c-150,190,0xFFB8D8FF,false);
     }
 
