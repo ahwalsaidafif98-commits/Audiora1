@@ -220,7 +220,7 @@ public final class AudioraInfoHud {
                 if (line >= 5) break;
                 int share = totalOres > 0 ? Math.round(100.0F * ore.getValue() / totalOres) : 0;
                 String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue() + " (" + share + "%)";
-                maxWidth = Math.max(maxWidth, client.font.width(oreLabel));
+                maxWidth = Math.max(maxWidth, client.font.width(oreLabel) + 22);
                 line++;
             }
             float oreScale = AudioraConfig.hudScale[6] / 100.0F;
@@ -234,6 +234,10 @@ public final class AudioraInfoHud {
                 if (line >= 5) break;
                 int share = totalOres > 0 ? Math.round(100.0F * ore.getValue() / totalOres) : 0;
                 String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue() + " (" + share + "%)";
+                int iconX = maxWidth - client.font.width(oreLabel) - 20;
+                Identifier oreItemId = Identifier.fromNamespaceAndPath("minecraft", ore.getKey());
+                var oreItem = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(oreItemId);
+                if (oreItem != null) graphics.item(new ItemStack(oreItem), iconX, line * 12 - 2);
                 graphics.text(client.font, oreLabel, maxWidth - client.font.width(oreLabel), line * 12, 0xFFE8D58A, true);
                 line++;
             }
