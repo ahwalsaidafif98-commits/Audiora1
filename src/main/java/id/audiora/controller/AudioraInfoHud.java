@@ -218,7 +218,6 @@ public final class AudioraInfoHud {
                 maxWidth = Math.max(maxWidth, client.font.width(oreLabel) + 22);
                 line++;
             }
-            float oreScale = AudioraConfig.hudScale[6] / 100.0F;
             int oreX = graphics.guiWidth() - maxWidth - 6 + AudioraConfig.hudX[6];
             int oreY = 6 + AudioraConfig.hudY[6];
             graphics.pose().pushMatrix();
@@ -339,7 +338,7 @@ public final class AudioraInfoHud {
                                        int x, int y, int color, int hudIndex) {
         graphics.pose().pushMatrix();
         graphics.pose().translate(x, y);
-        graphics.pose().scale(scale, scale);
+        graphics.pose().scale(AudioraConfig.hudScaleX(hudIndex), AudioraConfig.hudScaleY(hudIndex));
         graphics.text(client.font, text, 0, 0, color, true);
         graphics.pose().popMatrix();
     }
