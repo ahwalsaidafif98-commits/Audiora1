@@ -10,12 +10,17 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectInstance;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class AudioraController implements ClientModInitializer {
     private static boolean wasOnGround;
     private static boolean wasInventoryOpen;
     private static int lastSelectedSlot = -1;
     private static int netheriteStepCooldown;
+    private static final Set<String> activePotionEffects = new HashSet<>();
+    private static boolean potionEffectsInitialized;
 
     @Override
     public void onInitializeClient() {
@@ -32,8 +37,35 @@ public final class AudioraController implements ClientModInitializer {
             tickInventorySound(client);
             tickHotbarItemSound(client);
             tickNetheriteFootsteps(client);
+            tickPotionEffectSounds(client);
         });
         System.out.println("[Audiora] Sound and HUD controllers initialized. Open settings through Mod Menu.");
+    }
+
+    private static void tickPotionEffectSounds(Minecraft client) {
+        if (client.player == null) {
+            activePotionEffects.clear();
+            potionEffectsInitialized = false;
+            return;
+        }
+        Set<String> current = new HashSet<>();
+        for (MobEffectInstance effect : client.player.getActiveEffects()) {
+            var key = BuiltInRegistries.MOB_EFFECT.getKey(effect.getEffect().value());
+            if (key != null && key.getNamespace().equals("minecraft")) {
+                String name = key.getPath();
+                current.add(name);
+                if (potionEffectsInitialized && !activePotionEffects.contains(name)) {
+                    SoundEvent sound = AudioraSounds.POTION_SOUNDS.get(name);
+                    if (sound != null) {
+                        Identifier soundId = Identifier.fromNamespaceAndPath("audiora_controller", "potion_effect_" + name);
+                        playAudioraSound(client, sound, soundId, 0.85F);
+                    }
+                }
+            }
+        }
+        activePotionEffects.clear();
+        activePotionEffects.addAll(current);
+        potionEffectsInitialized = true;
     }
 
     private static void tickJumpSound(Minecraft client) {
