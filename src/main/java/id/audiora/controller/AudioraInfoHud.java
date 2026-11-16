@@ -28,6 +28,7 @@ public final class AudioraInfoHud {
     private static int lastTargetId = -1;
     private static float recentDamage;
     private static int damageTicks;
+    private static net.minecraft.client.multiplayer.ClientLevel lastLevel;
 
     private AudioraInfoHud() {}
 
@@ -40,6 +41,19 @@ public final class AudioraInfoHud {
     }
 
     public static void tick(Minecraft client) {
+        if (client.level != lastLevel) {
+            lastLevel = client.level;
+            previousCounts.clear();
+            oreCounts.clear();
+            pickupName = "";
+            pickupAmount = 0;
+            pickupStack = ItemStack.EMPTY;
+            pickupUntil = 0L;
+            lastTargetHealth = -1.0F;
+            lastTargetId = -1;
+            recentDamage = 0.0F;
+            damageTicks = 0;
+        }
         if (client.player == null) {
             previousCounts.clear();
             return;
