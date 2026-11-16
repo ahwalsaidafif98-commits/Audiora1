@@ -105,10 +105,9 @@ public final class AudioraInfoHud {
             String facing = player.getDirection().getName().toUpperCase(java.util.Locale.ROOT);
             int compassX = left + AudioraConfig.hudX[12];
             int compassY = top + 78 + AudioraConfig.hudY[12];
-            float compassScale = AudioraConfig.hudScale[12] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(compassX, compassY);
-            graphics.pose().scale(compassScale, compassScale);
+            graphics.pose().scale(AudioraConfig.hudScaleX(12), AudioraConfig.hudScaleY(12));
             graphics.text(client.font, "Facing: " + facing, 0, 0, 0xFF9FE7FF, true);
             graphics.pose().popMatrix();
         }
@@ -117,10 +116,9 @@ public final class AudioraInfoHud {
         if (AudioraConfig.hudEnabled[2]) {
             int armorX = left + AudioraConfig.hudX[2];
             int armorY = top + 24 + AudioraConfig.hudY[2];
-            float armorScale = AudioraConfig.hudScale[2] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(armorX, armorY);
-            graphics.pose().scale(armorScale, armorScale);
+            graphics.pose().scale(AudioraConfig.hudScaleX(2), AudioraConfig.hudScaleY(2));
             for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
                 net.minecraft.world.entity.EquipmentSlot.HEAD,
                 net.minecraft.world.entity.EquipmentSlot.CHEST,
@@ -154,10 +152,9 @@ public final class AudioraInfoHud {
             }
             int heldX = left + AudioraConfig.hudX[3];
             int heldY = top + (armorPieces > 0 ? 84 : 24) + AudioraConfig.hudY[3];
-            float heldScale = AudioraConfig.hudScale[3] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(heldX, heldY);
-            graphics.pose().scale(heldScale, heldScale);
+            graphics.pose().scale(AudioraConfig.hudScaleX(3), AudioraConfig.hudScaleY(3));
             graphics.item(held, 0, 0);
             graphics.text(client.font, heldLabel, 20, 5, 0xFFFFFFFF, true);
             if (held.isDamageableItem()) {
@@ -187,10 +184,9 @@ public final class AudioraInfoHud {
             int width = client.font.width(label);
             int x = (graphics.guiWidth() - width - 34) / 2 + AudioraConfig.itemInfoOffsetX + AudioraConfig.hudX[5];
             int y = graphics.guiHeight() - 64 + AudioraConfig.itemInfoOffsetY + AudioraConfig.hudY[5];
-            float scale = AudioraConfig.hudScale[5] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(x, y);
-            graphics.pose().scale(scale, scale);
+            graphics.pose().scale(AudioraConfig.hudScaleX(5), AudioraConfig.hudScaleY(5));
             if (!pickupStack.isEmpty()) graphics.item(pickupStack, 4, 3);
             graphics.text(client.font, label, 24, 7, 0xFFFFFFFF, true);
             graphics.pose().popMatrix();
@@ -204,10 +200,9 @@ public final class AudioraInfoHud {
             int damageX = graphics.guiWidth() / 2 - client.font.width(damageText) / 2
                 + AudioraConfig.hudX[8];
             int damageY = graphics.guiHeight() / 2 - 42 + AudioraConfig.hudY[8];
-            float damageScale = AudioraConfig.hudScale[8] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(damageX, damageY - (25 - damageTicks) / 2.0F);
-            graphics.pose().scale(damageScale, damageScale);
+            graphics.pose().scale(AudioraConfig.hudScaleX(8), AudioraConfig.hudScaleY(8));
             graphics.text(client.font, damageText, 0, 0, 0xFFFF6868, true);
             graphics.pose().popMatrix();
         }
@@ -228,7 +223,7 @@ public final class AudioraInfoHud {
             int oreY = 6 + AudioraConfig.hudY[6];
             graphics.pose().pushMatrix();
             graphics.pose().translate(oreX, oreY);
-            graphics.pose().scale(oreScale, oreScale);
+            graphics.pose().scale(AudioraConfig.hudScaleX(6), AudioraConfig.hudScaleY(6));
             line = 0;
             for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
                 if (line >= 5) break;
@@ -248,10 +243,9 @@ public final class AudioraInfoHud {
         if (AudioraConfig.hudEnabled[10] && !player.getActiveEffects().isEmpty()) {
             int potionX = 6 + AudioraConfig.hudX[10];
             int potionY = graphics.guiHeight() / 2 + AudioraConfig.hudY[10];
-            float potionScale = AudioraConfig.hudScale[10] / 100.0F;
             graphics.pose().pushMatrix();
             graphics.pose().translate(potionX, potionY);
-            graphics.pose().scale(potionScale, potionScale);
+            graphics.pose().scale(AudioraConfig.hudScaleX(10), AudioraConfig.hudScaleY(10));
             int line = 0;
             for (var effect : player.getActiveEffects()) {
                 if (line >= 8) break;
@@ -298,10 +292,9 @@ public final class AudioraInfoHud {
         int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX + AudioraConfig.hudX[hudIndex];
         int y = 12 + AudioraConfig.mobInfoOffsetY + AudioraConfig.hudY[hudIndex];
 
-        float scale = AudioraConfig.hudScale[hudIndex] / 100.0F;
         graphics.pose().pushMatrix();
         graphics.pose().translate(x, y);
-        graphics.pose().scale(scale, scale);
+        graphics.pose().scale(AudioraConfig.hudScaleX(hudIndex), AudioraConfig.hudScaleY(hudIndex));
         graphics.outline(0, 0, cardWidth, cardHeight, 0x88777777);
 
         try {
@@ -344,7 +337,6 @@ public final class AudioraInfoHud {
 
     private static void drawScaledText(GuiGraphicsExtractor graphics, Minecraft client, String text,
                                        int x, int y, int color, int hudIndex) {
-        float scale = AudioraConfig.hudScale[hudIndex] / 100.0F;
         graphics.pose().pushMatrix();
         graphics.pose().translate(x, y);
         graphics.pose().scale(scale, scale);
