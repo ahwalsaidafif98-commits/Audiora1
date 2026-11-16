@@ -1,6 +1,7 @@
 package id.audiora.controller.mixin;
 
 import id.audiora.controller.AudioraInfoHud;
+import id.audiora.controller.AudioraCombo;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,5 +22,6 @@ public abstract class LivingEntityHealthMixin {
     private void audiora$detectDamage(float health, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity)(Object)this;
         AudioraInfoHud.onLivingEntityHealthChanged(entity, this.audiora$oldHealth, entity.getHealth());
+        if (entity.getHealth() < this.audiora$oldHealth) AudioraCombo.onConfirmedDamage(entity.getId());
     }
 }
