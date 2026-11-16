@@ -29,7 +29,7 @@ public final class AudioraHudScreen extends Screen {
         }).bounds(panelX,y+26,164,20).build());
 
         this.addRenderableWidget(Button.builder(toggleLabel(),b->{
-            if(selected==7) AudioraConfig.comboEnabled=!AudioraConfig.comboEnabled;
+            if(selected==7) AudioraConfig.comboEnabled=!AudioraConfig.comboEnabled; AudioraConfig.hudEnabled[7]=AudioraConfig.comboEnabled;
             else AudioraConfig.hudEnabled[selected]=!AudioraConfig.hudEnabled[selected];
             b.setMessage(toggleLabel()); AudioraConfig.save();
         }).bounds(panelX,y+52,164,20).build());
@@ -51,7 +51,7 @@ public final class AudioraHudScreen extends Screen {
         }).bounds(panelX+84,y+108,80,20).build());
         this.addRenderableWidget(Button.builder(Component.literal("Reset selected HUD"),b->{
             AudioraConfig.hudX[selected]=0;AudioraConfig.hudY[selected]=0;AudioraConfig.hudScale[selected]=100;
-            if(selected==7)AudioraConfig.comboEnabled=true;else AudioraConfig.hudEnabled[selected]=true;
+            if(selected==7){AudioraConfig.comboEnabled=true;AudioraConfig.hudEnabled[7]=true;}else AudioraConfig.hudEnabled[selected]=true;
             AudioraConfig.save();rebuild();
         }).bounds(panelX,y+136,164,20).build());
 
@@ -90,7 +90,7 @@ public final class AudioraHudScreen extends Screen {
         g.text(this.font,"Drag HUD positions in-game via offsets.",x,260,0xFFB8D8FF,false);
         g.text(this.font,"All HUD toggles are managed here, including mob names and Crit.",x,274,0xFFB8D8FF,false);
     }
-    @Override public void extractBackground(GuiGraphicsExtractor g,int mx,int my,float delta) {}
+    @Override public void extractBackground(GuiGraphicsExtractor g,int mx,int my,float delta) {\n        int x=panelRight?Math.max(8,width-174):8;\n        g.fill(x-4,24,x+168,222,0xAA101A2B);\n    }
     @Override public boolean isPauseScreen(){return false;}
     @Override public void onClose(){AudioraConfig.save();this.minecraft.gui.setScreen(parent);}
 }
