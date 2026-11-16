@@ -29,8 +29,12 @@ public final class AudioraHudScreen extends Screen {
         }).bounds(panelX,y+26,164,20).build());
 
         this.addRenderableWidget(Button.builder(toggleLabel(),b->{
-            if(selected==7) AudioraConfig.comboEnabled=!AudioraConfig.comboEnabled; AudioraConfig.hudEnabled[7]=AudioraConfig.comboEnabled;
-            else AudioraConfig.hudEnabled[selected]=!AudioraConfig.hudEnabled[selected];
+            if (selected == 7) {
+                AudioraConfig.comboEnabled = !AudioraConfig.comboEnabled;
+                AudioraConfig.hudEnabled[selected] = AudioraConfig.comboEnabled;
+            } else {
+                AudioraConfig.hudEnabled[selected] = !AudioraConfig.hudEnabled[selected];
+            }
             b.setMessage(toggleLabel()); AudioraConfig.save();
         }).bounds(panelX,y+52,164,20).build());
 
