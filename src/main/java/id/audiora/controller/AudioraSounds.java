@@ -20,6 +20,16 @@ public final class AudioraSounds {
     public static final Identifier TOOL_MACE_ID = id("item_mace_select");
     public static final Identifier TOOL_TRIDENT_ID = id("item_trident_select");
     public static final Identifier NETHERITE_STEP_ID = id("armor_netherite_step");
+    public static final String[] POTION_EFFECTS = {
+        "speed", "slowness", "haste", "mining_fatigue", "strength", "instant_health",
+        "instant_damage", "jump_boost", "nausea", "regeneration", "resistance",
+        "fire_resistance", "water_breathing", "invisibility", "blindness", "night_vision",
+        "hunger", "weakness", "poison", "wither", "health_boost", "absorption",
+        "saturation", "glowing", "levitation", "luck", "unluck", "slow_falling",
+        "conduit_power", "dolphins_grace", "bad_omen", "hero_of_the_village",
+        "darkness", "trial_omen", "raid_omen", "wind_charged", "weaving", "oozing", "infested"
+    };
+    public static final java.util.Map<String, SoundEvent> POTION_SOUNDS = new java.util.HashMap<>();
 
     public static SoundEvent JUMP;
     public static SoundEvent ITEM_MOVE;
@@ -57,6 +67,10 @@ public final class AudioraSounds {
         TOOL_MACE = register(TOOL_MACE_ID);
         TOOL_TRIDENT = register(TOOL_TRIDENT_ID);
         NETHERITE_STEP = register(NETHERITE_STEP_ID);
+        for (String effect : POTION_EFFECTS) {
+            Identifier effectId = id("potion_effect_" + effect);
+            POTION_SOUNDS.put(effect, register(effectId));
+        }
     }
 
     private static SoundEvent register(Identifier id) {
