@@ -5,8 +5,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public final class AudioraMenuScreen extends Screen {
-    public AudioraMenuScreen() {
+    private final Screen parent;
+
+    public AudioraMenuScreen(Screen parent) {
         super(Component.literal("Audiora Settings"));
+        this.parent = parent;
     }
 
     @Override
@@ -30,8 +33,10 @@ public final class AudioraMenuScreen extends Screen {
             height / 2 - 62, 0xFFFFFFFF, true);
     }
 
+    @Override public boolean isPauseScreen() { return false; }
+
     @Override
-    public boolean isPauseScreen() {
-        return false;
+    public void onClose() {
+        minecraft.gui.setScreen(parent);
     }
 }
