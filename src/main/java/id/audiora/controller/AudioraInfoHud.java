@@ -302,10 +302,8 @@ public final class AudioraInfoHud {
 
         int cardWidth = Math.max(150, client.font.width(name) + 64);
         int cardHeight = 48;
-        // Keep mob and player target cards on opposite sides so their previews never overlap.
-        int x = (hudIndex == 4
-            ? 10
-            : graphics.guiWidth() - cardWidth - 10)
+        // Keep each preview beside its own target name inside the centered target card.
+        int x = (graphics.guiWidth() - cardWidth) / 2
             + AudioraConfig.mobInfoOffsetX + AudioraConfig.hudX[hudIndex];
         int y = 12 + AudioraConfig.mobInfoOffsetY + AudioraConfig.hudY[hudIndex];
 
