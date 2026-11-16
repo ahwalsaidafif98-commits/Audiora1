@@ -90,7 +90,10 @@ public final class AudioraHudScreen extends Screen {
         g.text(this.font,"Drag HUD positions in-game via offsets.",x,260,0xFFB8D8FF,false);
         g.text(this.font,"All HUD toggles are managed here, including mob names and Crit.",x,274,0xFFB8D8FF,false);
     }
-    @Override public void extractBackground(GuiGraphicsExtractor g,int mx,int my,float delta) {\n        int x=panelRight?Math.max(8,width-174):8;\n        g.fill(x-4,24,x+168,222,0xAA101A2B);\n    }
+    @Override public void extractBackground(GuiGraphicsExtractor g,int mx,int my,float delta) {
+        int x=panelRight?Math.max(8,width-174):8;
+        g.fill(x-4,24,x+168,222,0xAA101A2B);
+    }
     @Override public boolean isPauseScreen(){return false;}
     @Override public void onClose(){AudioraConfig.save();this.minecraft.gui.setScreen(parent);}
 }
