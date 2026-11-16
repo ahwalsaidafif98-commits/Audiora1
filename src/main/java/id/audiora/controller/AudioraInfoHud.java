@@ -237,7 +237,7 @@ public final class AudioraInfoHud {
                 int iconX = maxWidth - client.font.width(oreLabel) - 20;
                 Identifier oreItemId = Identifier.fromNamespaceAndPath("minecraft", ore.getKey());
                 var oreBlock = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(oreItemId);
-                ItemStack oreIcon = new ItemStack(oreBlock.asItem());
+                ItemStack oreIcon = oreBlock.map(reference -> new ItemStack(reference.value().asItem())).orElse(ItemStack.EMPTY);
                 if (!oreIcon.isEmpty()) graphics.item(oreIcon, iconX, line * 12 - 2);
                 graphics.text(client.font, oreLabel, maxWidth - client.font.width(oreLabel), line * 12, 0xFFE8D58A, true);
                 line++;
