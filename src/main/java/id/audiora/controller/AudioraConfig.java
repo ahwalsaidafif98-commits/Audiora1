@@ -221,5 +221,8 @@ public final class AudioraConfig {
         return -1;
     }
 
+    public static float hudScaleX(int index) { return hudScale[index] * hudWidth[index] / 10000.0F; }
+    public static float hudScaleY(int index) { return hudScale[index] * hudHeight[index] / 10000.0F; }
+
     private static int clamp(int value) { return Math.max(0, Math.min(100, value)); }
 }
