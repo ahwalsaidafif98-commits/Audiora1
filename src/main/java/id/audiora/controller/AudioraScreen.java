@@ -59,9 +59,15 @@ public final class AudioraScreen extends Screen {
             firstCategory = Math.min(maxFirst, firstCategory + 1);
             rebuild();
         }).bounds(c - 104, top + 140, 42, 20).build());
+        this.addRenderableWidget(Button.builder(comboLabel(), b -> {
+            AudioraConfig.comboEnabled = !AudioraConfig.comboEnabled;
+            AudioraConfig.hudEnabled[7] = AudioraConfig.comboEnabled;
+            b.setMessage(comboLabel());
+            AudioraConfig.save();
+        }).bounds(c - 150, top + 140, 92, 20).build());
         this.addRenderableWidget(Button.builder(Component.literal("HUD Settings  ⚙"), b ->
             this.minecraft.gui.setScreen(new AudioraHudScreen(this)))
-            .bounds(c - 55, top + 140, 205, 20).build());
+            .bounds(c - 53, top + 140, 203, 20).build());
         this.addRenderableWidget(Button.builder(Component.literal("Enable All"), b -> {
             AudioraConfig.masterEnabled = true;
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
@@ -141,6 +147,9 @@ public final class AudioraScreen extends Screen {
 
     private static Component masterLabel() {
         return Component.literal("Master: " + (AudioraConfig.masterEnabled ? "ON" : "OFF"));
+    }
+    private static Component comboLabel() {
+        return Component.literal("Combo: " + (AudioraConfig.comboEnabled ? "ON" : "OFF"));
     }
     private static Component toggleLabel(int i) {
         return Component.literal(AudioraConfig.enabled[i] ? "ON" : "OFF");
