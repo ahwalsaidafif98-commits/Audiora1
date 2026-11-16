@@ -137,7 +137,7 @@ public final class AudioraHudScreen extends Screen {
         int bottom = top + 26 + VISIBLE_ROWS * ROW_HEIGHT + 86;
 
         // Dark translucent card with a subtle blue header and selected-row marker.
-        g.fill(x - 5, top - 28, x + PANEL_WIDTH, bottom, 0xD9101725);
+        g.fill(x - 5, top - 28, x + PANEL_WIDTH, bottom, 0xAA101725);
         g.fill(x - 5, top - 28, x + PANEL_WIDTH, top - 5, 0xFF173B68);
         g.text(font, "AUDIORA  /  HUD SETTINGS", x + 5, top - 21, 0xFFFFFFFF, true);
         g.text(font, "HUD ELEMENTS", x + 5, top + 7, 0xFF80C8FF, true);
