@@ -18,9 +18,9 @@ public final class AudioraHudScreen extends Screen {
         this.parent = parent;
     }
 
-    private int visibleRows() { return height < 270 ? 3 : height < 340 ? 4 : 6; }
+    private int visibleRows() { return height < 250 ? 1 : height < 310 ? 2 : height < 400 ? 3 : 4; }
     private int panelX() { return Math.max(4, width - PANEL_WIDTH - 6); }
-    private int top() { return Math.max(8, (height - (visibleRows() * ROW_HEIGHT + 150)) / 2); }
+    private int top() { return Math.max(8, (height - (visibleRows() * ROW_HEIGHT + 196)) / 2); }
     private int controlsY() { return top() + 22 + visibleRows() * ROW_HEIGHT + 4; }
 
     @Override
@@ -55,22 +55,29 @@ public final class AudioraHudScreen extends Screen {
         addRenderableWidget(Button.builder(Component.literal("→"), b -> move(5, 0)).bounds(x + 61, cy + 23, 54, 19).build());
         addRenderableWidget(Button.builder(Component.literal("↑"), b -> move(0, -5)).bounds(x + 118, cy + 23, 54, 19).build());
         addRenderableWidget(Button.builder(Component.literal("↓"), b -> move(0, 5)).bounds(x + 175, cy + 23, 54, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Size −"), b -> resize(-10)).bounds(x + 4, cy + 46, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Size +"), b -> resize(10)).bounds(x + 118, cy + 46, 110, 19).build());
+        addRenderableWidget(Button.builder(Component.literal("Scale −"), b -> resizeScale(-10)).bounds(x + 4, cy + 46, 110, 19).build());
+        addRenderableWidget(Button.builder(Component.literal("Scale +"), b -> resizeScale(10)).bounds(x + 118, cy + 46, 110, 19).build());
+        addRenderableWidget(Button.builder(Component.literal("Width −"), b -> resizeWidth(-10)).bounds(x + 4, cy + 69, 110, 19).build());
+        addRenderableWidget(Button.builder(Component.literal("Width +"), b -> resizeWidth(10)).bounds(x + 118, cy + 69, 110, 19).build());
+        addRenderableWidget(Button.builder(Component.literal("Height −"), b -> resizeHeight(-10)).bounds(x + 4, cy + 92, 110, 19).build());
+        addRenderableWidget(Button.builder(Component.literal("Height +"), b -> resizeHeight(10)).bounds(x + 118, cy + 92, 110, 19).build());
         addRenderableWidget(Button.builder(Component.literal("Reset selected"), b -> {
             AudioraConfig.hudX[selected] = 0; AudioraConfig.hudY[selected] = 0;
-            AudioraConfig.hudScale[selected] = 100; setEnabled(selected, true);
-            AudioraConfig.save(); rebuild();
-        }).bounds(x + 4, cy + 69, 110, 19).build());
+            AudioraConfig.hudScale[selected] = 100;
+            AudioraConfig.hudWidth[selected] = 100; AudioraConfig.hudHeight[selected] = 100;
+            setEnabled(selected, true); AudioraConfig.save(); rebuild();
+        }).bounds(x + 4, cy + 115, 110, 19).build());
         addRenderableWidget(Button.builder(Component.literal("Reset all"), b -> {
             java.util.Arrays.fill(AudioraConfig.hudX, 0);
             java.util.Arrays.fill(AudioraConfig.hudY, 0);
             java.util.Arrays.fill(AudioraConfig.hudScale, 100);
+            java.util.Arrays.fill(AudioraConfig.hudWidth, 100);
+            java.util.Arrays.fill(AudioraConfig.hudHeight, 100);
             java.util.Arrays.fill(AudioraConfig.hudEnabled, true);
             AudioraConfig.comboEnabled = true; AudioraConfig.save(); rebuild();
-        }).bounds(x + 118, cy + 69, 110, 19).build());
+        }).bounds(x + 118, cy + 115, 110, 19).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
-            .bounds(x + 4, cy + 92, 239, 19).build());
+            .bounds(x + 4, cy + 138, 239, 19).build());
     }
 
     private void rebuild() { clearWidgets(); init(); }
@@ -83,8 +90,16 @@ public final class AudioraHudScreen extends Screen {
         AudioraConfig.hudX[selected] += dx; AudioraConfig.hudY[selected] += dy;
         AudioraConfig.save();
     }
-    private void resize(int amount) {
+    private void resizeScale(int amount) {
         AudioraConfig.hudScale[selected] = Math.max(50, Math.min(200, AudioraConfig.hudScale[selected] + amount));
+        AudioraConfig.save(); rebuild();
+    }
+    private void resizeWidth(int amount) {
+        AudioraConfig.hudWidth[selected] = Math.max(50, Math.min(200, AudioraConfig.hudWidth[selected] + amount));
+        AudioraConfig.save(); rebuild();
+    }
+    private void resizeHeight(int amount) {
+        AudioraConfig.hudHeight[selected] = Math.max(50, Math.min(200, AudioraConfig.hudHeight[selected] + amount));
         AudioraConfig.save(); rebuild();
     }
     private String hudName(int i) {
@@ -103,7 +118,7 @@ public final class AudioraHudScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
         super.extractRenderState(g, mx, my, delta);
         int x = panelX(), top = top(), cy = controlsY(), rows = visibleRows();
-        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 117, 0xDD101725);
+        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 163, 0xDD101725);
         g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF173B68);
         g.text(font, "AUDIORA / HUD SETTINGS", x + 5, top - 18, 0xFFFFFFFF, true);
         g.text(font, "Choose a HUD, then change its position and size.", x + 4, top + 1, 0xFF9FCFFF, false);
@@ -118,7 +133,9 @@ public final class AudioraHudScreen extends Screen {
         }
         g.text(font, "Selected: " + hudName(selected), x + 5, cy - 1, 0xFF80C8FF, true);
         g.text(font, "X " + AudioraConfig.hudX[selected] + " / Y " + AudioraConfig.hudY[selected]
-            + "  Size " + AudioraConfig.hudScale[selected] + "%", x + 5, cy + 72, 0xFFD5E4F2, false);
+            + "  Scale " + AudioraConfig.hudScale[selected] + "%", x + 5, cy + 72, 0xFFD5E4F2, false);
+        g.text(font, "Width " + AudioraConfig.hudWidth[selected] + "%  Height "
+            + AudioraConfig.hudHeight[selected] + "%", x + 5, cy + 86, 0xFFD5E4F2, false);
     }
 
     @Override
