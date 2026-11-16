@@ -236,8 +236,9 @@ public final class AudioraInfoHud {
                 String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue() + " (" + share + "%)";
                 int iconX = maxWidth - client.font.width(oreLabel) - 20;
                 Identifier oreItemId = Identifier.fromNamespaceAndPath("minecraft", ore.getKey());
-                var oreItem = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(oreItemId);
-                if (oreItem != null) graphics.item(new ItemStack(oreItem), iconX, line * 12 - 2);
+                var oreBlock = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(oreItemId);
+                ItemStack oreIcon = new ItemStack(oreBlock.asItem());
+                if (!oreIcon.isEmpty()) graphics.item(oreIcon, iconX, line * 12 - 2);
                 graphics.text(client.font, oreLabel, maxWidth - client.font.width(oreLabel), line * 12, 0xFFE8D58A, true);
                 line++;
             }
