@@ -17,7 +17,8 @@ import net.minecraft.world.item.ItemStack;
 public final class AudioraController implements ClientModInitializer {
     private static final KeyMapping.Category CATEGORY =
         KeyMapping.Category.register(Identifier.fromNamespaceAndPath("audiora_controller", "main"));
-    private static KeyMapping openSettings;\n    private static KeyMapping openHudSettings;
+    private static KeyMapping openSettings;
+    private static KeyMapping openHudSettings;
     private static boolean wasOnGround;
     private static boolean wasInventoryOpen;
     private static int lastSelectedSlot = -1;
@@ -35,7 +36,10 @@ public final class AudioraController implements ClientModInitializer {
             InputConstants.KEY_O,
             CATEGORY
         ));
-        openHudSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(\n            "key.audiora_controller.open_hud_settings", InputConstants.Type.KEYSYM, InputConstants.KEY_H, CATEGORY\n        ));\n        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        openHudSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.audiora_controller.open_hud_settings", InputConstants.Type.KEYSYM, InputConstants.KEY_H, CATEGORY
+        ));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
             AudioraConfig.enforceMutedSounds(client);
             AudioraAmbience.tick(client);
             AudioraCombo.tick();
@@ -44,7 +48,10 @@ public final class AudioraController implements ClientModInitializer {
             tickInventorySound(client);
             tickHotbarItemSound(client);
             tickNetheriteFootsteps(client);
-            while (openHudSettings.consumeClick()) {\n                if (client.player != null && client.gui.screen() == null) client.gui.setScreen(new AudioraHudScreen(null));\n            }\n            while (openSettings.consumeClick()) {
+            while (openHudSettings.consumeClick()) {
+                if (client.player != null && client.gui.screen() == null) client.gui.setScreen(new AudioraHudScreen(null));
+            }
+            while (openSettings.consumeClick()) {
                 if (client.player != null && client.gui.screen() == null) {
                     client.gui.setScreen(new AudioraScreen());
                 }
