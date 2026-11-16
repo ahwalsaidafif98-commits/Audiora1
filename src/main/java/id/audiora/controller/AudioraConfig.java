@@ -30,6 +30,8 @@ public final class AudioraConfig {
     public static final int[] hudX = new int[HUD_IDS.length];
     public static final int[] hudY = new int[HUD_IDS.length];
     public static final int[] hudScale = new int[HUD_IDS.length];
+    public static final int[] hudWidth = new int[HUD_IDS.length];
+    public static final int[] hudHeight = new int[HUD_IDS.length];
     public static final boolean[] hudEnabled = new boolean[HUD_IDS.length];
     public static final boolean[] enabled = new boolean[CATEGORIES.length];
     public static final int[] volume = new int[CATEGORIES.length];
@@ -40,6 +42,8 @@ public final class AudioraConfig {
             volume[i] = 100;
         }
         java.util.Arrays.fill(hudScale, 100);
+        java.util.Arrays.fill(hudWidth, 100);
+        java.util.Arrays.fill(hudHeight, 100);
         java.util.Arrays.fill(hudEnabled, true);
         java.util.Arrays.fill(hudEnabled, true);
         load();
@@ -66,6 +70,8 @@ public final class AudioraConfig {
                 hudX[i] = layout.has("x") ? layout.get("x").getAsInt() : 0;
                 hudY[i] = layout.has("y") ? layout.get("y").getAsInt() : 0;
                 hudScale[i] = Math.max(50, Math.min(200, layout.has("scale") ? layout.get("scale").getAsInt() : 100));
+                hudWidth[i] = Math.max(50, Math.min(200, layout.has("width") ? layout.get("width").getAsInt() : 100));
+                hudHeight[i] = Math.max(50, Math.min(200, layout.has("height") ? layout.get("height").getAsInt() : 100));
                 hudEnabled[i] = !layout.has("enabled") || layout.get("enabled").getAsBoolean();
             }
             JsonObject categories = root.has("categories") ? root.getAsJsonObject("categories") : new JsonObject();
@@ -96,6 +102,8 @@ public final class AudioraConfig {
             layout.addProperty("x", hudX[i]);
             layout.addProperty("y", hudY[i]);
             layout.addProperty("scale", hudScale[i]);
+            layout.addProperty("width", hudWidth[i]);
+            layout.addProperty("height", hudHeight[i]);
             layout.addProperty("enabled", hudEnabled[i]);
             hudLayout.add(HUD_IDS[i], layout);
         }
@@ -124,6 +132,8 @@ public final class AudioraConfig {
         java.util.Arrays.fill(hudX, 0);
         java.util.Arrays.fill(hudY, 0);
         java.util.Arrays.fill(hudScale, 100);
+        java.util.Arrays.fill(hudWidth, 100);
+        java.util.Arrays.fill(hudHeight, 100);
         java.util.Arrays.fill(hudEnabled, true);
         for (int i = 0; i < CATEGORIES.length; i++) { enabled[i] = true; volume[i] = 100; }
         java.util.Arrays.fill(lastCategoryMuted, false);
