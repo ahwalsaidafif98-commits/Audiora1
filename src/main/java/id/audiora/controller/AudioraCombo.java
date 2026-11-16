@@ -13,6 +13,7 @@ public final class AudioraCombo {
     private static int displayTicks;
     private static int pendingTargetId = -1;
     private static int pendingTicks;
+    private static boolean pendingCritical;
 
     private AudioraCombo() {}
 
@@ -22,6 +23,10 @@ public final class AudioraCombo {
             boolean validTarget = target instanceof LivingEntity living && living.isAlive();
             pendingTargetId = validTarget ? target.getId() : -1;
             pendingTicks = validTarget ? 6 : 0;
+            // Capture the player's critical-hit state at the moment of the attack.
+            pendingCritical = validTarget && player.fallDistance > 0.0F
+                && !player.onGround() && !player.isInWater()
+                && !player.isSprinting() && !player.isPassenger();
             return InteractionResult.PASS;
         });
 
@@ -53,21 +58,25 @@ public final class AudioraCombo {
         );
     }
 
-    /** Increases the combo only after the attacked entity actually loses health. */
+    /** Counts confirmed critical hits, not kills. */
     public static void onConfirmedDamage(int entityId) {
-        if (pendingTicks > 0 && pendingTargetId == entityId) {
+        if (pendingTicks > 0 && pendingTargetId == entityId && pendingCritical) {
             combo++;
             displayTicks = COMBO_TIMEOUT_TICKS;
-        } else {
+        } else if (pendingTicks > 0 && pendingTargetId == entityId) {
             combo = 0;
             displayTicks = 0;
         }
         pendingTargetId = -1;
         pendingTicks = 0;
+        pendingCritical = false;
     }
 
     public static void tick() {
-        if (pendingTicks > 0 && --pendingTicks == 0) pendingTargetId = -1;
+        if (pendingTicks > 0 && --pendingTicks == 0) {
+            pendingTargetId = -1;
+            pendingCritical = false;
+        }
         if (displayTicks > 0 && --displayTicks == 0) combo = 0;
     }
 }
