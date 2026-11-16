@@ -302,7 +302,11 @@ public final class AudioraInfoHud {
 
         int cardWidth = Math.max(150, client.font.width(name) + 64);
         int cardHeight = 48;
-        int x = (graphics.guiWidth() - cardWidth) / 2 + AudioraConfig.mobInfoOffsetX + AudioraConfig.hudX[hudIndex];
+        // Keep mob and player target cards on opposite sides so their previews never overlap.
+        int x = (hudIndex == 4
+            ? 10
+            : graphics.guiWidth() - cardWidth - 10)
+            + AudioraConfig.mobInfoOffsetX + AudioraConfig.hudX[hudIndex];
         int y = 12 + AudioraConfig.mobInfoOffsetY + AudioraConfig.hudY[hudIndex];
 
         graphics.pose().pushMatrix();
@@ -316,7 +320,7 @@ public final class AudioraInfoHud {
             // Reverse the preview's horizontal facing so the mob/player is no longer shown from the mirrored side.
             graphics.entity(
                 state,
-                18.0F,
+                hudIndex == 4 ? 12.0F : 18.0F,
                 new Vector3f(0.0F, 0.0F, 0.0F),
                 new Quaternionf().rotationZ((float) Math.PI).rotateY(0.35F),
                 null,
