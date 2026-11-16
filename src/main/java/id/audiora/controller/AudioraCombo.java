@@ -38,23 +38,30 @@ public final class AudioraCombo {
             Identifier.fromNamespaceAndPath("audiora_controller", "crit_combo"),
             (graphics, deltaTracker) -> {
                 Minecraft client = Minecraft.getInstance();
+                if (client.player == null) return;
+                int screenWidth = client.getWindow().getGuiScaledWidth();
+                int screenHeight = client.getWindow().getGuiScaledHeight();
+                if (confirmedCritical && AudioraConfig.hudEnabled[9] && displayTicks > 0) {
+                    String criticalLabel = "CRITICAL!";
+                    int criticalX = (screenWidth - client.font.width(criticalLabel)) / 2
+                        + AudioraConfig.hudX[9];
+                    int criticalY = screenHeight / 2 - 28 + AudioraConfig.hudY[9];
+                    graphics.pose().pushMatrix();
+                    graphics.pose().translate(criticalX, criticalY);
+                    graphics.pose().scale(AudioraConfig.hudScaleX(9), AudioraConfig.hudScaleY(9));
+                    graphics.text(client.font, criticalLabel, 0, 0, 0xFFFFD54A, true);
+                    graphics.pose().popMatrix();
+                }
                 if (!AudioraConfig.comboEnabled || !AudioraConfig.hudEnabled[7]
-                    || client.player == null || displayTicks <= 0 || combo <= 0) return;
+                    || displayTicks <= 0 || combo <= 0) return;
 
                 String label = "COMBO " + combo + "X";
                 int labelWidth = client.font.width(label);
-                int screenWidth = client.getWindow().getGuiScaledWidth();
-                int screenHeight = client.getWindow().getGuiScaledHeight();
                 int x = (screenWidth - labelWidth) / 2 + AudioraConfig.comboOffsetX + AudioraConfig.hudX[7];
                 int y = screenHeight / 2 + AudioraConfig.comboOffsetY + AudioraConfig.hudY[7];
-                float scale = AudioraConfig.hudScale[7] / 100.0F;
                 graphics.pose().pushMatrix();
                 graphics.pose().translate(x, y);
-                graphics.pose().scale(scale, scale);
-                if (confirmedCritical && AudioraConfig.hudEnabled[9]) {
-                    graphics.text(client.font, "CRITICAL!", AudioraConfig.hudX[9],
-                        AudioraConfig.hudY[9], 0xFFFFD54A, true);
-                }
+                graphics.pose().scale(AudioraConfig.hudScaleX(7), AudioraConfig.hudScaleY(7));
                 graphics.text(client.font, label, 0, 14,
                     combo >= 5 ? 0xFFFFD54A : 0xFFFFFFFF, true);
                 int barWidth = Math.max(0, Math.round(labelWidth * (displayTicks / (float)COMBO_TIMEOUT_TICKS)));
