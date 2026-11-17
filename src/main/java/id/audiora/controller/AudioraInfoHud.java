@@ -129,7 +129,7 @@ public final class AudioraInfoHud {
         var player = client.player;
         String coordinates = String.format(java.util.Locale.ROOT, "XYZ: %.1f / %.1f / %.1f",
             player.getX(), player.getY(), player.getZ());
-        if (AudioraConfig.hudEnabled[0]) drawScaledText(graphics, client, coordinates, left + AudioraConfig.hudX[0], top + AudioraConfig.hudY[0], 0xFFFFFFFF, 0);
+        if (AudioraConfig.hudEnabled[0]) renderCoordinates(graphics, client, player, left, top);
 
         String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
             .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
@@ -383,6 +383,39 @@ public final class AudioraInfoHud {
             int barColor = healthRatio > 0.5F ? 0xFF48D16A : healthRatio > 0.25F ? 0xFFFFC247 : 0xFFE64B4B;
             graphics.fill(barX, barY, barX + filledWidth, barY + 6, barColor);
         }
+        graphics.pose().popMatrix();
+    }
+
+    private static void renderCoordinates(GuiGraphicsExtractor graphics, Minecraft client,
+                                           net.minecraft.world.entity.player.Player player,
+                                           int left, int top) {
+        String xValue = String.format(java.util.Locale.ROOT, "%.2f", player.getX());
+        String yValue = String.format(java.util.Locale.ROOT, "%.2f", player.getY());
+        String zValue = String.format(java.util.Locale.ROOT, "%.2f", player.getZ());
+        String xLabel = "X: ";
+        String yLabel = "Y: ";
+        String zLabel = "Z: ";
+        int gap = 7;
+        int totalWidth = client.font.width(xLabel + xValue)
+            + client.font.width(yLabel + yValue) + client.font.width(zLabel + zValue) + gap * 2;
+        int x = (graphics.guiWidth() - totalWidth) / 2 + AudioraConfig.hudX[0];
+        int y = 6 + AudioraConfig.hudY[0];
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, y);
+        graphics.pose().scale(AudioraConfig.hudScaleX(0), AudioraConfig.hudScaleY(0));
+        graphics.fill(-4, -3, totalWidth + 4, client.font.lineHeight + 3, 0x990D1722);
+        int cursor = 0;
+        graphics.text(client.font, xLabel, cursor, 0, 0xFF55E66B, true);
+        cursor += client.font.width(xLabel);
+        graphics.text(client.font, xValue, cursor, 0, 0xFFFFFFFF, true);
+        cursor += client.font.width(xValue) + gap;
+        graphics.text(client.font, yLabel, cursor, 0, 0xFF55BFFF, true);
+        cursor += client.font.width(yLabel);
+        graphics.text(client.font, yValue, cursor, 0, 0xFFFFFFFF, true);
+        cursor += client.font.width(yValue) + gap;
+        graphics.text(client.font, zLabel, cursor, 0, 0xFFFF5555, true);
+        cursor += client.font.width(zLabel);
+        graphics.text(client.font, zValue, cursor, 0, 0xFFFFFFFF, true);
         graphics.pose().popMatrix();
     }
 
