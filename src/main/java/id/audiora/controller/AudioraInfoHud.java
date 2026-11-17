@@ -406,7 +406,8 @@ public final class AudioraInfoHud {
         int textY = 7;
         graphics.text(client.font, name, textX, textY, 0xFFFFFFFF, true);
 
-        String healthLabel = String.format(java.util.Locale.ROOT, "%.1f / %.1f HP", health, maxHealth);
+        int healthPercent = Math.round(healthRatio * 100.0F);
+        String healthLabel = healthPercent + "%";
         graphics.text(client.font, healthLabel, textX, textY + 13, 0xFFE0E0E0, true);
 
         int barX = textX;
