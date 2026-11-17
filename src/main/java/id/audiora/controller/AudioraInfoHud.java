@@ -169,6 +169,20 @@ public final class AudioraInfoHud {
             graphics.pose().pushMatrix();
             graphics.pose().translate(armorX, armorY);
             graphics.pose().scale(AudioraConfig.hudScaleX(2), AudioraConfig.hudScaleY(2));
+            int armorPanelHeight = 8;
+            for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
+                net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET
+            }) {
+                ItemStack armor = player.getItemBySlot(slot);
+                if (!armor.isEmpty() && armor.isDamageableItem()) armorPanelHeight += 19;
+            }
+            if (armorPanelHeight > 8) {
+                graphics.fill(0, 0, 112, armorPanelHeight, 0xB9101725);
+                graphics.outline(0, 0, 112, armorPanelHeight, 0x8877A9D8);
+            }
             for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
                 net.minecraft.world.entity.EquipmentSlot.HEAD,
                 net.minecraft.world.entity.EquipmentSlot.CHEST,
@@ -179,13 +193,12 @@ public final class AudioraInfoHud {
                 if (armor.isEmpty() || !armor.isDamageableItem()) continue;
                 int remaining = Math.max(0, armor.getMaxDamage() - armor.getDamageValue());
                 int percent = Math.round(100.0F * remaining / armor.getMaxDamage());
-                int rowY = armorPieces * 14;
-                graphics.item(armor, 0, rowY - 2);
-                graphics.text(client.font, armor.getHoverName().getString() + " " + percent + "%",
-                    20, rowY, 0xFFE8D58A, true);
-                int barWidth = 64;
-                graphics.fill(20, rowY + 10, 20 + barWidth, rowY + 12, 0xFF444444);
-                graphics.fill(20, rowY + 10, 20 + Math.round(barWidth * percent / 100.0F), rowY + 12,
+                int rowY = 5 + armorPieces * 19;
+                graphics.item(armor, 3, rowY - 3);
+                graphics.text(client.font, percent + "%", 25, rowY, 0xFFE8F1FA, true);
+                int barWidth = 79;
+                graphics.fill(25, rowY + 10, 25 + barWidth, rowY + 13, 0xFF343F50);
+                graphics.fill(25, rowY + 10, 25 + Math.round(barWidth * percent / 100.0F), rowY + 13,
                     percent > 50 ? 0xFF55D66B : percent > 20 ? 0xFFFFC247 : 0xFFE64B4B);
                 armorPieces++;
             }
@@ -230,15 +243,18 @@ public final class AudioraInfoHud {
         }
 
         if (AudioraConfig.hudEnabled[5] && pickupAmount > 0 && System.currentTimeMillis() < pickupUntil) {
-            String label = pickupName + " ×" + pickupAmount;
-            int width = client.font.width(label);
-            int x = (graphics.guiWidth() - width - 34) / 2 + AudioraConfig.itemInfoOffsetX + AudioraConfig.hudX[5];
-            int y = graphics.guiHeight() - 64 + AudioraConfig.itemInfoOffsetY + AudioraConfig.hudY[5];
+            String label = pickupName + "  ×" + pickupAmount;
+            int width = Math.max(112, client.font.width(label) + 36);
+            int x = (graphics.guiWidth() - width) / 2 + AudioraConfig.itemInfoOffsetX + AudioraConfig.hudX[5];
+            int y = graphics.guiHeight() - 66 + AudioraConfig.itemInfoOffsetY + AudioraConfig.hudY[5];
             graphics.pose().pushMatrix();
             graphics.pose().translate(x, y);
             graphics.pose().scale(AudioraConfig.hudScaleX(5), AudioraConfig.hudScaleY(5));
-            if (!pickupStack.isEmpty()) graphics.item(pickupStack, 4, 3);
-            graphics.text(client.font, label, 24, 7, 0xFFFFFFFF, true);
+            graphics.fill(0, 0, width, 25, 0xC9101725);
+            graphics.outline(0, 0, width, 25, 0x8877A9D8);
+            if (!pickupStack.isEmpty()) graphics.item(pickupStack, 5, 4);
+            graphics.text(client.font, pickupName, 27, 4, 0xFFFFFFFF, true);
+            graphics.text(client.font, "×" + pickupAmount, 27, 14, 0xFF9FCFFF, true);
             graphics.pose().popMatrix();
         } else {
             pickupAmount = 0;
@@ -295,13 +311,23 @@ public final class AudioraInfoHud {
             graphics.pose().pushMatrix();
             graphics.pose().translate(potionX, potionY);
             graphics.pose().scale(AudioraConfig.hudScaleX(10), AudioraConfig.hudScaleY(10));
+            int visibleEffects = Math.min(8, player.getActiveEffects().size());
+            int panelWidth = 142;
+            int panelHeight = 8 + visibleEffects * 15;
+            graphics.fill(0, 0, panelWidth, panelHeight, 0xC9101725);
+            graphics.outline(0, 0, panelWidth, panelHeight, 0x8877A9D8);
             int line = 0;
             for (var effect : player.getActiveEffects()) {
                 if (line >= 8) break;
                 String effectName = effect.getEffect().value().getDisplayName().getString();
                 int seconds = Math.max(0, effect.getDuration() / 20);
                 String duration = String.format(java.util.Locale.ROOT, "%d:%02d", seconds / 60, seconds % 60);
-                graphics.text(client.font, effectName + " " + duration, 0, line * 12, 0xFFD8C8FF, true);
+                String level = effect.getAmplifier() > 0 ? " " + (effect.getAmplifier() + 1) : "";
+                int rowY = 4 + line * 15;
+                graphics.fill(3, rowY - 1, 5, rowY + 10, 0xFF9B7BDE);
+                graphics.text(client.font, effectName + level, 9, rowY, 0xFFECE5FF, true);
+                int durationX = panelWidth - client.font.width(duration) - 6;
+                graphics.text(client.font, duration, durationX, rowY, 0xFF9FCFFF, true);
                 line++;
             }
             graphics.pose().popMatrix();
@@ -346,7 +372,8 @@ public final class AudioraInfoHud {
         graphics.pose().pushMatrix();
         graphics.pose().translate(x, y);
         graphics.pose().scale(AudioraConfig.hudScaleX(hudIndex), AudioraConfig.hudScaleY(hudIndex));
-        graphics.outline(0, 0, cardWidth, cardHeight, 0x88777777);
+        graphics.fill(0, 0, cardWidth, cardHeight, 0xD5101725);
+        graphics.outline(0, 0, cardWidth, cardHeight, 0x9977A9D8);
 
         try {
             float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
