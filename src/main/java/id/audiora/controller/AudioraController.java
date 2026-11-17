@@ -32,7 +32,7 @@ public final class AudioraController implements ClientModInitializer {
     public void onInitializeClient() {
         AudioraConfig.load();
         openSettingsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.audiora_controller.open_settings", InputConstants.Type.KEYSYM,
+            "key.audiora_controller.open_settings", InputConstants.Type.KEYBOARD,
             InputConstants.KEY_Z, KEY_CATEGORY));
         AudioraAmbience.initialize();
         AudioraCombo.initialize();
