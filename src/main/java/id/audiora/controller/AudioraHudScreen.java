@@ -21,7 +21,12 @@ public final class AudioraHudScreen extends Screen {
     }
 
     private int visibleRows() { return height < 250 ? 1 : height < 310 ? 2 : height < 400 ? 3 : 4; }
-    private int panelX() { return 6; }
+    // Keep the settings panel on the opposite side of the selected HUD's
+    // horizontal placement so it does not cover the live preview.
+    private int panelX() {
+        int offset = AudioraConfig.hudX[Math.max(0, Math.min(selected, AudioraConfig.HUD_IDS.length - 1))];
+        return offset < 0 ? Math.max(6, width - PANEL_WIDTH - 6) : 6;
+    }
     private int top() { return Math.max(8, (height - (visibleRows() * ROW_HEIGHT + 230)) / 2); }
     private int controlsY() { return top() + 22 + visibleRows() * ROW_HEIGHT + 4; }
 
