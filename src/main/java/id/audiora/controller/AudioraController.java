@@ -2,6 +2,10 @@ package id.audiora.controller;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -15,6 +19,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class AudioraController implements ClientModInitializer {
+    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
+        Identifier.fromNamespaceAndPath("audiora_controller", "main"));
+    private static KeyMapping openSettingsKey;
     private static boolean wasOnGround;
     private static boolean wasInventoryOpen;
     private static int lastSelectedSlot = -1;
@@ -25,10 +32,18 @@ public final class AudioraController implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         AudioraConfig.load();
+        openSettingsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.audiora_controller.open_settings", InputConstants.Type.KEYSYM,
+            InputConstants.KEY_Z, KEY_CATEGORY));
         AudioraAmbience.initialize();
         AudioraCombo.initialize();
         AudioraInfoHud.initialize();
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (openSettingsKey.consumeClick()) {
+                if (client.gui.screen() == null) {
+                    client.gui.setScreen(new AudioraScreen(null));
+                }
+            }
             AudioraConfig.enforceMutedSounds(client);
             AudioraAmbience.tick(client);
             AudioraCombo.tick();
@@ -39,7 +54,7 @@ public final class AudioraController implements ClientModInitializer {
             tickNetheriteFootsteps(client);
             tickPotionEffectSounds(client);
         });
-        System.out.println("[Audiora] Sound and HUD controllers initialized. Open settings through Mod Menu.");
+        System.out.println("[Audiora] Sound and HUD controllers initialized. Press Z to open Sound Settings.");
     }
 
     private static void tickPotionEffectSounds(Minecraft client) {
