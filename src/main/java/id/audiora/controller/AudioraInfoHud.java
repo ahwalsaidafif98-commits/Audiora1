@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import org.lwjgl.glfw.GLFW;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
@@ -102,9 +101,9 @@ public final class AudioraInfoHud {
 
     private static void tickKeystrokes(Minecraft client) {
         long now = System.currentTimeMillis();
-        long window = client.getWindow().handle();
-        boolean leftDown = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-        boolean rightDown = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+        // Read the game's SDL-backed attack/use mappings instead of polling GLFW.
+        boolean leftDown = client.options.keyAttack.isDown();
+        boolean rightDown = client.options.keyUse.isDown();
         if (leftDown && !wasLeftMouseDown) leftClicks.addLast(now);
         if (rightDown && !wasRightMouseDown) rightClicks.addLast(now);
         wasLeftMouseDown = leftDown;
