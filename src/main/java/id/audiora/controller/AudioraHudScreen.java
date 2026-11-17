@@ -12,6 +12,7 @@ public final class AudioraHudScreen extends Screen {
     public static int previewIndex = 0;
     public static boolean isPreviewing(int index) { return previewIndex == index; }
     private int firstRow;
+    private boolean showAllHud;
     private static final int PANEL_WIDTH = 260;
     private static final int ROW_HEIGHT = 23;
 
@@ -20,7 +21,7 @@ public final class AudioraHudScreen extends Screen {
         this.parent = parent;
     }
 
-    private int visibleRows() { return height < 250 ? 1 : height < 310 ? 2 : height < 400 ? 3 : 4; }
+    private int visibleRows() { if (showAllHud) return Math.max(1, Math.min(AudioraConfig.HUD_IDS.length, (height - 100) / ROW_HEIGHT)); return height < 250 ? 1 : height < 310 ? 2 : height < 400 ? 3 : 4; }
     // Keep the settings panel on the opposite side of the selected HUD's
     // horizontal placement so it does not cover the live preview.
     private int panelX() {
@@ -36,6 +37,28 @@ public final class AudioraHudScreen extends Screen {
         int x = panelX(), top = top(), count = AudioraConfig.HUD_IDS.length, rows = visibleRows();
         previewIndex = selected;
         firstRow = Math.max(0, Math.min(firstRow, Math.max(0, count - rows)));
+
+        if (showAllHud) {
+            for (int row = 0; row < rows; row++) {
+                final int index = firstRow + row;
+                if (index >= count) break;
+                int y = top + 22 + row * ROW_HEIGHT;
+                addRenderableWidget(Button.builder(Component.literal(hudName(index) + (isEnabled(index) ? "  • ON" : "  • OFF")), b -> {
+                    selected = index;
+                    previewIndex = index;
+                    showAllHud = false;
+                    rebuild();
+                }).bounds(x + 4, y, PANEL_WIDTH - 12, 19).build());
+            }
+            int listY = top + 24 + rows * ROW_HEIGHT;
+            addRenderableWidget(Button.builder(Component.literal("↑"), b -> { firstRow = Math.max(0, firstRow - 1); rebuild(); })
+                .bounds(x + 4, listY, 70, 19).build());
+            addRenderableWidget(Button.builder(Component.literal("↓"), b -> { firstRow = Math.min(Math.max(0, count - rows), firstRow + 1); rebuild(); })
+                .bounds(x + 80, listY, 70, 19).build());
+            addRenderableWidget(Button.builder(Component.literal("Back"), b -> { showAllHud = false; rebuild(); })
+                .bounds(x + 156, listY, 96, 19).build());
+            return;
+        }
 
         for (int row = 0; row < rows; row++) {
             final int index = firstRow + row;
@@ -84,6 +107,9 @@ public final class AudioraHudScreen extends Screen {
             java.util.Arrays.fill(AudioraConfig.hudEnabled, true);
             AudioraConfig.comboEnabled = true; AudioraConfig.save(); rebuild();
         }).bounds(x + 118, cy + 115, 110, 19).build());
+        addRenderableWidget(Button.builder(Component.literal("Show All HUDs  ▼"), b -> {
+            showAllHud = true; firstRow = 0; rebuild();
+        }).bounds(x + 4, cy + 161, 239, 19).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
             .bounds(x + 4, cy + 138, 239, 19).build());
     }
@@ -126,7 +152,22 @@ public final class AudioraHudScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
         super.extractRenderState(g, mx, my, delta);
         int x = panelX(), top = top(), cy = controlsY(), rows = visibleRows();
-        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 194, 0xB92B3B50);
+        if (showAllHud) {
+            int listBottom = top + 24 + rows * ROW_HEIGHT + 24;
+            g.fill(x - 4, top - 25, x + PANEL_WIDTH, listBottom, 0xB92B3B50);
+            g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF28527C);
+            g.text(font, "AUDIORA / SELECT HUD", x + 5, top - 18, 0xFFFFFFFF, true);
+            g.text(font, "All HUDs • arranged vertically", x + 4, top + 1, 0xFF9FCFFF, false);
+            for (int row = 0; row < rows; row++) {
+                int i = firstRow + row;
+                if (i >= AudioraConfig.HUD_IDS.length) break;
+                int y = top + 22 + row * ROW_HEIGHT;
+                g.fill(x, y - 1, x + PANEL_WIDTH - 8, y + 19, i == selected ? 0xAA305F91 : ((row & 1) == 0 ? 0x55485B70 : 0x44405266));
+                g.text(font, hudName(i), x + 9, y + 5, isEnabled(i) ? 0xFFF1F5FA : 0xFF8993A1, i == selected);
+            }
+            return;
+        }
+        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 220, 0xB92B3B50);
         g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF28527C);
         g.text(font, "AUDIORA / HUD SETTINGS", x + 5, top - 18, 0xFFFFFFFF, true);
         g.text(font, "Select a HUD to preview it live on screen.", x + 4, top + 1, 0xFF9FCFFF, false);
@@ -140,12 +181,12 @@ public final class AudioraHudScreen extends Screen {
             g.text(font, AudioraConfig.hudScale[i] + "%", x + 119, y + 5, 0xFFB8D8F4, false);
         }
         g.text(font, "Selected: " + hudName(selected), x + 5, cy - 1, 0xFF80C8FF, true);
-        g.fill(x, cy + 161, x + PANEL_WIDTH - 8, cy + 190, 0x665A718A);
+        g.fill(x, cy + 184, x + PANEL_WIDTH - 8, cy + 213, 0x665A718A);
         g.text(font, "X: " + AudioraConfig.hudX[selected] + "   Y: " + AudioraConfig.hudY[selected],
-            x + 5, cy + 165, 0xFFE5F1FC, false);
+            x + 5, cy + 188, 0xFFE5F1FC, false);
         g.text(font, "Scale: " + AudioraConfig.hudScale[selected] + "%   W: "
             + AudioraConfig.hudWidth[selected] + "%   H: " + AudioraConfig.hudHeight[selected] + "%",
-            x + 5, cy + 179, 0xFFE5F1FC, false);
+            x + 5, cy + 202, 0xFFE5F1FC, false);
     }
 
     @Override
