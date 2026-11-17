@@ -141,10 +141,19 @@ public final class AudioraInfoHud {
             player.getX(), player.getY(), player.getZ());
         if (shouldRenderHud(0)) renderCoordinates(graphics, client, player, left, top);
 
-        String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
-            .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
-            .orElse("unknown");
-        if (shouldRenderHud(1)) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
+        if (client.level != null && shouldRenderHud(1)) {
+            String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
+                .map(key -> key.location().getPath().replace('_', ' '))
+                .orElse("unknown");
+            String biomeLabel = "Biome: " + biome;
+            // During editing, keep the preview on the opposite side of the
+            // settings panel so the panel cannot cover the selected HUD.
+            int biomeX = editingHud
+                ? graphics.guiWidth() - client.font.width(biomeLabel) - 8 + AudioraConfig.hudX[1]
+                : left + AudioraConfig.hudX[1];
+            drawScaledText(graphics, client, biomeLabel, biomeX,
+                top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
+        }
 
         if (shouldRenderHud(13)) {
             int kx = graphics.guiWidth() - 72 + AudioraConfig.hudX[13];
