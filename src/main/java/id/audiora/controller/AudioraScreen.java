@@ -23,75 +23,76 @@ public final class AudioraScreen extends Screen {
 
     @Override
     protected void init() {
-        int c = this.width / 2;
-        int top = Math.max(8, (this.height - 250) / 2);
-        int maxFirst = Math.max(0, AudioraConfig.CATEGORIES.length - 4);
+        clearWidgets();
+        int panelW = Math.min(430, width - 24);
+        int panelX = (width - panelW) / 2;
+        int panelY = Math.max(12, (height - 270) / 2);
+        int sideW = 112;
+        int mainX = panelX + sideW + 12;
+        int mainW = panelW - sideW - 20;
+        int rowY = panelY + 42;
+        int maxFirst = Math.max(0, AudioraConfig.CATEGORIES.length - 5);
         firstCategory = Math.max(0, Math.min(maxFirst, firstCategory));
 
-        this.addRenderableWidget(Button.builder(masterLabel(), b -> {
-            AudioraConfig.masterEnabled = !AudioraConfig.masterEnabled;
-            b.setMessage(masterLabel());
-            AudioraConfig.save();
-        }).bounds(c - 150, top + 16, 92, 20).build());
-        this.addRenderableWidget(new VolumeSlider(c - 53, top + 16, 203, 20, AudioraConfig.masterVolume, "Master"));
+        addRenderableWidget(Button.builder(Component.literal("General  •"), b -> {})
+            .bounds(panelX, panelY + 30, sideW, 22).build());
+        addRenderableWidget(Button.builder(Component.literal("HUD Settings"), b ->
+            this.minecraft.gui.setScreen(new AudioraHudScreen(this)))
+            .bounds(panelX, panelY + 56, sideW, 22).build());
 
-        for (int row = 0; row < 4; row++) {
+        addRenderableWidget(Button.builder(masterLabel(), b -> {
+            AudioraConfig.masterEnabled = !AudioraConfig.masterEnabled;
+            b.setMessage(masterLabel()); AudioraConfig.save();
+        }).bounds(mainX, rowY, 100, 20).build());
+        addRenderableWidget(new VolumeSlider(mainX + 106, rowY, mainW - 106, 20,
+            AudioraConfig.masterVolume, "Master"));
+
+        for (int row = 0; row < 5; row++) {
             int index = firstCategory + row;
             if (index >= AudioraConfig.CATEGORIES.length) break;
             final int category = index;
-            int x = c - 150, y = top + 50 + row * 22;
-            this.addRenderableWidget(Button.builder(toggleLabel(category), b -> {
+            int y = rowY + 34 + row * 25;
+            addRenderableWidget(Button.builder(toggleLabel(category), b -> {
                 AudioraConfig.enabled[category] = !AudioraConfig.enabled[category];
-                b.setMessage(toggleLabel(category));
-                AudioraConfig.save();
-            }).bounds(x, y, 45, 20).build());
-            this.addRenderableWidget(new VolumeSlider(x + 49, y, 76, 20,
+                b.setMessage(toggleLabel(category)); AudioraConfig.save();
+            }).bounds(mainX, y, 42, 20).build());
+            addRenderableWidget(new VolumeSlider(mainX + 47, y, mainW - 98, 20,
                 AudioraConfig.volume[category], AudioraConfig.CATEGORIES[category]));
-            this.addRenderableWidget(Button.builder(Component.literal("▶"), b -> previewCategory(category))
-                .bounds(x + 128, y, 22, 20).build());
+            addRenderableWidget(Button.builder(Component.literal("▶"), b -> previewCategory(category))
+                .bounds(mainX + mainW - 46, y, 42, 20).build());
         }
 
-        this.addRenderableWidget(Button.builder(Component.literal("↑"), b -> {
-            firstCategory = Math.max(0, firstCategory - 1);
-            rebuild();
-        }).bounds(c - 150, top + 140, 42, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("↓"), b -> {
-            firstCategory = Math.min(maxFirst, firstCategory + 1);
-            rebuild();
-        }).bounds(c - 104, top + 140, 42, 20).build());
-        this.addRenderableWidget(Button.builder(comboLabel(), b -> {
+        addRenderableWidget(Button.builder(Component.literal("↑"), b -> {
+            firstCategory = Math.max(0, firstCategory - 1); rebuild();
+        }).bounds(mainX, rowY + 164, 42, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("↓"), b -> {
+            firstCategory = Math.min(maxFirst, firstCategory + 1); rebuild();
+        }).bounds(mainX + 47, rowY + 164, 42, 20).build());
+        addRenderableWidget(Button.builder(comboLabel(), b -> {
             AudioraConfig.comboEnabled = !AudioraConfig.comboEnabled;
             AudioraConfig.hudEnabled[7] = AudioraConfig.comboEnabled;
-            b.setMessage(comboLabel());
-            AudioraConfig.save();
-        }).bounds(c - 150, top + 140, 92, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("HUD Settings  ⚙"), b ->
-            this.minecraft.gui.setScreen(new AudioraHudScreen(this)))
-            .bounds(c - 53, top + 140, 203, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("Enable All"), b -> {
+            b.setMessage(comboLabel()); AudioraConfig.save();
+        }).bounds(mainX + 94, rowY + 164, 88, 20).build());
+
+        addRenderableWidget(Button.builder(Component.literal("Enable All"), b -> {
             AudioraConfig.masterEnabled = true;
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = true;
-            AudioraConfig.save();
-            rebuild();
-        }).bounds(c - 150, top + 169, 92, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("Disable All"), b -> {
+            AudioraConfig.save(); rebuild();
+        }).bounds(mainX, rowY + 192, 88, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Disable All"), b -> {
             AudioraConfig.masterEnabled = false;
             for (int i = 0; i < AudioraConfig.enabled.length; i++) AudioraConfig.enabled[i] = false;
-            AudioraConfig.save();
-            rebuild();
-        }).bounds(c - 53, top + 169, 92, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("Reset Sound"), b -> {
-            AudioraConfig.masterEnabled = true;
-            AudioraConfig.masterVolume = 100;
+            AudioraConfig.save(); rebuild();
+        }).bounds(mainX + 94, rowY + 192, 88, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Reset"), b -> {
+            AudioraConfig.masterEnabled = true; AudioraConfig.masterVolume = 100;
             for (int i = 0; i < AudioraConfig.enabled.length; i++) {
-                AudioraConfig.enabled[i] = true;
-                AudioraConfig.volume[i] = 100;
+                AudioraConfig.enabled[i] = true; AudioraConfig.volume[i] = 100;
             }
-            AudioraConfig.save();
-            rebuild();
-        }).bounds(c + 44, top + 169, 90, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
-            .bounds(c + 104, top + 196, 96, 20).build());
+            AudioraConfig.save(); rebuild();
+        }).bounds(mainX + 188, rowY + 192, Math.max(52, mainW - 188), 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
+            .bounds(panelX + panelW - 78, panelY + 240, 78, 20).build());
     }
 
     private void rebuild() {
@@ -110,15 +111,23 @@ public final class AudioraScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
         super.extractRenderState(g, mx, my, delta);
-        int c = this.width / 2;
-        int top = Math.max(8, (this.height - 250) / 2);
-        g.text(this.font, "AUDIORA • SOUND CONTROL", c - 83, top - 8, 0xFFFFFFFF, true);
-        g.text(this.font, "Master volume", c - 150, top + 6, 0xFFB8D8FF, false);
-        for (int row = 0; row < 4; row++) {
+        int panelW = Math.min(430, width - 24);
+        int panelX = (width - panelW) / 2;
+        int panelY = Math.max(12, (height - 270) / 2);
+        int sideW = 112, mainX = panelX + sideW + 12;
+        int mainW = panelW - sideW - 20, rowY = panelY + 42;
+        g.fill(panelX - 5, panelY - 8, panelX + panelW + 5, panelY + 270, 0xB9222B38);
+        g.fill(panelX - 5, panelY - 8, panelX + panelW + 5, panelY + 18, 0xFF28527C);
+        g.text(font, "AUDIORA SETTINGS", panelX + 5, panelY, 0xFFFFFFFF, true);
+        g.fill(panelX, panelY + 30, panelX + sideW, panelY + 53, 0xAA305F91);
+        g.text(font, "GENERAL", panelX + 9, panelY + 37, 0xFFFFFFFF, true);
+        g.text(font, "Master Sound", mainX, rowY - 12, 0xFFB8D8FF, true);
+        g.text(font, "Sound categories", mainX, rowY + 24, 0xFFB8D8FF, true);
+        for (int row = 0; row < 5; row++) {
             int i = firstCategory + row;
             if (i >= AudioraConfig.CATEGORIES.length) break;
-            int x = c - 150, y = top + 50 + row * 22;
-            g.text(this.font, AudioraConfig.CATEGORIES[i].toUpperCase(), x, y - 10, 0xFFE8E8E8, false);
+            int y = rowY + 34 + row * 25;
+            g.text(font, AudioraConfig.CATEGORIES[i].toUpperCase(), mainX + 2, y - 10, 0xFFE8E8E8, false);
         }
     }
 
