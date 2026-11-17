@@ -34,6 +34,10 @@ public final class AudioraScreen extends Screen {
         int x = panelX(), y = panelY(), rows = visibleRows();
         int maxFirst = Math.max(0, AudioraConfig.CATEGORIES.length - rows);
         firstCategory = Math.max(0, Math.min(maxFirst, firstCategory));
+        addRenderableWidget(Button.builder(Component.literal("SOUND SETTINGS"), b -> {})
+            .bounds(x + 4, y + 22, (panelW() - 12) / 2, 16).build());
+        addRenderableWidget(Button.builder(Component.literal("HUD SETTINGS"), b -> minecraft.gui.setScreen(new AudioraHudScreen(this)))
+            .bounds(x + 8 + (panelW() - 12) / 2, y + 22, (panelW() - 12) / 2, 16).build());
         for (int row = 0; row < rows; row++) {
             int index = firstCategory + row;
             if (index >= AudioraConfig.CATEGORIES.length) break;
@@ -76,8 +80,6 @@ public final class AudioraScreen extends Screen {
             .bounds(x + 4, y + 42 + rows * 21, 38, 18).build());
         addRenderableWidget(Button.builder(Component.literal("↓"), b -> { firstCategory = Math.min(maxFirst, firstCategory + 1); rebuild(); })
             .bounds(x + 46, y + 42 + rows * 21, 38, 18).build());
-        addRenderableWidget(Button.builder(Component.literal("HUD Settings"), b -> minecraft.gui.setScreen(new AudioraHudScreen(this)))
-            .bounds(x + 4, y + 238, sideW() - 8, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
             .bounds(x + panelW() - 78, y + 238, 74, 20).build());
     }
