@@ -378,12 +378,20 @@ public final class AudioraInfoHud {
         try {
             float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
             EntityRenderState state = client.getEntityRenderDispatcher().extractEntity(target, partialTick);
-            // Reverse the preview's horizontal facing so the mob/player is no longer shown from the mirrored side.
+            // Turn around the vertical axis (not the screen axis) to avoid upside-down previews.
+            // Large mobs are scaled down so they fit the same preview frame.
+            float previewScale = hudIndex == 4 ? 8.0F : 18.0F;
+            if (hudIndex == 4) {
+                float entitySize = Math.max(target.getBbHeight(), target.getBbWidth());
+                if (entitySize > 1.8F) {
+                    previewScale *= 1.8F / entitySize;
+                }
+            }
             graphics.entity(
                 state,
-                hudIndex == 4 ? 8.0F : 18.0F,
+                previewScale,
                 new Vector3f(0.0F, 0.0F, 0.0F),
-                new Quaternionf().rotationZ((float) Math.PI).rotateY(0.35F),
+                new Quaternionf().rotationY((float) Math.PI).rotateY(0.35F),
                 null,
                 2,
                 2,
