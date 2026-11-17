@@ -154,7 +154,7 @@ public final class AudioraHudScreen extends Screen {
         int x = panelX(), top = top(), cy = controlsY(), rows = visibleRows();
         if (showAllHud) {
             int listBottom = top + 24 + rows * ROW_HEIGHT + 24;
-            g.fill(x - 4, top - 25, x + PANEL_WIDTH, listBottom, 0xB92B3B50);
+            g.fill(x - 4, top - 25, x + PANEL_WIDTH, listBottom, 0xFF17212B);
             g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF28527C);
             g.text(font, "AUDIORA / SELECT HUD", x + 5, top - 18, 0xFFFFFFFF, true);
             g.text(font, "All HUDs • arranged vertically", x + 4, top + 1, 0xFF9FCFFF, false);
@@ -167,7 +167,7 @@ public final class AudioraHudScreen extends Screen {
             }
             return;
         }
-        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 220, 0xB92B3B50);
+        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 220, 0xFF17212B);
         g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF28527C);
         g.text(font, "AUDIORA / HUD SETTINGS", x + 5, top - 18, 0xFFFFFFFF, true);
         g.text(font, "Select a HUD to preview it live on screen.", x + 4, top + 1, 0xFF9FCFFF, false);
