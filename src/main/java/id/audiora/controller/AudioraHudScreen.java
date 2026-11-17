@@ -9,6 +9,8 @@ import net.minecraft.network.chat.Component;
 public final class AudioraHudScreen extends Screen {
     private final Screen parent;
     private int selected;
+    public static int previewIndex = 0;
+    public static boolean isPreviewing(int index) { return previewIndex == index; }
     private int firstRow;
     private static final int PANEL_WIDTH = 260;
     private static final int ROW_HEIGHT = 23;
@@ -19,7 +21,7 @@ public final class AudioraHudScreen extends Screen {
     }
 
     private int visibleRows() { return height < 250 ? 1 : height < 310 ? 2 : height < 400 ? 3 : 4; }
-    private int panelX() { return Math.max(4, width - PANEL_WIDTH - 6); }
+    private int panelX() { return 6; }
     private int top() { return Math.max(8, (height - (visibleRows() * ROW_HEIGHT + 196)) / 2); }
     private int controlsY() { return top() + 22 + visibleRows() * ROW_HEIGHT + 4; }
 
@@ -27,6 +29,7 @@ public final class AudioraHudScreen extends Screen {
     protected void init() {
         clearWidgets();
         int x = panelX(), top = top(), count = AudioraConfig.HUD_IDS.length, rows = visibleRows();
+        previewIndex = selected;
         firstRow = Math.max(0, Math.min(firstRow, Math.max(0, count - rows)));
 
         for (int row = 0; row < rows; row++) {
@@ -121,7 +124,7 @@ public final class AudioraHudScreen extends Screen {
         g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 163, 0xDD101725);
         g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF173B68);
         g.text(font, "AUDIORA / HUD SETTINGS", x + 5, top - 18, 0xFFFFFFFF, true);
-        g.text(font, "Choose a HUD, then change its position and size.", x + 4, top + 1, 0xFF9FCFFF, false);
+        g.text(font, "Select a HUD to preview it live on screen.", x + 4, top + 1, 0xFF9FCFFF, false);
         for (int row = 0; row < rows; row++) {
             int i = firstRow + row;
             if (i >= AudioraConfig.HUD_IDS.length) break;
@@ -155,7 +158,7 @@ public final class AudioraHudScreen extends Screen {
         for (int row = 0; row < rows; row++) {
             int i = firstRow + row, y = top + 22 + row * ROW_HEIGHT;
             if (i < AudioraConfig.HUD_IDS.length && mx >= x && mx < x + 155 && my >= y - 1 && my < y + 20) {
-                selected = i; rebuild(); return true;
+                selected = i; previewIndex = i; rebuild(); return true;
             }
         }
         return super.mouseClicked(event, doubleClick);
