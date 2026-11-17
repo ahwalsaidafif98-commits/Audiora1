@@ -119,9 +119,19 @@ public final class AudioraInfoHud {
         return ItemStack.EMPTY;
     }
 
+    private static boolean shouldRenderHud(int index) {
+        if (Minecraft.getInstance().gui.screen() instanceof AudioraHudScreen) return AudioraHudScreen.isPreviewing(index);
+        return AudioraConfig.hudEnabled[index];
+    }
+
+    private static boolean isHudPreview(int index) {
+        return Minecraft.getInstance().gui.screen() instanceof AudioraHudScreen && AudioraHudScreen.isPreviewing(index);
+    }
+
     private static void extract(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         Minecraft client = Minecraft.getInstance();
-        if (client.player == null || client.gui.screen() != null) return;
+        boolean editingHud = client.gui.screen() instanceof AudioraHudScreen;
+        if (client.player == null || (client.gui.screen() != null && !editingHud)) return;
 
         // Compact information HUDs requested for Audiora 1.0.3.
         int left = 6;
@@ -129,29 +139,30 @@ public final class AudioraInfoHud {
         var player = client.player;
         String coordinates = String.format(java.util.Locale.ROOT, "XYZ: %.1f / %.1f / %.1f",
             player.getX(), player.getY(), player.getZ());
-        if (AudioraConfig.hudEnabled[0]) renderCoordinates(graphics, client, player, left, top);
+        if (shouldRenderHud(0)) renderCoordinates(graphics, client, player, left, top);
 
         String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
             .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
             .orElse("unknown");
-        if (AudioraConfig.hudEnabled[1]) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
+        if (shouldRenderHud(1)) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
 
-        if (AudioraConfig.hudEnabled[13]) {
+        if (shouldRenderHud(13)) {
             int kx = graphics.guiWidth() - 72 + AudioraConfig.hudX[13];
             int ky = 8 + AudioraConfig.hudY[13];
             graphics.pose().pushMatrix();
             graphics.pose().translate(kx, ky);
             graphics.pose().scale(AudioraConfig.hudScaleX(13), AudioraConfig.hudScaleY(13));
-            drawKey(graphics, client, "W", 24, 0, client.options.keyUp.isDown());
-            drawKey(graphics, client, "A", 0, 20, client.options.keyLeft.isDown());
-            drawKey(graphics, client, "S", 24, 20, client.options.keyDown.isDown());
-            drawKey(graphics, client, "D", 48, 20, client.options.keyRight.isDown());
-            String cps = "LMB " + leftClicks.size() + "  |  RMB " + rightClicks.size();
-            graphics.text(client.font, cps, 0, 42, 0xFF8DFF8D, true);
+            graphics.fill(-4, -4, 76, 64, 0xA018202B);
+            drawKey(graphics, client, "W", 26, 1, client.options.keyUp.isDown());
+            drawKey(graphics, client, "A", 2, 21, client.options.keyLeft.isDown());
+            drawKey(graphics, client, "S", 26, 21, client.options.keyDown.isDown());
+            drawKey(graphics, client, "D", 50, 21, client.options.keyRight.isDown());
+            String cps = "LMB " + leftClicks.size() + " | RMB " + rightClicks.size();
+            graphics.text(client.font, cps, 1, 44, 0xFF8DFF8D, true);
             graphics.pose().popMatrix();
         }
 
-        if (AudioraConfig.hudEnabled[12]) {
+        if (shouldRenderHud(12)) {
             String facing = player.getDirection().getName().toUpperCase(java.util.Locale.ROOT);
             int compassX = left + AudioraConfig.hudX[12];
             int compassY = top + 78 + AudioraConfig.hudY[12];
@@ -163,7 +174,7 @@ public final class AudioraInfoHud {
         }
 
         int armorPieces = 0;
-        if (AudioraConfig.hudEnabled[2]) {
+        if (shouldRenderHud(2)) {
             int armorX = left + AudioraConfig.hudX[2];
             int armorY = top + 24 + AudioraConfig.hudY[2];
             graphics.pose().pushMatrix();
@@ -179,10 +190,7 @@ public final class AudioraInfoHud {
                 ItemStack armor = player.getItemBySlot(slot);
                 if (!armor.isEmpty() && armor.isDamageableItem()) armorPanelHeight += 19;
             }
-            if (armorPanelHeight > 8) {
-                graphics.fill(0, 0, 112, armorPanelHeight, 0xB9101725);
-                graphics.outline(0, 0, 112, armorPanelHeight, 0x8877A9D8);
-            }
+            // Armor durability has no panel background or outline.
             for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
                 net.minecraft.world.entity.EquipmentSlot.HEAD,
                 net.minecraft.world.entity.EquipmentSlot.CHEST,
@@ -206,7 +214,7 @@ public final class AudioraInfoHud {
         }
 
         ItemStack held = player.getMainHandItem();
-        if (!held.isEmpty() && AudioraConfig.hudEnabled[3]) {
+        if (!held.isEmpty() && shouldRenderHud(3)) {
             String heldLabel = held.getHoverName().getString();
             if (held.isDamageableItem()) {
                 int remaining = Math.max(0, held.getMaxDamage() - held.getDamageValue());
@@ -235,14 +243,14 @@ public final class AudioraInfoHud {
             Entity entity = entityHit.getEntity();
             if (entity instanceof LivingEntity living && living.isAlive()) {
                 if (living instanceof net.minecraft.world.entity.player.Player) {
-                    if (AudioraConfig.hudEnabled[11]) renderTargetCard(graphics, client, living, deltaTracker, 11);
-                } else if (AudioraConfig.hudEnabled[4]) {
+                    if (shouldRenderHud(11)) renderTargetCard(graphics, client, living, deltaTracker, 11);
+                } else if (shouldRenderHud(4)) {
                     renderTargetCard(graphics, client, living, deltaTracker, 4);
                 }
             }
         }
 
-        if (AudioraConfig.hudEnabled[5] && pickupAmount > 0 && System.currentTimeMillis() < pickupUntil) {
+        if (shouldRenderHud(5) && pickupAmount > 0 && System.currentTimeMillis() < pickupUntil) {
             String label = pickupName + "  ×" + pickupAmount;
             int width = Math.max(112, client.font.width(label) + 36);
             int x = (graphics.guiWidth() - width) / 2 + AudioraConfig.itemInfoOffsetX + AudioraConfig.hudX[5];
@@ -261,7 +269,7 @@ public final class AudioraInfoHud {
             pickupStack = ItemStack.EMPTY;
         }
 
-        if (AudioraConfig.hudEnabled[8] && damageTicks > 0) {
+        if (shouldRenderHud(8) && damageTicks > 0) {
             String damageText = String.format(java.util.Locale.ROOT, "-%.1f", recentDamage);
             int damageX = graphics.guiWidth() / 2 - client.font.width(damageText) / 2
                 + AudioraConfig.hudX[8];
@@ -273,8 +281,18 @@ public final class AudioraInfoHud {
             graphics.pose().popMatrix();
         }
 
-        if (AudioraConfig.hudEnabled[6] && !oreCounts.isEmpty()) {
+        if (shouldRenderHud(6) && (!oreCounts.isEmpty() || isHudPreview(6))) {
             int line = 0;
+            if (oreCounts.isEmpty() && isHudPreview(6)) {
+                int px = graphics.guiWidth() - 150 + AudioraConfig.hudX[6];
+                int py = 6 + AudioraConfig.hudY[6];
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(px, py);
+                graphics.pose().scale(AudioraConfig.hudScaleX(6), AudioraConfig.hudScaleY(6));
+                graphics.text(client.font, "Ore Tracker (preview)", 0, 0, 0xFFE8D58A, true);
+                graphics.text(client.font, "Diamond Ore: 0 (0%)", 0, 12, 0xFFE8D58A, true);
+                graphics.pose().popMatrix();
+            }
             int totalOres = oreCounts.values().stream().mapToInt(Integer::intValue).sum();
             int maxWidth = 0;
             for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
@@ -305,7 +323,7 @@ public final class AudioraInfoHud {
             graphics.pose().popMatrix();
         }
 
-        if (AudioraConfig.hudEnabled[10] && !player.getActiveEffects().isEmpty()) {
+        if (shouldRenderHud(10) && !player.getActiveEffects().isEmpty()) {
             int potionX = 6 + AudioraConfig.hudX[10];
             int potionY = graphics.guiHeight() / 2 + AudioraConfig.hudY[10];
             graphics.pose().pushMatrix();
@@ -457,9 +475,8 @@ public final class AudioraInfoHud {
 
     private static void drawKey(GuiGraphicsExtractor graphics, Minecraft client, String label,
                                 int x, int y, boolean pressed) {
-        int background = pressed ? 0xFF4B9B58 : 0xCC202A36;
+        int background = pressed ? 0xFF4B9B58 : 0xDD303B49;
         graphics.fill(x, y, x + 20, y + 18, background);
-        graphics.outline(x, y, x + 20, y + 18, 0xFF8FA7B8);
         int textX = x + (20 - client.font.width(label)) / 2;
         graphics.text(client.font, label, textX, y + 5, 0xFFFFFFFF, true);
     }
