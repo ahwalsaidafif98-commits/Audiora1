@@ -2,6 +2,9 @@ package id.audiora.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import org.lwjgl.glfw.GLFW;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
@@ -29,6 +32,10 @@ public final class AudioraInfoHud {
     private static float recentDamage;
     private static int damageTicks;
     private static net.minecraft.client.multiplayer.ClientLevel lastLevel;
+    private static final Deque<Long> leftClicks = new ArrayDeque<>();
+    private static final Deque<Long> rightClicks = new ArrayDeque<>();
+    private static boolean wasLeftMouseDown;
+    private static boolean wasRightMouseDown;
 
     private AudioraInfoHud() {}
 
@@ -60,6 +67,7 @@ public final class AudioraInfoHud {
         }
 
         if (damageTicks > 0) damageTicks--;
+        tickKeystrokes(client);
 
         Inventory inventory = client.player.getInventory();
         Map<String, Integer> current = new HashMap<>();
@@ -90,6 +98,19 @@ public final class AudioraInfoHud {
         previousCounts.putAll(current);
     }
 
+    private static void tickKeystrokes(Minecraft client) {
+        long now = System.currentTimeMillis();
+        long window = client.getWindow().handle();
+        boolean leftDown = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+        boolean rightDown = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+        if (leftDown && !wasLeftMouseDown) leftClicks.addLast(now);
+        if (rightDown && !wasRightMouseDown) rightClicks.addLast(now);
+        wasLeftMouseDown = leftDown;
+        wasRightMouseDown = rightDown;
+        while (!leftClicks.isEmpty() && now - leftClicks.peekFirst() > 1000L) leftClicks.removeFirst();
+        while (!rightClicks.isEmpty() && now - rightClicks.peekFirst() > 1000L) rightClicks.removeFirst();
+    }
+
     private static ItemStack findStack(Inventory inventory, String itemId) {
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             ItemStack stack = inventory.getItem(i);
@@ -114,6 +135,21 @@ public final class AudioraInfoHud {
             .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
             .orElse("unknown");
         if (AudioraConfig.hudEnabled[1]) drawScaledText(graphics, client, "Biome: " + biome, left + AudioraConfig.hudX[1], top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
+
+        if (AudioraConfig.hudEnabled[13]) {
+            int kx = graphics.guiWidth() - 72 + AudioraConfig.hudX[13];
+            int ky = 8 + AudioraConfig.hudY[13];
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(kx, ky);
+            graphics.pose().scale(AudioraConfig.hudScaleX(13), AudioraConfig.hudScaleY(13));
+            drawKey(graphics, client, "W", 24, 0, client.options.keyUp.isDown());
+            drawKey(graphics, client, "A", 0, 20, client.options.keyLeft.isDown());
+            drawKey(graphics, client, "S", 24, 20, client.options.keyDown.isDown());
+            drawKey(graphics, client, "D", 48, 20, client.options.keyRight.isDown());
+            String cps = "LMB " + leftClicks.size() + "  |  RMB " + rightClicks.size();
+            graphics.text(client.font, cps, 0, 42, 0xFF8DFF8D, true);
+            graphics.pose().popMatrix();
+        }
 
         if (AudioraConfig.hudEnabled[12]) {
             String facing = player.getDirection().getName().toUpperCase(java.util.Locale.ROOT);
@@ -348,6 +384,15 @@ public final class AudioraInfoHud {
             graphics.fill(barX, barY, barX + filledWidth, barY + 6, barColor);
         }
         graphics.pose().popMatrix();
+    }
+
+    private static void drawKey(GuiGraphicsExtractor graphics, Minecraft client, String label,
+                                int x, int y, boolean pressed) {
+        int background = pressed ? 0xFF4B9B58 : 0xCC202A36;
+        graphics.fill(x, y, x + 20, y + 18, background);
+        graphics.outline(x, y, x + 20, y + 18, 0xFF8FA7B8);
+        int textX = x + (20 - client.font.width(label)) / 2;
+        graphics.text(client.font, label, textX, y + 5, 0xFFFFFFFF, true);
     }
 
     private static void drawScaledText(GuiGraphicsExtractor graphics, Minecraft client, String text,
