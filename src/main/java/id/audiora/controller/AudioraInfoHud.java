@@ -402,17 +402,15 @@ public final class AudioraInfoHud {
         graphics.fill(0, 0, cardWidth, cardHeight, 0xD5101725);
         graphics.outline(0, 0, cardWidth, cardHeight, 0x9977A9D8);
 
+        boolean mobPreviewRendered = false;
         try {
             float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
             EntityRenderState state = client.getEntityRenderDispatcher().extractEntity(target, partialTick);
-            // Turn around the vertical axis (not the screen axis) to avoid upside-down previews.
-            // Large mobs are scaled down so they fit the same preview frame.
-            float previewScale = hudIndex == 4 ? 8.0F : 18.0F;
-            if (hudIndex == 4) {
-                float entitySize = Math.max(target.getBbHeight(), target.getBbWidth());
-                if (entitySize > 1.8F) {
-                    previewScale *= 1.8F / entitySize;
-                }
+            // Center the entity preview in the left side of the card.
+            float previewScale = 18.0F;
+            float entitySize = Math.max(target.getBbHeight(), target.getBbWidth());
+            if (entitySize > 1.8F) {
+                previewScale *= 1.8F / entitySize;
             }
             graphics.entity(
                 state,
@@ -425,8 +423,30 @@ public final class AudioraInfoHud {
                 38,
                 45
             );
+            mobPreviewRendered = true;
         } catch (RuntimeException exception) {
-            // Keep the target name and health visible if a custom entity renderer cannot be previewed.
+            // Some entity renderers cannot be extracted on every client/renderer.
+        }
+
+        // Always provide a visible fallback instead of leaving an empty portrait area.
+        // Most vanilla mobs have a matching spawn-egg item.
+        if (!mobPreviewRendered) {
+            try {
+                String entityPath = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE
+                    .getKey(target.getType()).getPath();
+                Identifier spawnEggId = Identifier.fromNamespaceAndPath("minecraft", entityPath + "_spawn_egg");
+                ItemStack spawnEgg = net.minecraft.core.registries.BuiltInRegistries.ITEM
+                    .get(spawnEggId)
+                    .map(reference -> new ItemStack(reference.value()))
+                    .orElse(ItemStack.EMPTY);
+                if (!spawnEgg.isEmpty()) {
+                    graphics.item(spawnEgg, 13, 16);
+                } else {
+                    graphics.text(client.font, "?", 24, 17, 0xFFFFD36A, true);
+                }
+            } catch (RuntimeException exception) {
+                graphics.text(client.font, "?", 24, 17, 0xFFFFD36A, true);
+            }
         }
 
         int textX = 42;
