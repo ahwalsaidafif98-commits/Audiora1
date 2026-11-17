@@ -143,7 +143,7 @@ public final class AudioraInfoHud {
 
         if (client.level != null && shouldRenderHud(1)) {
             String biome = client.level.getBiome(player.blockPosition()).unwrapKey()
-                .map(key -> key.location().getPath().replace('_', ' '))
+                .map(key -> key.toString().replace("ResourceKey[minecraft:", "").replace("]", "").replace('_', ' '))
                 .orElse("unknown");
             String biomeLabel = "Biome: " + biome;
             // During editing, keep the preview on the opposite side of the
