@@ -34,7 +34,7 @@ public final class AudioraScreen extends Screen {
         int maxFirst = Math.max(0, AudioraConfig.CATEGORIES.length - 5);
         firstCategory = Math.max(0, Math.min(maxFirst, firstCategory));
 
-        addRenderableWidget(Button.builder(Component.literal("General  •"), b -> {})
+        addRenderableWidget(Button.builder(Component.literal("Sound Settings  •"), b -> {})
             .bounds(panelX, panelY + 30, sideW, 22).build());
         addRenderableWidget(Button.builder(Component.literal("HUD Settings"), b ->
             this.minecraft.gui.setScreen(new AudioraHudScreen(this)))
@@ -120,7 +120,7 @@ public final class AudioraScreen extends Screen {
         g.fill(panelX - 5, panelY - 8, panelX + panelW + 5, panelY + 18, 0xFF28527C);
         g.text(font, "AUDIORA SETTINGS", panelX + 5, panelY, 0xFFFFFFFF, true);
         g.fill(panelX, panelY + 30, panelX + sideW, panelY + 53, 0xAA305F91);
-        g.text(font, "GENERAL", panelX + 9, panelY + 37, 0xFFFFFFFF, true);
+        g.text(font, "SOUND SETTINGS", panelX + 9, panelY + 37, 0xFFFFFFFF, true);
         g.text(font, "Master Sound", mainX, rowY - 12, 0xFFB8D8FF, true);
         g.text(font, "Sound categories", mainX, rowY + 24, 0xFFB8D8FF, true);
         for (int row = 0; row < 5; row++) {
