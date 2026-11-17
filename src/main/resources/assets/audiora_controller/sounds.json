@@ -103,7 +103,7 @@
   "armor_netherite_step": {
     "sounds": [
       {
-        "name": "minecraft:block.netherite_block.step",
+        "name": "minecraft:item.armor.equip_netherite",
         "type": "event"
       }
     ]
