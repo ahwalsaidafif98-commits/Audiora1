@@ -2,7 +2,7 @@ name: Build Audiora
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "minecraft-26.3" ]
   workflow_dispatch:
 
 jobs:
