@@ -9,6 +9,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
@@ -402,50 +404,48 @@ public final class AudioraInfoHud {
         graphics.fill(0, 0, cardWidth, cardHeight, 0xD5101725);
         graphics.outline(0, 0, cardWidth, cardHeight, 0x9977A9D8);
 
-        boolean mobPreviewRendered = false;
-        try {
-            float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
-            EntityRenderState state = client.getEntityRenderDispatcher().extractEntity(target, partialTick);
-            // Center the entity preview in the left side of the card.
-            float previewScale = 18.0F;
-            float entitySize = Math.max(target.getBbHeight(), target.getBbWidth());
-            if (entitySize > 1.8F) {
-                previewScale *= 1.8F / entitySize;
-            }
-            graphics.entity(
-                state,
-                previewScale,
-                new Vector3f(0.0F, 0.0F, 0.0F),
-                new Quaternionf().rotationY((float) Math.PI).rotateY(0.35F),
-                null,
-                2,
-                2,
-                38,
-                45
-            );
-            mobPreviewRendered = true;
-        } catch (RuntimeException exception) {
-            // Some entity renderers cannot be extracted on every client/renderer.
-        }
-
-        // Always provide a visible fallback instead of leaving an empty portrait area.
-        // Most vanilla mobs have a matching spawn-egg item.
-        if (!mobPreviewRendered) {
+        if (target instanceof AbstractClientPlayer targetPlayer) {
+            // Players use their actual skin head (including the outer hat layer), kept still.
             try {
-                String entityPath = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE
-                    .getKey(target.getType()).getPath();
-                Identifier spawnEggId = Identifier.fromNamespaceAndPath("minecraft", entityPath + "_spawn_egg");
-                ItemStack spawnEgg = net.minecraft.core.registries.BuiltInRegistries.ITEM
-                    .get(spawnEggId)
-                    .map(reference -> new ItemStack(reference.value()))
-                    .orElse(ItemStack.EMPTY);
-                if (!spawnEgg.isEmpty()) {
-                    graphics.item(spawnEgg, 13, 16);
-                } else {
+                PlayerFaceExtractor.extractRenderState(graphics, targetPlayer.getSkin(), 5, 8, 32);
+            } catch (RuntimeException exception) {
+                graphics.text(client.font, "?", 17, 17, 0xFFFFD36A, true);
+            }
+        } else {
+            // Mobs rotate continuously through a full turn, including showing their back.
+            try {
+                float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
+                EntityRenderState state = client.getEntityRenderDispatcher().extractEntity(target, partialTick);
+                float previewScale = 18.0F;
+                float entitySize = Math.max(target.getBbHeight(), target.getBbWidth());
+                if (entitySize > 1.8F) previewScale *= 1.8F / entitySize;
+                float rotation = (System.currentTimeMillis() % 8000L) / 8000.0F * ((float) Math.PI * 2.0F);
+                graphics.entity(
+                    state,
+                    previewScale,
+                    new Vector3f(0.0F, 0.0F, 0.0F),
+                    new Quaternionf().rotationY(rotation),
+                    null,
+                    2,
+                    2,
+                    38,
+                    45
+                );
+            } catch (RuntimeException exception) {
+                // Keep the target card usable if a renderer does not support the entity.
+                try {
+                    String entityPath = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE
+                        .getKey(target.getType()).getPath();
+                    Identifier spawnEggId = Identifier.fromNamespaceAndPath("minecraft", entityPath + "_spawn_egg");
+                    ItemStack spawnEgg = net.minecraft.core.registries.BuiltInRegistries.ITEM
+                        .get(spawnEggId)
+                        .map(reference -> new ItemStack(reference.value()))
+                        .orElse(ItemStack.EMPTY);
+                    if (!spawnEgg.isEmpty()) graphics.item(spawnEgg, 13, 16);
+                    else graphics.text(client.font, "?", 24, 17, 0xFFFFD36A, true);
+                } catch (RuntimeException ignored) {
                     graphics.text(client.font, "?", 24, 17, 0xFFFFD36A, true);
                 }
-            } catch (RuntimeException exception) {
-                graphics.text(client.font, "?", 24, 17, 0xFFFFD36A, true);
             }
         }
 
