@@ -3,115 +3,79 @@ package id.audiora.controller;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 public final class AudioraHudScreen extends Screen {
     private final Screen parent;
     private int selected;
+    private int firstRow;
     public static int previewIndex = 0;
     public static boolean isPreviewing(int index) { return previewIndex == index; }
-    private int firstRow;
-    private boolean showAllHud;
-    private static final int PANEL_WIDTH = 260;
-    private static final int ROW_HEIGHT = 23;
+    private static final int ROW_HEIGHT = 19;
 
     public AudioraHudScreen(Screen parent) {
         super(Component.literal("Audiora HUD Settings"));
         this.parent = parent;
     }
 
-    private int visibleRows() { if (showAllHud) return Math.max(1, Math.min(AudioraConfig.HUD_IDS.length, (height - 100) / ROW_HEIGHT)); return height < 250 ? 1 : height < 310 ? 2 : height < 400 ? 3 : 4; }
-    // Keep the settings panel on the opposite side of the selected HUD's
-    // horizontal placement so it does not cover the live preview.
-    private int panelX() {
-        int offset = AudioraConfig.hudX[Math.max(0, Math.min(selected, AudioraConfig.HUD_IDS.length - 1))];
-        return offset < 0 ? Math.max(6, width - PANEL_WIDTH - 6) : 6;
-    }
-    private int top() { return Math.max(8, (height - (visibleRows() * ROW_HEIGHT + 230)) / 2); }
-    private int controlsY() { return top() + 22 + visibleRows() * ROW_HEIGHT + 4; }
+    private int panelW() { return Math.min(500, width - 20); }
+    private int panelX() { return (width - panelW()) / 2; }
+    private int panelY() { return Math.max(8, (height - 270) / 2); }
+    private int sideW() { return Math.min(154, panelW() / 3); }
+    private int mainX() { return panelX() + sideW() + 12; }
+    private int mainW() { return panelW() - sideW() - 22; }
+    private int visibleRows() { return Math.max(3, Math.min(10, (height - 112) / ROW_HEIGHT)); }
 
-    @Override
-    protected void init() {
+    @Override protected void init() {
         clearWidgets();
-        int x = panelX(), top = top(), count = AudioraConfig.HUD_IDS.length, rows = visibleRows();
-        previewIndex = selected;
+        int x = panelX(), y = panelY(), rows = visibleRows(), count = AudioraConfig.HUD_IDS.length;
         firstRow = Math.max(0, Math.min(firstRow, Math.max(0, count - rows)));
-
-        if (showAllHud) {
-            for (int row = 0; row < rows; row++) {
-                final int index = firstRow + row;
-                if (index >= count) break;
-                int y = top + 22 + row * ROW_HEIGHT;
-                addRenderableWidget(Button.builder(Component.literal(hudName(index) + (isEnabled(index) ? "  • ON" : "  • OFF")), b -> {
-                    selected = index;
-                    previewIndex = index;
-                    showAllHud = false;
-                    rebuild();
-                }).bounds(x + 4, y, PANEL_WIDTH - 12, 19).build());
-            }
-            int listY = top + 24 + rows * ROW_HEIGHT;
-            addRenderableWidget(Button.builder(Component.literal("↑"), b -> { firstRow = Math.max(0, firstRow - 1); rebuild(); })
-                .bounds(x + 4, listY, 70, 19).build());
-            addRenderableWidget(Button.builder(Component.literal("↓"), b -> { firstRow = Math.min(Math.max(0, count - rows), firstRow + 1); rebuild(); })
-                .bounds(x + 80, listY, 70, 19).build());
-            addRenderableWidget(Button.builder(Component.literal("Back"), b -> { showAllHud = false; rebuild(); })
-                .bounds(x + 156, listY, 96, 19).build());
-            return;
-        }
+        previewIndex = selected;
 
         for (int row = 0; row < rows; row++) {
-            final int index = firstRow + row;
+            int index = firstRow + row;
             if (index >= count) break;
-            int y = top + 22 + row * ROW_HEIGHT;
-            addRenderableWidget(Button.builder(Component.literal(isEnabled(index) ? "ON" : "OFF"), b -> {
-                setEnabled(index, !isEnabled(index)); AudioraConfig.save(); rebuild();
-            }).bounds(x + 158, y, 38, 19).build());
-            addRenderableWidget(Button.builder(Component.literal("−"), b -> {
-                AudioraConfig.hudScale[index] = Math.max(50, AudioraConfig.hudScale[index] - 10);
-                AudioraConfig.save(); rebuild();
-            }).bounds(x + 199, y, 25, 19).build());
-            addRenderableWidget(Button.builder(Component.literal("+"), b -> {
-                AudioraConfig.hudScale[index] = Math.min(200, AudioraConfig.hudScale[index] + 10);
-                AudioraConfig.save(); rebuild();
-            }).bounds(x + 227, y, 25, 19).build());
+            final int i = index;
+            addRenderableWidget(Button.builder(Component.literal((isEnabled(i) ? "● " : "○ ") + hudName(i)), b -> {
+                selected = i; previewIndex = i; rebuild();
+            }).bounds(x + 4, y + 38 + row * ROW_HEIGHT, sideW() - 8, 17).build());
         }
 
-        int cy = controlsY();
-        addRenderableWidget(Button.builder(Component.literal("↑ List"), b -> { firstRow = Math.max(0, firstRow - 1); rebuild(); })
-            .bounds(x + 4, cy, 72, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("↓ List"), b -> { firstRow = Math.min(Math.max(0, count - rows), firstRow + 1); rebuild(); })
-            .bounds(x + 80, cy, 72, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("←"), b -> move(-5, 0)).bounds(x + 4, cy + 23, 54, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("→"), b -> move(5, 0)).bounds(x + 61, cy + 23, 54, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("↑"), b -> move(0, -5)).bounds(x + 118, cy + 23, 54, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("↓"), b -> move(0, 5)).bounds(x + 175, cy + 23, 54, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Scale −"), b -> resizeScale(-10)).bounds(x + 4, cy + 46, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Scale +"), b -> resizeScale(10)).bounds(x + 118, cy + 46, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Width −"), b -> resizeWidth(-10)).bounds(x + 4, cy + 69, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Width +"), b -> resizeWidth(10)).bounds(x + 118, cy + 69, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Height −"), b -> resizeHeight(-10)).bounds(x + 4, cy + 92, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Height +"), b -> resizeHeight(10)).bounds(x + 118, cy + 92, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Reset selected"), b -> {
+        int right = mainX(), w = mainW(), cy = y + 48;
+        addRenderableWidget(Button.builder(Component.literal(isEnabled(selected) ? "HUD: ON" : "HUD: OFF"), b -> {
+            setEnabled(selected, !isEnabled(selected)); AudioraConfig.save(); rebuild();
+        }).bounds(right, cy, Math.max(60, w / 2 - 4), 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Scale −"), b -> resizeScale(-10))
+            .bounds(right, cy + 29, Math.max(60, w / 2 - 4), 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Scale +"), b -> resizeScale(10))
+            .bounds(right + w / 2 + 2, cy + 29, Math.max(60, w - w / 2 - 2), 20).build());
+        addRenderableWidget(Button.builder(Component.literal("←"), b -> move(-5, 0)).bounds(right, cy + 57, 38, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("→"), b -> move(5, 0)).bounds(right + 42, cy + 57, 38, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("↑"), b -> move(0, -5)).bounds(right + 84, cy + 57, 38, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("↓"), b -> move(0, 5)).bounds(right + 126, cy + 57, 38, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Width −"), b -> resizeWidth(-10)).bounds(right, cy + 85, Math.max(60, w / 2 - 4), 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Width +"), b -> resizeWidth(10)).bounds(right + w / 2 + 2, cy + 85, Math.max(60, w - w / 2 - 2), 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Height −"), b -> resizeHeight(-10)).bounds(right, cy + 113, Math.max(60, w / 2 - 4), 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Height +"), b -> resizeHeight(10)).bounds(right + w / 2 + 2, cy + 113, Math.max(60, w - w / 2 - 2), 20).build());
+
+        addRenderableWidget(Button.builder(Component.literal("↑"), b -> { firstRow = Math.max(0, firstRow - 1); rebuild(); })
+            .bounds(x + 4, y + 40 + rows * ROW_HEIGHT, 38, 18).build());
+        addRenderableWidget(Button.builder(Component.literal("↓"), b -> { firstRow = Math.min(Math.max(0, count - rows), firstRow + 1); rebuild(); })
+            .bounds(x + 46, y + 40 + rows * ROW_HEIGHT, 38, 18).build());
+        addRenderableWidget(Button.builder(Component.literal("Reset"), b -> {
             AudioraConfig.hudX[selected] = 0; AudioraConfig.hudY[selected] = 0;
-            AudioraConfig.hudScale[selected] = 100;
-            AudioraConfig.hudWidth[selected] = 100; AudioraConfig.hudHeight[selected] = 100;
-            setEnabled(selected, true); AudioraConfig.save(); rebuild();
-        }).bounds(x + 4, cy + 115, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Reset all"), b -> {
-            java.util.Arrays.fill(AudioraConfig.hudX, 0);
-            java.util.Arrays.fill(AudioraConfig.hudY, 0);
-            java.util.Arrays.fill(AudioraConfig.hudScale, 100);
-            java.util.Arrays.fill(AudioraConfig.hudWidth, 100);
-            java.util.Arrays.fill(AudioraConfig.hudHeight, 100);
-            java.util.Arrays.fill(AudioraConfig.hudEnabled, true);
+            AudioraConfig.hudScale[selected] = 100; AudioraConfig.hudWidth[selected] = 100;
+            AudioraConfig.hudHeight[selected] = 100; setEnabled(selected, true);
+            AudioraConfig.save(); rebuild();
+        }).bounds(right, cy + 145, Math.max(60, w / 2 - 4), 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Reset All"), b -> {
+            java.util.Arrays.fill(AudioraConfig.hudX, 0); java.util.Arrays.fill(AudioraConfig.hudY, 0);
+            java.util.Arrays.fill(AudioraConfig.hudScale, 100); java.util.Arrays.fill(AudioraConfig.hudWidth, 100);
+            java.util.Arrays.fill(AudioraConfig.hudHeight, 100); java.util.Arrays.fill(AudioraConfig.hudEnabled, true);
             AudioraConfig.comboEnabled = true; AudioraConfig.save(); rebuild();
-        }).bounds(x + 118, cy + 115, 110, 19).build());
-        addRenderableWidget(Button.builder(Component.literal("Show All HUDs  ▼"), b -> {
-            showAllHud = true; firstRow = 0; rebuild();
-        }).bounds(x + 4, cy + 161, 239, 19).build());
+        }).bounds(right + w / 2 + 2, cy + 145, Math.max(60, w - w / 2 - 2), 20).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
-            .bounds(x + 4, cy + 138, 239, 19).build());
+            .bounds(x + panelW() - 78, y + 238, 74, 20).build());
     }
 
     private void rebuild() { clearWidgets(); init(); }
@@ -122,18 +86,18 @@ public final class AudioraHudScreen extends Screen {
     }
     private void move(int dx, int dy) {
         AudioraConfig.hudX[selected] += dx; AudioraConfig.hudY[selected] += dy;
-        AudioraConfig.save();
-    }
-    private void resizeScale(int amount) {
-        AudioraConfig.hudScale[selected] = Math.max(50, Math.min(200, AudioraConfig.hudScale[selected] + amount));
         AudioraConfig.save(); rebuild();
     }
-    private void resizeWidth(int amount) {
-        AudioraConfig.hudWidth[selected] = Math.max(50, Math.min(200, AudioraConfig.hudWidth[selected] + amount));
+    private void resizeScale(int n) {
+        AudioraConfig.hudScale[selected] = Math.max(50, Math.min(200, AudioraConfig.hudScale[selected] + n));
         AudioraConfig.save(); rebuild();
     }
-    private void resizeHeight(int amount) {
-        AudioraConfig.hudHeight[selected] = Math.max(50, Math.min(200, AudioraConfig.hudHeight[selected] + amount));
+    private void resizeWidth(int n) {
+        AudioraConfig.hudWidth[selected] = Math.max(50, Math.min(200, AudioraConfig.hudWidth[selected] + n));
+        AudioraConfig.save(); rebuild();
+    }
+    private void resizeHeight(int n) {
+        AudioraConfig.hudHeight[selected] = Math.max(50, Math.min(200, AudioraConfig.hudHeight[selected] + n));
         AudioraConfig.save(); rebuild();
     }
     private String hudName(int i) {
@@ -144,74 +108,34 @@ public final class AudioraHudScreen extends Screen {
             case "ore_tracker" -> "Ore Tracker"; case "combo" -> "Combo";
             case "damage_number" -> "Damage number"; case "critical_hit" -> "Critical hit";
             case "potion_effects" -> "Potion effects"; case "player_target" -> "Player Guide";
-            case "compass" -> "Compass"; case "keystrokes" -> "WASD + CPS"; default -> AudioraConfig.HUD_IDS[i];
+            case "compass" -> "Compass"; case "keystrokes" -> "WASD + CPS";
+            default -> AudioraConfig.HUD_IDS[i];
         };
     }
 
-    @Override
-    public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
+    @Override public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
         super.extractRenderState(g, mx, my, delta);
-        int x = panelX(), top = top(), cy = controlsY(), rows = visibleRows();
-        if (showAllHud) {
-            int listBottom = top + 24 + rows * ROW_HEIGHT + 24;
-            g.fill(x - 4, top - 25, x + PANEL_WIDTH, listBottom, 0xFF17212B);
-            g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF28527C);
-            g.text(font, "AUDIORA / SELECT HUD", x + 5, top - 18, 0xFFFFFFFF, true);
-            g.text(font, "All HUDs • arranged vertically", x + 4, top + 1, 0xFF9FCFFF, false);
-            for (int row = 0; row < rows; row++) {
-                int i = firstRow + row;
-                if (i >= AudioraConfig.HUD_IDS.length) break;
-                int y = top + 22 + row * ROW_HEIGHT;
-                g.fill(x, y - 1, x + PANEL_WIDTH - 8, y + 19, i == selected ? 0xAA305F91 : ((row & 1) == 0 ? 0x55485B70 : 0x44405266));
-                g.text(font, hudName(i), x + 9, y + 5, isEnabled(i) ? 0xFFF1F5FA : 0xFF8993A1, i == selected);
-            }
-            return;
-        }
-        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 220, 0xFF17212B);
-        g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF28527C);
-        g.text(font, "AUDIORA / HUD SETTINGS", x + 5, top - 18, 0xFFFFFFFF, true);
-        g.text(font, "Select a HUD to preview it live on screen.", x + 4, top + 1, 0xFF9FCFFF, false);
-        for (int row = 0; row < rows; row++) {
-            int i = firstRow + row;
-            if (i >= AudioraConfig.HUD_IDS.length) break;
-            int y = top + 22 + row * ROW_HEIGHT;
-            g.fill(x, y - 1, x + PANEL_WIDTH - 8, y + 19,
-                i == selected ? 0xAA305F91 : ((row & 1) == 0 ? 0x55485B70 : 0x44405266));
-            g.text(font, hudName(i), x + 5, y + 5, isEnabled(i) ? 0xFFF1F5FA : 0xFF8993A1, i == selected);
-            g.text(font, AudioraConfig.hudScale[i] + "%", x + 119, y + 5, 0xFFB8D8F4, false);
-        }
-        g.text(font, "Selected: " + hudName(selected), x + 5, cy - 1, 0xFF80C8FF, true);
-        g.fill(x, cy + 184, x + PANEL_WIDTH - 8, cy + 213, 0x665A718A);
-        g.text(font, "X: " + AudioraConfig.hudX[selected] + "   Y: " + AudioraConfig.hudY[selected],
-            x + 5, cy + 188, 0xFFE5F1FC, false);
-        g.text(font, "Scale: " + AudioraConfig.hudScale[selected] + "%   W: "
-            + AudioraConfig.hudWidth[selected] + "%   H: " + AudioraConfig.hudHeight[selected] + "%",
-            x + 5, cy + 202, 0xFFE5F1FC, false);
+        int x = panelX(), y = panelY(), rows = visibleRows(), right = mainX(), w = mainW();
+        // Lightly transparent editor surfaces keep the game visible behind the settings.
+        g.fill(x - 3, y - 5, x + panelW() + 3, y + 266, 0x55202935);
+        g.fill(x - 3, y - 5, x + panelW() + 3, y + 20, 0x88304761);
+        g.text(font, "AUDIORA / HUD SETTINGS", x + 5, y + 3, 0xFFFFFFFF, true);
+        g.text(font, "HUD LIST", x + 7, y + 27, 0xFFB8D8FF, true);
+        g.text(font, "HUD SIZE & POSITION", right, y + 27, 0xFFB8D8FF, true);
+        g.fill(right - 3, y + 43, right + w + 2, y + 220, 0x33202935);
+        g.text(font, "Selected: " + hudName(selected), right + 3, y + 49, 0xFFFFFFFF, true);
+        g.text(font, "Scale: " + AudioraConfig.hudScale[selected] + "%", right + 3, y + 91, 0xFFE8F1FA, false);
+        g.text(font, "X: " + AudioraConfig.hudX[selected] + "   Y: " + AudioraConfig.hudY[selected], right + 3, y + 119, 0xFFE8F1FA, false);
+        g.text(font, "Width: " + AudioraConfig.hudWidth[selected] + "%", right + 3, y + 147, 0xFFE8F1FA, false);
+        g.text(font, "Height: " + AudioraConfig.hudHeight[selected] + "%", right + 3, y + 175, 0xFFE8F1FA, false);
     }
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
+    @Override public boolean mouseScrolled(double mx, double my, double dx, double dy) {
         int max = Math.max(0, AudioraConfig.HUD_IDS.length - visibleRows());
-        firstRow = Math.max(0, Math.min(max, firstRow + (deltaY < 0 ? 1 : -1)));
-        rebuild();
-        return true;
+        firstRow = Math.max(0, Math.min(max, firstRow + (dy < 0 ? 1 : -1)));
+        rebuild(); return true;
     }
-
-    @Override public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) { }
-
-    @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        double mx = event.x(), my = event.y();
-        int x = panelX(), top = top(), rows = visibleRows();
-        for (int row = 0; row < rows; row++) {
-            int i = firstRow + row, y = top + 22 + row * ROW_HEIGHT;
-            if (i < AudioraConfig.HUD_IDS.length && mx >= x && mx < x + 155 && my >= y - 1 && my < y + 20) {
-                selected = i; previewIndex = i; rebuild(); return true;
-            }
-        }
-        return super.mouseClicked(event, doubleClick);
-    }
-
+    @Override public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float delta) { }
     @Override public boolean isPauseScreen() { return false; }
     @Override public void onClose() { AudioraConfig.save(); minecraft.gui.setScreen(parent); }
 }
