@@ -22,7 +22,7 @@ public final class AudioraHudScreen extends Screen {
 
     private int visibleRows() { return height < 250 ? 1 : height < 310 ? 2 : height < 400 ? 3 : 4; }
     private int panelX() { return 6; }
-    private int top() { return Math.max(8, (height - (visibleRows() * ROW_HEIGHT + 196)) / 2); }
+    private int top() { return Math.max(8, (height - (visibleRows() * ROW_HEIGHT + 230)) / 2); }
     private int controlsY() { return top() + 22 + visibleRows() * ROW_HEIGHT + 4; }
 
     @Override
@@ -121,8 +121,8 @@ public final class AudioraHudScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
         super.extractRenderState(g, mx, my, delta);
         int x = panelX(), top = top(), cy = controlsY(), rows = visibleRows();
-        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 163, 0xDD101725);
-        g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF173B68);
+        g.fill(x - 4, top - 25, x + PANEL_WIDTH, cy + 194, 0xB92B3B50);
+        g.fill(x - 4, top - 25, x + PANEL_WIDTH, top - 5, 0xFF28527C);
         g.text(font, "AUDIORA / HUD SETTINGS", x + 5, top - 18, 0xFFFFFFFF, true);
         g.text(font, "Select a HUD to preview it live on screen.", x + 4, top + 1, 0xFF9FCFFF, false);
         for (int row = 0; row < rows; row++) {
@@ -130,15 +130,17 @@ public final class AudioraHudScreen extends Screen {
             if (i >= AudioraConfig.HUD_IDS.length) break;
             int y = top + 22 + row * ROW_HEIGHT;
             g.fill(x, y - 1, x + PANEL_WIDTH - 8, y + 19,
-                i == selected ? 0xAA305F91 : ((row & 1) == 0 ? 0x55303D50 : 0x332B394D));
+                i == selected ? 0xAA305F91 : ((row & 1) == 0 ? 0x55485B70 : 0x44405266));
             g.text(font, hudName(i), x + 5, y + 5, isEnabled(i) ? 0xFFF1F5FA : 0xFF8993A1, i == selected);
             g.text(font, AudioraConfig.hudScale[i] + "%", x + 119, y + 5, 0xFFB8D8F4, false);
         }
         g.text(font, "Selected: " + hudName(selected), x + 5, cy - 1, 0xFF80C8FF, true);
-        g.text(font, "X " + AudioraConfig.hudX[selected] + " / Y " + AudioraConfig.hudY[selected]
-            + "  Scale " + AudioraConfig.hudScale[selected] + "%", x + 5, cy + 72, 0xFFD5E4F2, false);
-        g.text(font, "Width " + AudioraConfig.hudWidth[selected] + "%  Height "
-            + AudioraConfig.hudHeight[selected] + "%", x + 5, cy + 86, 0xFFD5E4F2, false);
+        g.fill(x, cy + 161, x + PANEL_WIDTH - 8, cy + 190, 0x665A718A);
+        g.text(font, "X: " + AudioraConfig.hudX[selected] + "   Y: " + AudioraConfig.hudY[selected],
+            x + 5, cy + 165, 0xFFE5F1FC, false);
+        g.text(font, "Scale: " + AudioraConfig.hudScale[selected] + "%   W: "
+            + AudioraConfig.hudWidth[selected] + "%   H: " + AudioraConfig.hudHeight[selected] + "%",
+            x + 5, cy + 179, 0xFFE5F1FC, false);
     }
 
     @Override
