@@ -110,7 +110,7 @@ public final class AudioraHudScreen extends Screen {
             case "ore_tracker" -> "Ore Tracker"; case "combo" -> "Combo";
             case "damage_number" -> "Damage number"; case "critical_hit" -> "Critical hit";
             case "potion_effects" -> "Potion effects"; case "player_target" -> "Player Guide";
-            case "compass" -> "Compass"; default -> AudioraConfig.HUD_IDS[i];
+            case "compass" -> "Compass"; case "keystrokes" -> "WASD + CPS"; default -> AudioraConfig.HUD_IDS[i];
         };
     }
 
