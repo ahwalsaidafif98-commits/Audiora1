@@ -32,6 +32,10 @@ public final class AudioraHudScreen extends Screen {
         firstRow = Math.max(0, Math.min(firstRow, Math.max(0, count - rows)));
         previewIndex = selected;
 
+        addRenderableWidget(Button.builder(Component.literal("SOUND SETTINGS"), b -> minecraft.gui.setScreen(new AudioraScreen(this)))
+            .bounds(x + 4, y + 22, (panelW() - 12) / 2, 16).build());
+        addRenderableWidget(Button.builder(Component.literal("HUD SETTINGS"), b -> {})
+            .bounds(x + 8 + (panelW() - 12) / 2, y + 22, (panelW() - 12) / 2, 16).build());
         for (int row = 0; row < rows; row++) {
             int index = firstRow + row;
             if (index >= count) break;
