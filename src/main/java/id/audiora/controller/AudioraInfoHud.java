@@ -69,7 +69,6 @@ public final class AudioraInfoHud {
         }
 
         if (damageTicks > 0) damageTicks--;
-        tickKeystrokes(client);
 
         Inventory inventory = client.player.getInventory();
         Map<String, Integer> current = new HashMap<>();
@@ -157,22 +156,6 @@ public final class AudioraInfoHud {
                 top + 12 + AudioraConfig.hudY[1], 0xFFB8D8FF, 1);
         }
 
-        if (shouldRenderHud(13)) {
-            int kx = graphics.guiWidth() - 72 + AudioraConfig.hudX[13];
-            int ky = 8 + AudioraConfig.hudY[13];
-            graphics.pose().pushMatrix();
-            graphics.pose().translate(kx, ky);
-            graphics.pose().scale(AudioraConfig.hudScaleX(13), AudioraConfig.hudScaleY(13));
-            graphics.fill(-4, -4, 76, 64, 0xA018202B);
-            drawKey(graphics, client, "W", 26, 1, client.options.keyUp.isDown());
-            drawKey(graphics, client, "A", 2, 21, client.options.keyLeft.isDown());
-            drawKey(graphics, client, "S", 26, 21, client.options.keyDown.isDown());
-            drawKey(graphics, client, "D", 50, 21, client.options.keyRight.isDown());
-            String cps = "LMB " + leftClicks.size() + " | RMB " + rightClicks.size();
-            graphics.text(client.font, cps, 1, 44, 0xFF8DFF8D, true);
-            graphics.pose().popMatrix();
-        }
-
         if (shouldRenderHud(12)) {
             String facing = player.getDirection().getName().toUpperCase(java.util.Locale.ROOT);
             int compassX = left + AudioraConfig.hudX[12];
@@ -254,7 +237,7 @@ public final class AudioraInfoHud {
             Entity entity = entityHit.getEntity();
             if (entity instanceof LivingEntity living && living.isAlive()) {
                 if (living instanceof net.minecraft.world.entity.player.Player) {
-                    if (shouldRenderHud(11)) renderTargetCard(graphics, client, living, deltaTracker, 11);
+                    if (shouldRenderHud(4)) renderTargetCard(graphics, client, living, deltaTracker, 4);
                 } else if (shouldRenderHud(4)) {
                     renderTargetCard(graphics, client, living, deltaTracker, 4);
                 }
@@ -294,43 +277,32 @@ public final class AudioraInfoHud {
 
         if (shouldRenderHud(6) && (!oreCounts.isEmpty() || isHudPreview(6))) {
             int line = 0;
-            if (oreCounts.isEmpty() && isHudPreview(6)) {
-                int px = graphics.guiWidth() - 150 + AudioraConfig.hudX[6];
-                int py = 6 + AudioraConfig.hudY[6];
-                graphics.pose().pushMatrix();
-                graphics.pose().translate(px, py);
-                graphics.pose().scale(AudioraConfig.hudScaleX(6), AudioraConfig.hudScaleY(6));
-                graphics.text(client.font, "Ore Tracker (preview)", 0, 0, 0xFFE8D58A, true);
-                graphics.text(client.font, "Diamond Ore: 0 (0%)", 0, 12, 0xFFE8D58A, true);
-                graphics.pose().popMatrix();
-            }
-            int totalOres = oreCounts.values().stream().mapToInt(Integer::intValue).sum();
             int maxWidth = 0;
-            for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
+            java.util.List<ItemStack> oreItems = new java.util.ArrayList<>();
+            for (String orePath : oreCounts.keySet()) {
                 if (line >= 5) break;
-                int share = totalOres > 0 ? Math.round(100.0F * ore.getValue() / totalOres) : 0;
-                String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue() + " (" + share + "%)";
-                maxWidth = Math.max(maxWidth, client.font.width(oreLabel) + 22);
+                String itemPath = orePath;
+                if (itemPath.startsWith("deepslate_")) itemPath = itemPath.substring("deepslate_".length());
+                if (itemPath.endsWith("_ore")) itemPath = itemPath.substring(0, itemPath.length() - 4);
+                if (itemPath.equals("ancient_debris")) itemPath = "netherite_scrap";
+                if (itemPath.equals("redstone")) itemPath = "redstone";
+                if (itemPath.equals("lapis")) itemPath = "lapis_lazuli";
+                if (itemPath.equals("diamond") || itemPath.equals("emerald") || itemPath.equals("coal")
+                    || itemPath.equals("copper") || itemPath.equals("iron") || itemPath.equals("gold")
+                    || itemPath.equals("netherite_scrap") || itemPath.equals("redstone") || itemPath.equals("lapis_lazuli")) {
+                    Identifier itemId = Identifier.fromNamespaceAndPath("minecraft", itemPath);
+                    ItemStack icon = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(itemId)
+                        .map(reference -> new ItemStack(reference.value())).orElse(ItemStack.EMPTY);
+                    if (!icon.isEmpty()) oreItems.add(icon);
+                }
                 line++;
             }
-            int oreX = graphics.guiWidth() - maxWidth - 6 + AudioraConfig.hudX[6];
+            int oreX = graphics.guiWidth() - 34 + AudioraConfig.hudX[6];
             int oreY = 6 + AudioraConfig.hudY[6];
             graphics.pose().pushMatrix();
             graphics.pose().translate(oreX, oreY);
             graphics.pose().scale(AudioraConfig.hudScaleX(6), AudioraConfig.hudScaleY(6));
-            line = 0;
-            for (Map.Entry<String, Integer> ore : oreCounts.entrySet()) {
-                if (line >= 5) break;
-                int share = totalOres > 0 ? Math.round(100.0F * ore.getValue() / totalOres) : 0;
-                String oreLabel = ore.getKey().replace('_', ' ') + ": " + ore.getValue() + " (" + share + "%)";
-                int iconX = maxWidth - client.font.width(oreLabel) - 20;
-                Identifier oreItemId = Identifier.fromNamespaceAndPath("minecraft", ore.getKey());
-                var oreBlock = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(oreItemId);
-                ItemStack oreIcon = oreBlock.map(reference -> new ItemStack(reference.value().asItem())).orElse(ItemStack.EMPTY);
-                if (!oreIcon.isEmpty()) graphics.item(oreIcon, iconX, line * 12 - 2);
-                graphics.text(client.font, oreLabel, maxWidth - client.font.width(oreLabel), line * 12, 0xFFE8D58A, true);
-                line++;
-            }
+            for (int i = 0; i < oreItems.size(); i++) graphics.item(oreItems.get(i), 0, i * 18);
             graphics.pose().popMatrix();
         }
 
